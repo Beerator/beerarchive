@@ -7,17 +7,5 @@
         jumboMode="false"
         revision="19.1.0"
         sha1="3d645417e7780d44f32e29a3ec6b729b75aef26c"/>
-    <item
-        dex="/home/richard/AndroidStudioProjects/BeerArchive/app/build/intermediates/pre-dexed/debug/classes-6c71f10fc0525233600c6814e4154010c4a16671.jar"
-        jar="/home/richard/AndroidStudioProjects/BeerArchive/build/intermediates/exploded-aar/com.github.castorflex.smoothprogressbar/library/0.4.0/classes.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="6ca319f998430aa20c4dde97ba6df213d6cf3dd0"/>
-    <item
-        dex="/home/richard/AndroidStudioProjects/BeerArchive/app/build/intermediates/pre-dexed/debug/classes-a8630ad0c08e4893e5db6573ee4b7d2fa8ae2d47.jar"
-        jar="/home/richard/AndroidStudioProjects/BeerArchive/build/intermediates/exploded-aar/com.github.chrisbanes.actionbarpulltorefresh/library/0.9.9/classes.jar"
-        jumboMode="false"
-        revision="19.1.0"
-        sha1="06ca4ea902f14efb76284d918edb085df33cc365"/>
 
 </pre-dex-items>
