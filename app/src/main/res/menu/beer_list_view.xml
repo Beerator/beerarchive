@@ -2,6 +2,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.rjmoseley.beerarchive.app.BeerListViewActivity" >
 
+    <item android:id="@+id/action_refresh"
+        android:title="@string/action_refresh"
+        android:orderInCategory="0"
+        android:showAsAction="always"
+        android:icon="@drawable/ic_action_refresh"/>
+
     <item android:id="@+id/action_add"
         android:title="@string/action_add"
         android:orderInCategory="1"

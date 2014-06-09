@@ -6,22 +6,16 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.TextView;
 
 import com.parse.FindCallback;
 import com.parse.Parse;
-import com.parse.ParseAnalytics;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseQueryAdapter;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -33,12 +27,13 @@ public class BeerListViewActivity extends Activity {
 
     private ListView beerListView ;
 
-    private String sortKey = "brewery";
-
+    private String sortKey1 = "beer";
+    private String sortKey2 = "brewery";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_beer_list_view);
 
         Parse.initialize(this, "7TlbR0Q2rGmZDaHsmDh6YwVBwkREhlQObLY6kvvo", "2h6aF1mhOnShpJ77Ky1PgWENL14WDC39ZWk4gBjL");
@@ -50,11 +45,13 @@ public class BeerListViewActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
+        //Refresh the beer list when resuming this activity
         setListViewContent();
     }
 
     public void setListViewContent() {
-
+        findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+        findViewById(R.id.beerListView).setVisibility(View.GONE);
         ParseQuery query = new ParseQuery("BeerList");
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
@@ -62,15 +59,23 @@ public class BeerListViewActivity extends Activity {
                 List<Map<String, String>> beerList = new ArrayList<Map<String, String>>();
                 for (ParseObject obj : objects) {
                     Map<String, String> t = new HashMap<String, String>();
+                    t.put("objectId", obj.getObjectId());
                     t.put("beer", obj.getString("beer"));
                     t.put("brewery", obj.getString("brewery"));
                     beerList.add(t);
                 }
-                //Sort the beers
+                //Sort the beers by sortKey1
                 Collections.sort(beerList, new Comparator<Map<String, String>>() {
                     @Override
                     public int compare(Map<String, String> m1, Map<String, String> m2) {
-                        return m1.get(sortKey).compareTo(m2.get(sortKey));
+                        return m1.get(sortKey1).compareTo(m2.get(sortKey1));
+                    }
+                });
+                //Sort the beers by sortKey2
+                Collections.sort(beerList, new Comparator<Map<String, String>>() {
+                    @Override
+                    public int compare(Map<String, String> m1, Map<String, String> m2) {
+                        return m1.get(sortKey2).compareTo(m2.get(sortKey2));
                     }
                 });
                 SimpleAdapter listAdapter = new SimpleAdapter(BeerListViewActivity.this, beerList,
@@ -79,6 +84,8 @@ public class BeerListViewActivity extends Activity {
                         new int[] {android.R.id.text1,
                                 android.R.id.text2});
                 beerListView.setAdapter(listAdapter);
+                findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+                findViewById(R.id.beerListView).setVisibility(View.VISIBLE);
             }
         });
 
@@ -108,6 +115,9 @@ public class BeerListViewActivity extends Activity {
             Intent launchAddBeer = new Intent(this, BeerAddActivity.class);
             startActivity(launchAddBeer);
             return true;
+        }
+        else if (id == R.id.action_refresh) {
+            setListViewContent();
         }
         return super.onOptionsItemSelected(item);
     }
