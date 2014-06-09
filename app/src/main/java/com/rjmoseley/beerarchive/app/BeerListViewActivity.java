@@ -80,9 +80,10 @@ public class BeerListViewActivity extends Activity {
                 });
                 SimpleAdapter listAdapter = new SimpleAdapter(BeerListViewActivity.this, beerList,
                         R.layout.beer_list_item,
-                        new String[] {"brewery", "beer"},
-                        new int[] {android.R.id.text1,
-                                android.R.id.text2});
+                        new String[] {"brewery", "beer", "objectId"},
+                        new int[] {R.id.text1,
+                                R.id.text2,
+                                R.id.objectId});
                 beerListView.setAdapter(listAdapter);
                 findViewById(R.id.loadingPanel).setVisibility(View.GONE);
                 findViewById(R.id.beerListView).setVisibility(View.VISIBLE);
