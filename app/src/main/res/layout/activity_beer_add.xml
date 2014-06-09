@@ -11,21 +11,18 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:id="@+id/linearLayout"
-        android:layout_marginTop="6dp"
-        android:layout_marginBottom="6dp">
+        android:layout_margin="6dp">
 
         <TextView android:id="@+id/tvBrewery"
             android:layout_width="110dp"
             android:layout_height="wrap_content"
             android:text="@string/brewery_name"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_marginLeft="6dp" />
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <EditText android:id="@+id/breweryName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginRight="6dp" />
+            android:layout_weight="1" />
     </LinearLayout>
 
     <LinearLayout
@@ -33,32 +30,41 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="6dp"
-        android:layout_marginBottom="6dp">
+        android:layout_margin="6dp">
 
         <TextView android:id="@+id/tvBeer"
             android:layout_width="110dp"
             android:layout_height="wrap_content"
             android:text="@string/beer_name"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_marginLeft="6dp" />
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <EditText android:id="@+id/beerName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginRight="6dp" />
+            android:layout_weight="1" />
 
     </LinearLayout>
 
-    <Button
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/add_beer"
-        android:id="@+id/addBeerButton"
         android:layout_gravity="right"
-        android:onClick="addBeer"
-        android:layout_marginTop="6dp"
-        android:layout_marginRight="6dp" />
+        android:gravity="right">
+
+        <Button android:id="@+id/addBeerButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/add_beer"
+            android:onClick="addBeer"
+            android:layout_margin="6dp" />
+
+        <Button android:id="@+id/button2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/cancel"
+            android:onClick="cancel"
+            android:layout_margin="6dp" />
+    </LinearLayout>
 
 </LinearLayout>

@@ -1,11 +1,13 @@
 package com.rjmoseley.beerarchive.app;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.parse.ParseObject;
 
@@ -24,10 +26,23 @@ public class BeerAddActivity extends Activity {
         EditText breweryInput = (EditText) findViewById(R.id.breweryName);
         String beerString = beerInput.getText().toString();
         String breweryString = breweryInput.getText().toString();
-        ParseObject newBeer = new ParseObject("BeerList");
-        newBeer.put("beer", beerString);
-        newBeer.put("brewery", breweryString);
-        newBeer.saveInBackground();
+        if ((beerString.length() > 0) && (breweryString.length() > 0)) {
+            ParseObject newBeer = new ParseObject("BeerList");
+            newBeer.put("beer", beerString);
+            newBeer.put("brewery", breweryString);
+            newBeer.saveInBackground();
+            finish();
+        }
+        else {
+            Context context = getApplicationContext();
+            CharSequence text = "Brewery and Beer Name cannot be empty";
+            int duration = Toast.LENGTH_SHORT;
+            Toast toast = Toast.makeText(context, text, duration);
+            toast.show();
+        }
+    }
+
+    public void cancel(View view) {
         finish();
     }
 
