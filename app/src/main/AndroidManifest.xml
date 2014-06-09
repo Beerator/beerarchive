@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.rjmoseley.beerarchive.app" >
+
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.rjmoseley.beerarchive.app.MainActivity"
+            android:name=".MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -18,9 +20,17 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.rjmoseley.beerarchive.app.BeerListViewActivity"
+            android:name=".BeerListViewActivity"
             android:label="@string/app_name" >
             >
+        </activity>
+        <activity
+            android:name=".BeerAddActivity"
+            android:label="@string/title_activity_beer_add"
+            android:parentActivityName=".BeerListViewActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.rjmoseley.beerarchive.app.BeerListViewActivity" />
         </activity>
     </application>
 

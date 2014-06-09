@@ -1,6 +1,7 @@
 package com.rjmoseley.beerarchive.app;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -46,6 +47,12 @@ public class BeerListViewActivity extends Activity {
         setListViewContent();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        setListViewContent();
+    }
+
     public void setListViewContent() {
 
         ParseQuery query = new ParseQuery("BeerList");
@@ -77,10 +84,9 @@ public class BeerListViewActivity extends Activity {
 
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        
+
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.beer_list_view, menu);
         return true;
@@ -99,6 +105,8 @@ public class BeerListViewActivity extends Activity {
             return true;
         }
         else if (id == R.id.action_add) {
+            Intent launchAddBeer = new Intent(this, BeerAddActivity.class);
+            startActivity(launchAddBeer);
             return true;
         }
         return super.onOptionsItemSelected(item);
