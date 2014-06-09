@@ -77,57 +77,6 @@ public class BeerListViewActivity extends Activity {
 
     }
 
-        /*
-        ParseObject beer = new ParseObject("BeerList");
-        beer.put("beer", "Nicks");
-        beer.put("brewery", "Milk Street");
-        beer.saveInBackground();
-        beer = new ParseObject("BeerList");
-        beer.put("beer", "Beer");
-        beer.put("brewery", "Milk Street");
-        beer.saveInBackground();
-*/
-
- /*       //Create list of beers
-        String[] beers = new String[] {"Beer 1", "Beer 2", "Beer 3", "Beer 4"};
-        String[] breweries = new String[] {"Brewery 9", "Brewery 8", "Brewery 7", "Brewery 6"};
-*/
-
-//        List<Map<String,String>> beerList = new ArrayList<Map<String, String>>();
-
-/*        for (int i=0; i<4; i++) {
-            Map<String, String> entry = new HashMap<String, String>(2);
-            entry.put("beer", beers[i]);
-            entry.put("brewery", breweries[i]);
-            beerList.add(entry);
-        }*/
-
-/*        //Sort the beers
-        Collections.sort(beerList, new Comparator<Map<String, String>>() {
-            @Override
-            public int compare(Map<String, String> m1, Map<String, String> m2) {
-                return m1.get(sortKey).compareTo(m2.get(sortKey));
-            }
-        });*/
-/*
-
-        beerListView = (ListView) findViewById(R.id.beerListView);
-        listAdapter = new SimpleAdapter(this, beerList,
-                                        R.layout.beer_list_item,
-                                        new String[] {"brewery", "beer"},
-                                        new int[] {android.R.id.text1,
-                                                   android.R.id.text2});
-        beerListView.setAdapter( listAdapter );
-*/
-
-/*        //Working implementation using the ParseQueryAdapter
-        ParseQueryAdapter<ParseObject> adapter = new ParseQueryAdapter<ParseObject>(this, "BeerList");
-        adapter.setTextKey("beer");
-        ListView beerListView = (ListView) findViewById(R.id.beerListView);
-        beerListView.setAdapter(adapter);*/
-
-/*    }*/
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
