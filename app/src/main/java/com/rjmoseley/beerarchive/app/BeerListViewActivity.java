@@ -100,6 +100,9 @@ public class BeerListViewActivity extends Activity {
                         TextView tv = (TextView) rl.findViewById(R.id.objectId);
                         String objectId = tv.getText().toString();
                         Log.i("Beer List", "Selected beer is " + objectId);
+                        Intent launchBeerDetails = new Intent(getApplicationContext(), BeerDetailsActivity.class);
+                        launchBeerDetails.putExtra("objectId", objectId);
+                        startActivity(launchBeerDetails);
                     }
                 });
             }
