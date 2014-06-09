@@ -3,6 +3,7 @@ package com.rjmoseley.beerarchive.app;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,12 +31,14 @@ public class BeerAddActivity extends Activity {
             ParseObject newBeer = new ParseObject("BeerList");
             newBeer.put("beer", beerString);
             newBeer.put("brewery", breweryString);
+            Log.i("Beer Add", "Adding (Brewery, Beer): " + breweryString + ", " + beerString);
             newBeer.saveInBackground();
             finish();
         }
         else {
             Context context = getApplicationContext();
             CharSequence text = "Brewery and Beer Name cannot be empty";
+            Log.i("Beer Add", "Not adding beer, Brewery and Beer Name cannot be empty");
             int duration = Toast.LENGTH_SHORT;
             Toast toast = Toast.makeText(context, text, duration);
             toast.show();

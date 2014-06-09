@@ -32,6 +32,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.rjmoseley.beerarchive.app.BeerListViewActivity" />
         </activity>
+        <activity
+            android:name=".BeerDetailsActivity"
+            android:label="@string/title_activity_beer_details"
+            android:parentActivityName=".BeerListViewActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.rjmoseley.beerarchive.app.BeerListViewActivity" />
+        </activity>
     </application>
 
 </manifest>
