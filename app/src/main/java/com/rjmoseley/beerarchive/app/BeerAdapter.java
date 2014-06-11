@@ -57,6 +57,9 @@ public class BeerAdapter extends ArrayAdapter<Beer> {
         holder.breweryName.setText(beer.getBrewery());
         holder.objectId.setText(beer.getObjectId());
 
+        //To disable the display of the objectID uncomment below line
+        //holder.objectId.setVisibility(View.GONE);
+
         return row;
     }
 
@@ -70,7 +73,9 @@ public class BeerAdapter extends ArrayAdapter<Beer> {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
             FilterResults results = new FilterResults();
-            Log.i("Filter", "Filter started");
+
+            String filterString = constraint.toString();
+
             // We implement here the filter logic
             if (constraint == null || constraint.length() == 0) {
                 // No filter implemented we return all the list
@@ -79,11 +84,14 @@ public class BeerAdapter extends ArrayAdapter<Beer> {
                 results.count = beerList.size();
             }
             else {
+                Log.i("Filter", "Filtering on: " + filterString);
                 // We perform filtering operation
                 List<Beer> nBeerList = new ArrayList<Beer>();
 
                 for (Beer b : beerList) {
-                    if (b.getName().toUpperCase().startsWith(constraint.toString().toUpperCase()))
+                    if (b.getName().toUpperCase().startsWith(filterString.toUpperCase()))
+                        nBeerList.add(b);
+                    else if (b.getBrewery().toUpperCase().startsWith(filterString.toUpperCase()))
                         nBeerList.add(b);
                 }
                 Log.i("Filter","Number of items found " + nBeerList.size());
@@ -98,29 +106,29 @@ public class BeerAdapter extends ArrayAdapter<Beer> {
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
             // Now we have to inform the adapter about the new list filtered
-            beerList = (ArrayList<Beer>)results.values;
-            notifyDataSetChanged();
-            clear();
-            for (int i = 0, l=results.count; i<l; i++) {
-                add(beerList.get(i));
+            beerList.clear();
+            beerList.addAll((ArrayList<Beer>)results.values);
+
+            if (results.count > 0) {
+                notifyDataSetChanged();
+            }
+            else {
                 notifyDataSetInvalidated();
             }
-
-
         }
     }
 
     @Override
     public Filter getFilter() {
         if (beerFilter == null) {
-            Log.i("Filter", "bring created as currently null");
             beerFilter = new BeerFilter();
         }
-        Log.i("Filter", "returning beerFilter");
         return beerFilter;
     }
 
     public void resetData() {
+        Log.i("Filter", "Resetting data");
         beerList = beerListOrig;
+        notifyDataSetChanged();
     }
 }

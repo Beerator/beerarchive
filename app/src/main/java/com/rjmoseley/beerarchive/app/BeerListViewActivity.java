@@ -69,6 +69,7 @@ public class BeerListViewActivity extends Activity {
     private void downloadBeers() {
         findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
         findViewById(R.id.beerListView).setVisibility(View.GONE);
+        beerFilterText = (EditText) findViewById(R.id.filter);
         ParseQuery query = new ParseQuery("BeerList");
         query.orderByAscending(sortKey1).addAscendingOrder(sortKey2)
                 .findInBackground(new FindCallback<ParseObject>() {
@@ -95,9 +96,8 @@ public class BeerListViewActivity extends Activity {
 
     private void setListViewContent() {
         final BeerAdapter beerAdapter = new BeerAdapter(this, R.layout.beer_list_item, beerList);
-        Log.i("Beer List", "Beer listed: " + beerList.size());
+        Log.i("Beer List", "Beers listed: " + beerList.size());
 
-        beerFilterText = (EditText) findViewById(R.id.filter);
         beerFilterText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int start, int before, int count) {
@@ -108,9 +108,8 @@ public class BeerListViewActivity extends Activity {
             public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
                 Log.i("FilterText", "Text: " + charSequence.toString() + ", Start: " + start
                                             + ", Before: " + before + ", Count: " + count);
-                if (count < before) {
-                    beerAdapter.resetData();
-                }
+                if (count < before) beerAdapter.resetData();
+                if (count == 0) beerAdapter.resetData();
                 beerAdapter.getFilter().filter(charSequence.toString());
             }
 
@@ -163,15 +162,13 @@ public class BeerListViewActivity extends Activity {
         if (id == R.id.action_settings) {
             return true;
         }
-        else if (id ==R.id.action_search) {
-            return true;
-        }
         else if (id == R.id.action_add) {
             Intent launchAddBeer = new Intent(this, BeerAddActivity.class);
             startActivity(launchAddBeer);
             return true;
         }
         else if (id == R.id.action_refresh) {
+            beerFilterText.setText("");
             downloadBeers();
         }
         return super.onOptionsItemSelected(item);
