@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Filter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
@@ -33,6 +34,7 @@ public class BeerListViewActivity extends Activity {
 
     private String sortKey1 = "beer";
     private String sortKey2 = "brewery";
+    private List<ParseObject> beerList = new ArrayList<ParseObject>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,72 +45,104 @@ public class BeerListViewActivity extends Activity {
         Parse.initialize(this, "7TlbR0Q2rGmZDaHsmDh6YwVBwkREhlQObLY6kvvo", "2h6aF1mhOnShpJ77Ky1PgWENL14WDC39ZWk4gBjL");
 
         beerListView = (ListView) findViewById(R.id.beerListView);
-        setListViewContent();
+        findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+        findViewById(R.id.beerListView).setVisibility(View.GONE);
+
+        downloadBeers();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         //Refresh the beer list when resuming this activity
-        setListViewContent();
+        //setListViewContent();
     }
 
-    public void setListViewContent() {
-        findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
-        findViewById(R.id.beerListView).setVisibility(View.GONE);
+    private void downloadBeers(){
         ParseQuery query = new ParseQuery("BeerList");
-        query.findInBackground(new FindCallback<ParseObject>() {
+        query.orderByAscending("brewery").addAscendingOrder("beer")
+                .findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
-                List<Map<String, String>> beerList = new ArrayList<Map<String, String>>();
-                for (ParseObject obj : objects) {
-                    Map<String, String> t = new HashMap<String, String>();
-                    t.put("objectId", obj.getObjectId());
-                    t.put("beer", obj.getString("beer"));
-                    t.put("brewery", obj.getString("brewery"));
-                    beerList.add(t);
+                if (e == null) {
+                    beerList = objects;
+                    setListViewContent();
+                } else {
+                    Log.i("Beer download", "Beer download failed");
                 }
-                //Sort the beers by sortKey1
-                Collections.sort(beerList, new Comparator<Map<String, String>>() {
-                    @Override
-                    public int compare(Map<String, String> m1, Map<String, String> m2) {
-                        return m1.get(sortKey1).compareTo(m2.get(sortKey1));
-                    }
-                });
-                //Sort the beers by sortKey2
-                Collections.sort(beerList, new Comparator<Map<String, String>>() {
-                    @Override
-                    public int compare(Map<String, String> m1, Map<String, String> m2) {
-                        return m1.get(sortKey2).compareTo(m2.get(sortKey2));
-                    }
-                });
-                SimpleAdapter listAdapter = new SimpleAdapter(BeerListViewActivity.this, beerList,
-                        R.layout.beer_list_item,
-                        new String[] {"brewery", "beer", "objectId"},
-                        new int[] {R.id.text1,
-                                R.id.text2,
-                                R.id.objectId});
-                beerListView.setAdapter(listAdapter);
-                Log.i("Beer List", beerList.size() + " beers listed");
-                findViewById(R.id.loadingPanel).setVisibility(View.GONE);
-                findViewById(R.id.beerListView).setVisibility(View.VISIBLE);
+            }
+        });
+    }
 
-                beerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        RelativeLayout rl = (RelativeLayout)view;
-                        TextView tv = (TextView) rl.findViewById(R.id.objectId);
-                        String objectId = tv.getText().toString();
-                        Log.i("Beer List", "Selected beer is " + objectId);
-                        Intent launchBeerDetails = new Intent(getApplicationContext(), BeerDetailsActivity.class);
-                        launchBeerDetails.putExtra("objectId", objectId);
-                        startActivity(launchBeerDetails);
-                    }
-                });
+
+    private void setListViewContent() {
+        //Convert ParseObjects to Map<String, String>
+        List<Map<String, String>> beersToDisplay = new ArrayList<Map<String, String>>();
+        for (ParseObject beer : beerList) {
+            Map<String, String> t = new HashMap<String, String>();
+            t.put("objectId", beer.getObjectId());
+            t.put("beer", beer.getString("beer"));
+            t.put("brewery", beer.getString("brewery"));
+            beersToDisplay.add(t);
+        }
+
+        SimpleAdapter listAdapter = new SimpleAdapter(BeerListViewActivity.this, beersToDisplay,
+                R.layout.beer_list_item,
+                new String[] {"brewery", "beer", "objectId"},
+                new int[] {R.id.text1,
+                        R.id.text2,
+                        R.id.objectId});
+        beerListView.setAdapter(listAdapter);
+        Log.i("Beer List", beerList.size() + " beers listed");
+        findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+        findViewById(R.id.beerListView).setVisibility(View.VISIBLE);
+
+        beerListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                RelativeLayout rl = (RelativeLayout)view;
+                TextView tv = (TextView) rl.findViewById(R.id.objectId);
+                String objectId = tv.getText().toString();
+                Log.i("Beer List", "Selected beer is " + objectId);
+                Intent launchBeerDetails = new Intent(getApplicationContext(), BeerDetailsActivity.class);
+                launchBeerDetails.putExtra("objectId", objectId);
+                startActivity(launchBeerDetails);
             }
         });
 
     }
+
+/*    private class beerFilter extends Filter {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            //
+            FilterResults results = new FilterResults();
+            // We implement here the filter logic
+            if (constraint == null || constraint.length() == 0) {
+                // No filter implemented we return all the list
+                results.values = beerList;
+                results.count = beerList.size();
+            }
+            else {
+                // We perform filtering operation
+                List<Planet> nPlanetList = new ArrayList<Planet>();
+
+                for (Planet p : beerList) {
+                    if (p.getName().toUpperCase().startsWith(constraint.toString().toUpperCase()))
+                        nPlanetList.add(p);
+                }
+
+                results.values = nPlanetList;
+                results.count = nPlanetList.size();
+
+            }
+    return results;
+        }
+        @Override
+        protected void publishResults(CharSequence constraint,FilterResults results) {
+            //
+        }
+    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
