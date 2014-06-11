@@ -34,10 +34,9 @@ import java.util.Map;
 
 public class BeerListViewActivity extends Activity {
 
-    private List<Map<String, String>> beerList = new ArrayList<Map<String, String>>();
-    private List<Map<String, String>> beerListToDisplay = new ArrayList<Map<String, String>>();
+    private ArrayList<Beer> beerList = new ArrayList<Beer>();
 
-    SimpleAdapter listAdapter;
+    BeerAdapter beerAdapter;
 
     private ListView beerListView ;
 
@@ -78,15 +77,14 @@ public class BeerListViewActivity extends Activity {
                     public void done(List<ParseObject> objects, ParseException e) {
                         if (e == null) {
                             for (ParseObject obj : objects) {
-                                Map<String, String> t = new HashMap<String, String>();
-                                t.put("objectId", obj.getObjectId());
-                                t.put("beer", obj.getString("beer"));
-                                t.put("brewery", obj.getString("brewery"));
-                                beerList.add(t);
+                                Beer b = new Beer(obj.getString("beer"),
+                                        obj.getString("brewery"),
+                                        obj.getObjectId());
+                                beerList.add(b);
+                                Log.i("Beer download", "Beer added: " + b.toString());
 
                             }
                             Log.i("Beer download", "Beers downloaded: " + beerList.size());
-                            beerListToDisplay = beerList;
                             setListViewContent();
                         } else {
                             Log.i("Beer download", "Beer download failed");
@@ -97,16 +95,15 @@ public class BeerListViewActivity extends Activity {
 
 
     private void setListViewContent() {
-        SimpleAdapter listAdapter = new SimpleAdapter(BeerListViewActivity.this, beerListToDisplay,
-                R.layout.beer_list_item,
-                new String[] {"brewery", "beer", "objectId"},
-                new int[] {R.id.text1,
-                        R.id.text2,
-                        R.id.objectId});
+        BeerAdapter beerAdapter = new BeerAdapter(beerList, this);
 
-        beerListView.setAdapter(listAdapter);
+        beerListView.setAdapter(beerAdapter);
 
-        Log.i("Beer List", "Beers listed: " + beerListToDisplay.size());
+        Log.i("Beer List", "Beer listed: " + beerList.size());
+
+        for (Beer b : beerList) {
+            Log.i("Beer list", b.toString());
+        }
 
         findViewById(R.id.loadingPanel).setVisibility(View.GONE);
         findViewById(R.id.beerListView).setVisibility(View.VISIBLE);
@@ -123,54 +120,12 @@ public class BeerListViewActivity extends Activity {
                 startActivity(launchBeerDetails);
             }
         });
-
     }
 
     private void filterBeerList(String constraint) {
 
     }
 
-    /*private class BeerFilter extends Filter {
-        @Override
-        protected FilterResults performFiltering(CharSequence constraint) {
-            FilterResults results = new FilterResults();
-            // We implement here the filter logic
-            if (constraint == null || constraint.length() == 0) {
-                // No filter implemented we return all the list
-                results.values = beerList;
-                results.count = beerList.size();
-            }
-            else {
-                // We perform filtering operation
-                List<Map<String, String>> nBeerList = new ArrayList<Map<String, String>>();
-
-                for (Map<String, String> b : beerList) {
-                    if (b.get("beer").toUpperCase().startsWith(constraint.toString().toUpperCase())) {
-                        nBeerList.add(b);
-                    } else if (b.get("brewery").toUpperCase().startsWith(constraint.toString().toUpperCase())) {
-                        nBeerList.add(b);
-                    }
-                }
-
-                results.values = nBeerList;
-                results.count = nBeerList.size();
-            }
-            return results;
-        }
-        @Override
-        protected void publishResults(CharSequence constraint,
-                                      FilterResults results) {
-
-            // Now we have to inform the adapter about the new list filtered
-            if (results.count == 0)
-                notifyDataSetInvalidated();
-            else {
-                planetList = (List<Planet>) results.values;
-                notifyDataSetChanged();
-            }
-
-        }
-    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
