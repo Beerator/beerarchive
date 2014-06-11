@@ -40,7 +40,7 @@ public class BeerListViewActivity extends Activity {
 
     private ListView beerListView ;
 
-    private EditText beerFilter;
+    private EditText beerFilterText;
 
     private String sortKey1 = "brewery";
     private String sortKey2 = "beer";
@@ -57,7 +57,6 @@ public class BeerListViewActivity extends Activity {
         beerListView = (ListView) findViewById(R.id.beerListView);
 
         downloadBeers();
-
     }
 
     @Override
@@ -81,7 +80,7 @@ public class BeerListViewActivity extends Activity {
                                         obj.getString("brewery"),
                                         obj.getObjectId());
                                 beerList.add(b);
-                                Log.i("Beer download", "Beer added: " + b.toString());
+                                //Log.i("Beer download", "Beer added: " + b.toString());
 
                             }
                             Log.i("Beer download", "Beers downloaded: " + beerList.size());
@@ -95,15 +94,38 @@ public class BeerListViewActivity extends Activity {
 
 
     private void setListViewContent() {
-        BeerAdapter beerAdapter = new BeerAdapter(beerList, this);
+        final BeerAdapter beerAdapter = new BeerAdapter(this, R.layout.beer_list_item, beerList);
+        Log.i("Beer List", "Beer listed: " + beerList.size());
+
+        beerFilterText = (EditText) findViewById(R.id.filter);
+        beerFilterText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+                Log.i("FilterText", "Text: " + charSequence.toString() + ", Start: " + start
+                                            + ", Before: " + before + ", Count: " + count);
+                if (count < before) {
+                    beerAdapter.resetData();
+                }
+                beerAdapter.getFilter().filter(charSequence.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
 
         beerListView.setAdapter(beerAdapter);
 
-        Log.i("Beer List", "Beer listed: " + beerList.size());
 
-        for (Beer b : beerList) {
+/*        for (Beer b : beerList) {
             Log.i("Beer list", b.toString());
-        }
+        }*/
 
         findViewById(R.id.loadingPanel).setVisibility(View.GONE);
         findViewById(R.id.beerListView).setVisibility(View.VISIBLE);
@@ -122,9 +144,7 @@ public class BeerListViewActivity extends Activity {
         });
     }
 
-    private void filterBeerList(String constraint) {
 
-    }
 
 
     @Override
