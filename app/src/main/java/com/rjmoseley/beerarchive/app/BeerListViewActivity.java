@@ -3,11 +3,15 @@ package com.rjmoseley.beerarchive.app;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.Filter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -30,11 +34,18 @@ import java.util.Map;
 
 public class BeerListViewActivity extends Activity {
 
+    private List<Map<String, String>> beerList = new ArrayList<Map<String, String>>();
+    private List<Map<String, String>> beerListToDisplay = new ArrayList<Map<String, String>>();
+
+    SimpleAdapter listAdapter;
+
     private ListView beerListView ;
 
-    private String sortKey1 = "beer";
-    private String sortKey2 = "brewery";
-    private List<ParseObject> beerList = new ArrayList<ParseObject>();
+    private EditText beerFilter;
+
+    private String sortKey1 = "brewery";
+    private String sortKey2 = "beer";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,10 +56,9 @@ public class BeerListViewActivity extends Activity {
         Parse.initialize(this, "7TlbR0Q2rGmZDaHsmDh6YwVBwkREhlQObLY6kvvo", "2h6aF1mhOnShpJ77Ky1PgWENL14WDC39ZWk4gBjL");
 
         beerListView = (ListView) findViewById(R.id.beerListView);
-        findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
-        findViewById(R.id.beerListView).setVisibility(View.GONE);
 
         downloadBeers();
+
     }
 
     @Override
@@ -58,42 +68,46 @@ public class BeerListViewActivity extends Activity {
         //setListViewContent();
     }
 
-    private void downloadBeers(){
+    private void downloadBeers() {
+        findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+        findViewById(R.id.beerListView).setVisibility(View.GONE);
         ParseQuery query = new ParseQuery("BeerList");
-        query.orderByAscending("brewery").addAscendingOrder("beer")
+        query.orderByAscending(sortKey1).addAscendingOrder(sortKey2)
                 .findInBackground(new FindCallback<ParseObject>() {
-            @Override
-            public void done(List<ParseObject> objects, ParseException e) {
-                if (e == null) {
-                    beerList = objects;
-                    setListViewContent();
-                } else {
-                    Log.i("Beer download", "Beer download failed");
-                }
-            }
-        });
+                    @Override
+                    public void done(List<ParseObject> objects, ParseException e) {
+                        if (e == null) {
+                            for (ParseObject obj : objects) {
+                                Map<String, String> t = new HashMap<String, String>();
+                                t.put("objectId", obj.getObjectId());
+                                t.put("beer", obj.getString("beer"));
+                                t.put("brewery", obj.getString("brewery"));
+                                beerList.add(t);
+
+                            }
+                            Log.i("Beer download", "Beers downloaded: " + beerList.size());
+                            beerListToDisplay = beerList;
+                            setListViewContent();
+                        } else {
+                            Log.i("Beer download", "Beer download failed");
+                        }
+                    }
+                });
     }
 
 
     private void setListViewContent() {
-        //Convert ParseObjects to Map<String, String>
-        List<Map<String, String>> beersToDisplay = new ArrayList<Map<String, String>>();
-        for (ParseObject beer : beerList) {
-            Map<String, String> t = new HashMap<String, String>();
-            t.put("objectId", beer.getObjectId());
-            t.put("beer", beer.getString("beer"));
-            t.put("brewery", beer.getString("brewery"));
-            beersToDisplay.add(t);
-        }
-
-        SimpleAdapter listAdapter = new SimpleAdapter(BeerListViewActivity.this, beersToDisplay,
+        SimpleAdapter listAdapter = new SimpleAdapter(BeerListViewActivity.this, beerListToDisplay,
                 R.layout.beer_list_item,
                 new String[] {"brewery", "beer", "objectId"},
                 new int[] {R.id.text1,
                         R.id.text2,
                         R.id.objectId});
+
         beerListView.setAdapter(listAdapter);
-        Log.i("Beer List", beerList.size() + " beers listed");
+
+        Log.i("Beer List", "Beers listed: " + beerListToDisplay.size());
+
         findViewById(R.id.loadingPanel).setVisibility(View.GONE);
         findViewById(R.id.beerListView).setVisibility(View.VISIBLE);
 
@@ -112,10 +126,13 @@ public class BeerListViewActivity extends Activity {
 
     }
 
-/*    private class beerFilter extends Filter {
+    private void filterBeerList(String constraint) {
+
+    }
+
+    /*private class BeerFilter extends Filter {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
-            //
             FilterResults results = new FilterResults();
             // We implement here the filter logic
             if (constraint == null || constraint.length() == 0) {
@@ -125,22 +142,33 @@ public class BeerListViewActivity extends Activity {
             }
             else {
                 // We perform filtering operation
-                List<Planet> nPlanetList = new ArrayList<Planet>();
+                List<Map<String, String>> nBeerList = new ArrayList<Map<String, String>>();
 
-                for (Planet p : beerList) {
-                    if (p.getName().toUpperCase().startsWith(constraint.toString().toUpperCase()))
-                        nPlanetList.add(p);
+                for (Map<String, String> b : beerList) {
+                    if (b.get("beer").toUpperCase().startsWith(constraint.toString().toUpperCase())) {
+                        nBeerList.add(b);
+                    } else if (b.get("brewery").toUpperCase().startsWith(constraint.toString().toUpperCase())) {
+                        nBeerList.add(b);
+                    }
                 }
 
-                results.values = nPlanetList;
-                results.count = nPlanetList.size();
-
+                results.values = nBeerList;
+                results.count = nBeerList.size();
             }
-    return results;
+            return results;
         }
         @Override
-        protected void publishResults(CharSequence constraint,FilterResults results) {
-            //
+        protected void publishResults(CharSequence constraint,
+                                      FilterResults results) {
+
+            // Now we have to inform the adapter about the new list filtered
+            if (results.count == 0)
+                notifyDataSetInvalidated();
+            else {
+                planetList = (List<Planet>) results.values;
+                notifyDataSetChanged();
+            }
+
         }
     }*/
 
@@ -169,7 +197,7 @@ public class BeerListViewActivity extends Activity {
             return true;
         }
         else if (id == R.id.action_refresh) {
-            setListViewContent();
+            downloadBeers();
         }
         return super.onOptionsItemSelected(item);
     }

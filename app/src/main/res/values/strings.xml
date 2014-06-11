@@ -13,6 +13,6 @@
     <string name="beer_name">Beer Name</string>
     <string name="brewery_name">Brewery</string>
     <string name="add_beer">Add Beer</string>
-    <string name="title_activity_beer_details">BeerDetailsActivity</string>
+    <string name="title_activity_beer_details">Beer Details</string>
 
 </resources>
