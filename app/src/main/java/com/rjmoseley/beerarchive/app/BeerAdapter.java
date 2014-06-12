@@ -91,10 +91,14 @@ public class BeerAdapter extends ArrayAdapter<Beer> {
                 List<Beer> nBeerList = new ArrayList<Beer>();
 
                 for (Beer b : beerList) {
-                    if (b.getName().toUpperCase().startsWith(filterString.toUpperCase()))
+                    if (b.getName().toUpperCase().startsWith(filterString.toUpperCase())) {
                         nBeerList.add(b);
-                    else if (b.getBrewery().toUpperCase().startsWith(filterString.toUpperCase()))
+                        Log.i("Filter", "Adding by Name: " + b.toString());
+                    }
+                    else if (b.getBrewery().toUpperCase().startsWith(filterString.toUpperCase())) {
                         nBeerList.add(b);
+                        Log.i("Filter", "Adding by Brewery: " + b.toString());
+                    }
                 }
                 Log.i("Filter","Number of items found " + nBeerList.size());
                 results.values = nBeerList;
@@ -108,9 +112,9 @@ public class BeerAdapter extends ArrayAdapter<Beer> {
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
             synchronized (mLock) {
-                final ArrayList<Beer> localItems = (ArrayList<Beer>) results.values;
+                beerList = (ArrayList<Beer>) results.values;
                 clear();
-                for (Beer b : localItems) {
+                for (Beer b : beerList) {
                     add(b);
                 }
                 notifyDataSetChanged();
