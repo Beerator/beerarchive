@@ -60,7 +60,7 @@ public class BeerAdapter extends ArrayAdapter<Beer> {
         holder.objectId.setText(beer.getObjectId());
 
         //To disable the display of the objectID uncomment below line
-        //holder.objectId.setVisibility(View.GONE);
+        holder.objectId.setVisibility(View.GONE);
 
         return row;
     }

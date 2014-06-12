@@ -1,7 +1,9 @@
 package com.rjmoseley.beerarchive.app;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -12,6 +14,9 @@ public class BeerDetailsActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_beer_details);
+        Intent intent = getIntent();
+        String objectId = intent.getStringExtra("objectId");
+        Log.i("Beer details", "objectId: " + objectId);
     }
 
 

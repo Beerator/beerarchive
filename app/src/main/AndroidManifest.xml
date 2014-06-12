@@ -20,14 +20,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".BeerListViewActivity"
+            android:name=".BeerListActivity"
             android:label="@string/app_name" >
             >
         </activity>
         <activity
             android:name=".BeerAddActivity"
             android:label="@string/title_activity_beer_add"
-            android:parentActivityName=".BeerListViewActivity" >
+            android:parentActivityName=".BeerListActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.rjmoseley.beerarchive.app.BeerListViewActivity" />
@@ -35,7 +35,7 @@
         <activity
             android:name=".BeerDetailsActivity"
             android:label="@string/title_activity_beer_details"
-            android:parentActivityName=".BeerListViewActivity" >
+            android:parentActivityName=".BeerListActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.rjmoseley.beerarchive.app.BeerListViewActivity" />

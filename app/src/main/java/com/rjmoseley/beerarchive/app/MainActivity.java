@@ -6,12 +6,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListView;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 
 public class MainActivity extends Activity {
@@ -24,13 +18,13 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Intent launchBeerList = new Intent(this, BeerListViewActivity.class);
+        Intent launchBeerList = new Intent(this, BeerListActivity.class);
         startActivity(launchBeerList);
     }
 
     public void launchBeerList(View v) {
         //Do something when button pressed
-        Intent launchBeerList = new Intent(this, BeerListViewActivity.class);
+        Intent launchBeerList = new Intent(this, BeerListActivity.class);
         startActivity(launchBeerList);
     }
 
