@@ -37,7 +37,7 @@ public class BeerDetailsActivity extends Activity {
         beerList = g.getBeerList();
         for (Beer b : beerList) {
             if (b.getObjectId().equals(objectId)) {
-                Log.i("Beer details", "Beer details found");
+                Log.i("Beer details", "Beer details found " + b.toString());
                 beerName.setText(b.getName());
                 breweryName.setText(b.getBrewery());
             }

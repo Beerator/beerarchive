@@ -77,6 +77,9 @@ public class BeerListActivity extends Activity {
                                 Beer b = new Beer(obj.getString("beer"),
                                         obj.getString("brewery"),
                                         obj.getObjectId());
+/*                                        if (obj.getNumber("abv") != null) {
+                                            b.setABV(obj.getNumber("abv").floatValue());
+                                        }*/
                                 beerList.add(b);
                                 //Log.i("Beer download", "Beer added: " + b.toString());
                             }

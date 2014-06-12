@@ -10,7 +10,11 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.SaveCallback;
+
+import java.util.ArrayList;
 
 
 public class BeerAddActivity extends Activity {
@@ -19,20 +23,32 @@ public class BeerAddActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_beer_add);
+
     }
 
     public void addBeer(View view) {
         //Add the beer to the Parse DB
         EditText beerInput = (EditText) findViewById(R.id.beerName);
         EditText breweryInput = (EditText) findViewById(R.id.breweryName);
-        String beerString = beerInput.getText().toString();
-        String breweryString = breweryInput.getText().toString();
+        final String beerString = beerInput.getText().toString();
+        final String breweryString = breweryInput.getText().toString();
         if ((beerString.length() > 0) && (breweryString.length() > 0)) {
-            ParseObject newBeer = new ParseObject("BeerList");
-            newBeer.put("beer", beerString);
-            newBeer.put("brewery", breweryString);
+            final ParseObject newParseBeer = new ParseObject("BeerList");
+            newParseBeer.put("beer", beerString);
+            newParseBeer.put("brewery", breweryString);
             Log.i("Beer Add", "Adding (Brewery, Beer): " + breweryString + ", " + beerString);
-            newBeer.saveInBackground();
+            newParseBeer.saveInBackground(new SaveCallback() {
+                //Once saved to parse grab objectId and save locally
+                @Override
+                public void done(ParseException e) {
+                    final String objectId = newParseBeer.getObjectId();
+                    Globals g = Globals.getInstance();
+                    ArrayList<Beer> beerList = g.getBeerList();
+                    Beer newBeer = new Beer(beerString, breweryString, objectId);
+                    beerList.add(newBeer);
+                    g.setBeerlist(beerList);
+                }
+            });
             finish();
         }
         else {
@@ -43,6 +59,7 @@ public class BeerAddActivity extends Activity {
             Toast toast = Toast.makeText(context, text, duration);
             toast.show();
         }
+
     }
 
     public void cancel(View view) {
