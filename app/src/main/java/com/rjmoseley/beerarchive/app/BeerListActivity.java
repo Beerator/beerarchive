@@ -27,7 +27,7 @@ import java.util.List;
 
 public class BeerListActivity extends Activity {
 
-    public ArrayList<Beer> beerList = new ArrayList<Beer>();
+    private ArrayList<Beer> beerList = new ArrayList<Beer>();
 
     BeerAdapter beerAdapter;
 
@@ -37,6 +37,8 @@ public class BeerListActivity extends Activity {
 
     private String sortKey1 = "brewery";
     private String sortKey2 = "beer";
+
+    final Globals g = Globals.getInstance();
 
 
     @Override
@@ -62,6 +64,7 @@ public class BeerListActivity extends Activity {
     private void downloadBeers() {
         findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
         findViewById(R.id.beerListView).setVisibility(View.GONE);
+
         beerFilterText = (EditText) findViewById(R.id.filter);
         ParseQuery query = new ParseQuery("BeerList");
         query.orderByAscending(sortKey1).addAscendingOrder(sortKey2)
@@ -76,13 +79,13 @@ public class BeerListActivity extends Activity {
                                         obj.getObjectId());
                                 beerList.add(b);
                                 //Log.i("Beer download", "Beer added: " + b.toString());
-
                             }
                             Log.i("Beer download", "Beers downloaded: " + beerList.size());
                             setListViewContent();
                         } else {
                             Log.i("Beer download", "Beer download failed");
                         }
+                        g.setBeerlist(beerList);
                     }
                 });
     }

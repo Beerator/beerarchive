@@ -14,8 +14,12 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
+import java.util.ArrayList;
+
 
 public class BeerDetailsActivity extends Activity {
+
+    private ArrayList<Beer> beerList = new ArrayList<Beer>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,18 +32,16 @@ public class BeerDetailsActivity extends Activity {
         Intent intent = getIntent();
         String objectId = intent.getStringExtra("objectId");
         Log.i("Beer details", "objectId: " + objectId);
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("BeerList");
-        query.getInBackground(objectId, new GetCallback<ParseObject>() {
-            public void done(ParseObject object, ParseException e) {
-                if (e == null) {
-                    Log.i("Beer details", "Beer details found");
-                    beerName.setText(object.getString("beer"));
-                    breweryName.setText(object.getString("brewery"));
-                } else {
-                    Log.i("Beer details", "Failed to find beer");
-                }
+
+        Globals g = Globals.getInstance();
+        beerList = g.getBeerList();
+        for (Beer b : beerList) {
+            if (b.getObjectId().equals(objectId)) {
+                Log.i("Beer details", "Beer details found");
+                beerName.setText(b.getName());
+                breweryName.setText(b.getBrewery());
             }
-        });
+        }
     }
 
     @Override
