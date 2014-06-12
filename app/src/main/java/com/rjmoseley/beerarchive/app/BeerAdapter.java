@@ -14,6 +14,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Custom Adapter to hold beer objects
@@ -24,6 +25,7 @@ public class BeerAdapter extends ArrayAdapter<Beer> {
     private Context context;
     private int layoutResourceId;
     private BeerFilter beerFilter;
+    public Object mLock = new Object();
 
     public BeerAdapter(Context context, int layoutResourceId, ArrayList<Beer> beerList) {
         super(context, layoutResourceId, beerList);
@@ -105,15 +107,13 @@ public class BeerAdapter extends ArrayAdapter<Beer> {
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            // Now we have to inform the adapter about the new list filtered
-            beerList.clear();
-            beerList.addAll((ArrayList<Beer>)results.values);
-
-            if (results.count > 0) {
+            synchronized (mLock) {
+                final ArrayList<Beer> localItems = (ArrayList<Beer>) results.values;
+                clear();
+                for (Beer b : localItems) {
+                    add(b);
+                }
                 notifyDataSetChanged();
-            }
-            else {
-                notifyDataSetInvalidated();
             }
         }
     }
