@@ -65,7 +65,7 @@ public class BeerAdapter extends ArrayAdapter<Beer> {
         return row;
     }
 
-    static class BeerHolder {
+    private class BeerHolder {
         TextView beerName;
         TextView breweryName;
         TextView objectId;

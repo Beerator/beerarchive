@@ -1,4 +1,4 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -6,11 +6,47 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
-    tools:context="com.rjmoseley.beerarchive.app.BeerDetailsActivity">
+    tools:context="com.rjmoseley.beerarchive.app.BeerDetailsActivity"
+    android:orientation="vertical">
 
-    <TextView
-        android:text="@string/hello_world"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/linearLayout"
+        android:layout_margin="6dp">
 
-</RelativeLayout>
+        <TextView android:id="@+id/tvBrewery"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:text="@string/brewery_name"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView android:id="@+id/breweryName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="6dp">
+
+        <TextView android:id="@+id/tvBeer"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:text="@string/beer_name"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView android:id="@+id/beerName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+</LinearLayout>

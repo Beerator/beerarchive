@@ -27,7 +27,7 @@ import java.util.List;
 
 public class BeerListActivity extends Activity {
 
-    private ArrayList<Beer> beerList = new ArrayList<Beer>();
+    public ArrayList<Beer> beerList = new ArrayList<Beer>();
 
     BeerAdapter beerAdapter;
 
@@ -69,6 +69,7 @@ public class BeerListActivity extends Activity {
                     @Override
                     public void done(List<ParseObject> objects, ParseException e) {
                         if (e == null) {
+                            beerList.clear();
                             for (ParseObject obj : objects) {
                                 Beer b = new Beer(obj.getString("beer"),
                                         obj.getString("brewery"),

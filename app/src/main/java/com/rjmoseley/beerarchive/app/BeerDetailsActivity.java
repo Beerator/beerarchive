@@ -6,6 +6,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.parse.GetCallback;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 
 
 public class BeerDetailsActivity extends Activity {
@@ -14,11 +21,26 @@ public class BeerDetailsActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_beer_details);
+
+        final TextView breweryName = (TextView) findViewById(R.id.breweryName);
+        final TextView beerName = (TextView) findViewById(R.id.beerName);
+
         Intent intent = getIntent();
         String objectId = intent.getStringExtra("objectId");
         Log.i("Beer details", "objectId: " + objectId);
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("BeerList");
+        query.getInBackground(objectId, new GetCallback<ParseObject>() {
+            public void done(ParseObject object, ParseException e) {
+                if (e == null) {
+                    Log.i("Beer details", "Beer details found");
+                    beerName.setText(object.getString("beer"));
+                    breweryName.setText(object.getString("brewery"));
+                } else {
+                    Log.i("Beer details", "Failed to find beer");
+                }
+            }
+        });
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
