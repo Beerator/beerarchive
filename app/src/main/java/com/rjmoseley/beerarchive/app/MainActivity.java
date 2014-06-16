@@ -3,11 +3,16 @@ package com.rjmoseley.beerarchive.app;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.parse.LogInCallback;
 import com.parse.Parse;
+import com.parse.ParseFacebookUtils;
+import com.parse.ParseUser;
+import com.parse.ParseException;
 
 
 public class MainActivity extends Activity {
@@ -18,6 +23,20 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         Parse.initialize(this, "7TlbR0Q2rGmZDaHsmDh6YwVBwkREhlQObLY6kvvo", "2h6aF1mhOnShpJ77Ky1PgWENL14WDC39ZWk4gBjL");
+        /*ParseFacebookUtils.initialize("892320204116447");
+
+        ParseFacebookUtils.logIn(this, new LogInCallback() {
+            @Override
+            public void done(ParseUser user, ParseException err) {
+                if (user == null) {
+                    Log.d("MyApp", "Uh oh. The user cancelled the Facebook login.");
+                } else if (user.isNew()) {
+                    Log.d("MyApp", "User signed up and logged in through Facebook!");
+                } else {
+                    Log.d("MyApp", "User logged in through Facebook!");
+                }
+            }
+        });*/
 
         Intent launchBeerList = new Intent(this, BeerListActivity.class);
         startActivity(launchBeerList);
