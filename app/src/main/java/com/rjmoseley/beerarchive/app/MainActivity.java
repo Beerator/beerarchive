@@ -7,17 +7,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.parse.Parse;
+
 
 public class MainActivity extends Activity {
-
-/*    private ListView beerListView ;
-    private ArrayAdapter<String> listAdapter ;
-*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Parse.initialize(this, "7TlbR0Q2rGmZDaHsmDh6YwVBwkREhlQObLY6kvvo", "2h6aF1mhOnShpJ77Ky1PgWENL14WDC39ZWk4gBjL");
+
         Intent launchBeerList = new Intent(this, BeerListActivity.class);
         startActivity(launchBeerList);
     }

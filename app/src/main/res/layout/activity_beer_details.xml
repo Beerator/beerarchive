@@ -49,4 +49,81 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="6dp">
+
+        <TextView android:id="@+id/tvABV"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:text="@string/abv"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView android:id="@+id/abv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+
+        <LinearLayout android:id="@+id/ratingLayout"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="6dp">
+
+            <NumberPicker
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:id="@+id/numberPicker1" />
+            <NumberPicker
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dp"
+                android:id="@+id/numberPicker2" />
+
+            <Button android:id="@+id/rateBeerButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/rate_beer"
+                android:onClick="rateBeer"
+                android:layout_marginLeft="30dp" />
+
+        </LinearLayout>
+
+        <ProgressBar android:id="@+id/loadingPanel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:layout_centerInParent="true" />
+
+    </RelativeLayout>
+
+
+    <LinearLayout android:id="@+id/loadRatingsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_gravity="center"
+        android:layout_margin="6dp">
+
+        <Button android:id="@+id/loadRatings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/load_ratings"
+            android:onClick="loadRatings" />
+
+        </LinearLayout>
+
 </LinearLayout>

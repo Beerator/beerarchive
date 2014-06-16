@@ -1,18 +1,23 @@
 package com.rjmoseley.beerarchive.app;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 
@@ -21,16 +26,22 @@ public class BeerDetailsActivity extends Activity {
 
     private ArrayList<Beer> beerList = new ArrayList<Beer>();
 
+    private String beerObjectId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_beer_details);
 
+        findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+
         final TextView breweryName = (TextView) findViewById(R.id.breweryName);
         final TextView beerName = (TextView) findViewById(R.id.beerName);
+        final TextView abv = (TextView) findViewById(R.id.abv);
 
         Intent intent = getIntent();
         String objectId = intent.getStringExtra("objectId");
+        beerObjectId = objectId;
         Log.i("Beer details", "objectId: " + objectId);
 
         Globals g = Globals.getInstance();
@@ -40,8 +51,61 @@ public class BeerDetailsActivity extends Activity {
                 Log.i("Beer details", "Beer details found " + b.toString());
                 beerName.setText(b.getName());
                 breweryName.setText(b.getBrewery());
+                if (b.getABV() != null) {
+                    abv.setText(b.getABV() + " %");
+                }
             }
         }
+
+        NumberPicker np1 = (NumberPicker) findViewById(R.id.numberPicker1);
+        String[] np1Strings = {"5", "4", "3", "2", "1"};
+        np1.setDisplayedValues(np1Strings);
+        np1.setMaxValue(4);
+        np1.setMinValue(0);
+        np1.setValue(2);
+        np1.setWrapSelectorWheel(false);
+
+        NumberPicker np2 = (NumberPicker) findViewById(R.id.numberPicker2);
+        String[] np2Strings = {"+", " ", "-"};
+        np2.setDisplayedValues(np2Strings);
+        np2.setMinValue(0);
+        np2.setMaxValue(2);
+        np2.setValue(1);
+        np2.setWrapSelectorWheel(false);
+
+    }
+
+    public void rateBeer(View view) {
+        findViewById(R.id.ratingLayout).setVisibility(View.GONE);
+        findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+        NumberPicker np1 = (NumberPicker) findViewById(R.id.numberPicker1);
+        String[] np1Strings = np1.getDisplayedValues();
+        String ratingElement1 = np1Strings[np1.getValue()];
+
+        NumberPicker np2 = (NumberPicker) findViewById(R.id.numberPicker2);
+        String[] np2Strings = np2.getDisplayedValues();
+        String ratingElement2 = np2Strings[np2.getValue()];
+
+        ParseObject parseRating = new ParseObject("BeerRatings");
+
+        parseRating.put("beerObjectId", beerObjectId);
+        parseRating.put("rating1", ratingElement1);
+        parseRating.put("rating2", ratingElement2);
+
+        Log.i("Beer rating", "Adding rating of " + ratingElement1 + ratingElement2
+                            + " for beer with objectId " + beerObjectId);
+
+        parseRating.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+            }
+        });
+
+    }
+
+    public void loadRatings(View view) {
+        findViewById(R.id.loadRatingsLayout).setVisibility(View.GONE);
     }
 
     @Override

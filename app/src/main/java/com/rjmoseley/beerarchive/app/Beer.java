@@ -8,7 +8,7 @@ public class Beer {
     String name = null;
     String brewery = null;
     String objectId = null;
-    Float abv = null;
+    String abv = null;
 
     public Beer(String name, String brewery, String objectId) {
         super();
@@ -29,11 +29,11 @@ public class Beer {
         return objectId;
     }
 
-    public void setABV(Float abv) {
+    public void setABV(String abv) {
         this.abv = abv;
     }
 
-    public float getABV() {
+    public String getABV() {
         return this.abv;
     }
 

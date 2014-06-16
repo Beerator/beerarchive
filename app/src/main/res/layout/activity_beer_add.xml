@@ -49,6 +49,27 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="6dp">
+
+        <TextView android:id="@+id/tvABV"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:text="@string/abv"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <EditText android:id="@+id/abv"
+            android:inputType="numberDecimal"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_gravity="right"
         android:gravity="right">
 

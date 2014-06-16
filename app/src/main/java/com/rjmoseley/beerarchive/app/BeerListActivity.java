@@ -47,8 +47,6 @@ public class BeerListActivity extends Activity {
 
         setContentView(R.layout.activity_beer_list);
 
-        Parse.initialize(this, "7TlbR0Q2rGmZDaHsmDh6YwVBwkREhlQObLY6kvvo", "2h6aF1mhOnShpJ77Ky1PgWENL14WDC39ZWk4gBjL");
-
         beerListView = (ListView) findViewById(R.id.beerListView);
 
         downloadBeers();
@@ -77,9 +75,9 @@ public class BeerListActivity extends Activity {
                                 Beer b = new Beer(obj.getString("beer"),
                                         obj.getString("brewery"),
                                         obj.getObjectId());
-/*                                        if (obj.getNumber("abv") != null) {
-                                            b.setABV(obj.getNumber("abv").floatValue());
-                                        }*/
+                                        if (obj.getString("abv") != null) {
+                                            b.setABV(obj.getString("abv"));
+                                        }
                                 beerList.add(b);
                                 //Log.i("Beer download", "Beer added: " + b.toString());
                             }

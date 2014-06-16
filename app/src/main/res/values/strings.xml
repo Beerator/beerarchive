@@ -14,5 +14,8 @@
     <string name="brewery_name">Brewery</string>
     <string name="add_beer">Add Beer</string>
     <string name="title_activity_beer_details">Beer Details</string>
+    <string name="abv">ABV</string>
+    <string name="rate_beer">Rate!</string>
+    <string name="load_ratings">Load previous ratings</string>
 
 </resources>

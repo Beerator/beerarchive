@@ -30,12 +30,17 @@ public class BeerAddActivity extends Activity {
         //Add the beer to the Parse DB
         EditText beerInput = (EditText) findViewById(R.id.beerName);
         EditText breweryInput = (EditText) findViewById(R.id.breweryName);
+        EditText abvInput = (EditText) findViewById(R.id.abv);
         final String beerString = beerInput.getText().toString();
         final String breweryString = breweryInput.getText().toString();
+        final String abvString = abvInput.getText().toString();
         if ((beerString.length() > 0) && (breweryString.length() > 0)) {
             final ParseObject newParseBeer = new ParseObject("BeerList");
             newParseBeer.put("beer", beerString);
             newParseBeer.put("brewery", breweryString);
+            if (abvString.length() > 0) {
+                newParseBeer.put("abv", abvString);
+            }
             Log.i("Beer Add", "Adding (Brewery, Beer): " + breweryString + ", " + beerString);
             newParseBeer.saveInBackground(new SaveCallback() {
                 //Once saved to parse grab objectId and save locally
@@ -45,6 +50,9 @@ public class BeerAddActivity extends Activity {
                     Globals g = Globals.getInstance();
                     ArrayList<Beer> beerList = g.getBeerList();
                     Beer newBeer = new Beer(beerString, breweryString, objectId);
+                    if (abvString.length() > 0) {
+                        newBeer.setABV(abvString);
+                    }
                     beerList.add(newBeer);
                     g.setBeerlist(beerList);
                 }
