@@ -9,10 +9,13 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
+import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -20,6 +23,8 @@ import com.parse.ParseQuery;
 import com.parse.SaveCallback;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 
 public class BeerDetailsActivity extends Activity {
@@ -28,12 +33,23 @@ public class BeerDetailsActivity extends Activity {
 
     private String beerObjectId;
 
+    private Beer beer;
+
+    private ListView ratingsListView;
+
+    BeerRatingsAdapter beerRatingsAdapter;
+
+    private ArrayList<BeerRating> beerRatings = new ArrayList<BeerRating>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_beer_details);
 
+        ratingsListView = (ListView) findViewById(R.id.ratingsListView);
+
         findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+        findViewById(R.id.ratingsListView).setVisibility(View.GONE);
 
         final TextView breweryName = (TextView) findViewById(R.id.breweryName);
         final TextView beerName = (TextView) findViewById(R.id.beerName);
@@ -49,11 +65,33 @@ public class BeerDetailsActivity extends Activity {
         for (Beer b : beerList) {
             if (b.getObjectId().equals(objectId)) {
                 Log.i("Beer details", "Beer details found " + b.toString());
-                beerName.setText(b.getName());
-                breweryName.setText(b.getBrewery());
-                if (b.getABV() != null) {
-                    abv.setText(b.getABV() + " %");
+                beer = b;
+                beerName.setText(beer.getName());
+                breweryName.setText(beer.getBrewery());
+                if (beer.getABV() != null) {
+                    abv.setText(beer.getABV() + " %");
                 }
+
+                //Download beer ratings in background
+                final ParseQuery query = new ParseQuery("BeerRatings");
+                query.whereEqualTo("beerObjectId", objectId);
+                query.orderByDescending("createdAt").findInBackground(new FindCallback<ParseObject>() {
+                    @Override
+                    public void done(List<ParseObject> objects, ParseException e) {
+                        if (e == null) {
+                            for (ParseObject obj : objects) {
+                                BeerRating br = new BeerRating(obj.getString("rating1"),
+                                        obj.getString("rating2"),
+                                        obj.getCreatedAt());
+                                beer.addRating(br);
+                            }
+                            Log.i("Beer details", "Beer ratings downloaded: " + objects.size());
+                        } else {
+                            Log.i("Beer details", "Beer ratings download failed");
+                        }
+                        loadRatings();
+                    }
+                });
             }
         }
 
@@ -75,18 +113,22 @@ public class BeerDetailsActivity extends Activity {
 
     }
 
-    public void rateBeer(View view) {
+    public void rateBeerOnClick(View view) {
+        rateBeer();
+    }
+
+    public void rateBeer() {
         findViewById(R.id.ratingLayout).setVisibility(View.GONE);
         findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
         NumberPicker np1 = (NumberPicker) findViewById(R.id.numberPicker1);
         String[] np1Strings = np1.getDisplayedValues();
-        String ratingElement1 = np1Strings[np1.getValue()];
+        final String ratingElement1 = np1Strings[np1.getValue()];
 
         NumberPicker np2 = (NumberPicker) findViewById(R.id.numberPicker2);
         String[] np2Strings = np2.getDisplayedValues();
-        String ratingElement2 = np2Strings[np2.getValue()];
+        final String ratingElement2 = np2Strings[np2.getValue()];
 
-        ParseObject parseRating = new ParseObject("BeerRatings");
+        final ParseObject parseRating = new ParseObject("BeerRatings");
 
         parseRating.put("beerObjectId", beerObjectId);
         parseRating.put("rating1", ratingElement1);
@@ -99,12 +141,27 @@ public class BeerDetailsActivity extends Activity {
             @Override
             public void done(ParseException e) {
                 findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+                Date date = parseRating.getCreatedAt();
+                BeerRating beerRating = new BeerRating(ratingElement1, ratingElement2, date);
+                beer.addRating(beerRating);
             }
         });
 
     }
 
-    public void loadRatings(View view) {
+    public void loadRatingsOnClick(View view) {
+        loadRatings();
+    }
+
+    public void loadRatings() {
+        //ArrayList<BeerRating> beerRatings;
+        beerRatings = beer.getRatingsList();
+
+        final BeerRatingsAdapter beerRatingsAdapter
+                = new BeerRatingsAdapter(this, R.layout.beer_rating_item, beerRatings);
+
+        ratingsListView.setAdapter(beerRatingsAdapter);
+        findViewById(R.id.ratingsListView).setVisibility(View.VISIBLE);
         findViewById(R.id.loadRatingsLayout).setVisibility(View.GONE);
     }
 

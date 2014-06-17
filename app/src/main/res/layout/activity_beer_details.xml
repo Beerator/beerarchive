@@ -96,7 +96,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="@string/rate_beer"
-                android:onClick="rateBeer"
+                android:onClick="rateBeerOnClick"
                 android:layout_marginLeft="30dp" />
 
         </LinearLayout>
@@ -117,13 +117,24 @@
         android:layout_gravity="center"
         android:layout_margin="6dp">
 
-        <Button android:id="@+id/loadRatings"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/load_ratings"
-            android:onClick="loadRatings" />
+            android:layout_height="wrap_content">
 
-        </LinearLayout>
+            <Button android:id="@+id/loadRatings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top"
+                android:text="@string/load_ratings"
+                android:onClick="loadRatingsOnClick" />
+
+            <ListView android:id="@+id/ratingsListView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
 
 </LinearLayout>

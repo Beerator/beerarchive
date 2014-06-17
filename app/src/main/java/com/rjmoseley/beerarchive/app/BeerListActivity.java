@@ -119,11 +119,6 @@ public class BeerListActivity extends Activity {
 
         beerListView.setAdapter(beerAdapter);
 
-
-/*        for (Beer b : beerList) {
-            Log.i("Beer list", b.toString());
-        }*/
-
         findViewById(R.id.loadingPanel).setVisibility(View.GONE);
         findViewById(R.id.beerListView).setVisibility(View.VISIBLE);
 
