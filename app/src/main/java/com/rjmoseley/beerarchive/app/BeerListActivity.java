@@ -29,7 +29,7 @@ public class BeerListActivity extends Activity {
 
     private ArrayList<Beer> beerList = new ArrayList<Beer>();
 
-    BeerAdapter beerAdapter;
+    //BeerAdapter beerAdapter;
 
     private ListView beerListView ;
 

@@ -37,7 +37,7 @@ public class BeerDetailsActivity extends Activity {
 
     private ListView ratingsListView;
 
-    BeerRatingsAdapter beerRatingsAdapter;
+    //private BeerRatingsAdapter beerRatingsAdapter;
 
     private ArrayList<BeerRating> beerRatings = new ArrayList<BeerRating>();
 
@@ -79,6 +79,7 @@ public class BeerDetailsActivity extends Activity {
                     @Override
                     public void done(List<ParseObject> objects, ParseException e) {
                         if (e == null) {
+                            beer.clearRatings();
                             for (ParseObject obj : objects) {
                                 BeerRating br = new BeerRating(obj.getString("rating1"),
                                         obj.getString("rating2"),
@@ -154,15 +155,20 @@ public class BeerDetailsActivity extends Activity {
     }
 
     public void loadRatings() {
-        //ArrayList<BeerRating> beerRatings;
+
         beerRatings = beer.getRatingsList();
 
         final BeerRatingsAdapter beerRatingsAdapter
                 = new BeerRatingsAdapter(this, R.layout.beer_rating_item, beerRatings);
 
+        beerRatingsAdapter.notifyDataSetChanged();
+
+        Log.i("Beer details", "beerRatings size: " + beerRatings.size());
+
         ratingsListView.setAdapter(beerRatingsAdapter);
+
         findViewById(R.id.ratingsListView).setVisibility(View.VISIBLE);
-        findViewById(R.id.loadRatingsLayout).setVisibility(View.GONE);
+        findViewById(R.id.loadRatings).setVisibility(View.GONE);
     }
 
     @Override

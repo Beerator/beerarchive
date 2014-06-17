@@ -119,7 +119,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
 
             <Button android:id="@+id/loadRatings"
                 android:layout_width="match_parent"
@@ -130,8 +130,7 @@
 
             <ListView android:id="@+id/ratingsListView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal" />
+                android:layout_height="match_parent" />
 
         </RelativeLayout>
 

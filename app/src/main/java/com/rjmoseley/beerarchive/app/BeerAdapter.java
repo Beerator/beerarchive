@@ -38,7 +38,7 @@ public class BeerAdapter extends ArrayAdapter<Beer> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View row = convertView;
-        BeerHolder holder = null;
+        BeerHolder holder;
         if (row == null) {
             LayoutInflater inflater = ((Activity)context).getLayoutInflater();
             row = inflater.inflate(layoutResourceId, parent, false);

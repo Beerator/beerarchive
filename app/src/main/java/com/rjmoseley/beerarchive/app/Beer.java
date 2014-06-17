@@ -53,6 +53,10 @@ public class Beer {
         return ratingsList;
     }
 
+    public void clearRatings() {
+        ratingsList.clear();
+    }
+
     public String get(String key) {
         if (key == "name") {
             return name;

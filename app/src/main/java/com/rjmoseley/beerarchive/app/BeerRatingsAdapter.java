@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Adapter to hold and display beer ratings
  */
-public class BeerRatingsAdapter extends ArrayAdapter {
+public class BeerRatingsAdapter extends ArrayAdapter<BeerRating> {
 
     private ArrayList<BeerRating> beerRatings;
     private Context context;
@@ -32,7 +32,7 @@ public class BeerRatingsAdapter extends ArrayAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View row = convertView;
-        RatingsHolder holder = null;
+        RatingsHolder holder;
         if (row == null) {
             LayoutInflater inflater = ((Activity)context).getLayoutInflater();
             row = inflater.inflate(layoutResourceId, parent, false);
@@ -56,9 +56,25 @@ public class BeerRatingsAdapter extends ArrayAdapter {
     }
 
     private class RatingsHolder {
-        TextView rating;
-        TextView date;
+        public TextView rating;
+        public TextView date;
+    }
+    @Override
+    public int getCount() {
+        Log.i("BeerRatingsAdapter", "Count: " + beerRatings.size());
+        return beerRatings.size();
     }
 
+    @Override
+    public BeerRating getItem(int position){
+        Log.i("BeerRatingsAdapter", "getItem");
+        return beerRatings.get(position);
+    }
+
+    @Override
+    public long getItemId(int arg0) {
+        Log.i("BeerRatingsAdapter", "getItemId: " + arg0);
+        return arg0;
+    }
 }
 
