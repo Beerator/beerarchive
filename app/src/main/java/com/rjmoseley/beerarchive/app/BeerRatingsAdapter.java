@@ -48,7 +48,7 @@ public class BeerRatingsAdapter extends ArrayAdapter<BeerRating> {
         }
 
         BeerRating beerRating = beerRatings.get(position);
-        Log.i("BeerRatingsAdapter", beerRating.toString() + " " + beerRating.getDate().toString());
+        //Log.i("BeerRatingsAdapter", beerRating.toString() + " " + beerRating.getDate().toString());
         holder.rating.setText(beerRating.toString());
         holder.date.setText(beerRating.getDate().toString());
 
@@ -59,22 +59,6 @@ public class BeerRatingsAdapter extends ArrayAdapter<BeerRating> {
         public TextView rating;
         public TextView date;
     }
-    @Override
-    public int getCount() {
-        Log.i("BeerRatingsAdapter", "Count: " + beerRatings.size());
-        return beerRatings.size();
-    }
 
-    @Override
-    public BeerRating getItem(int position){
-        Log.i("BeerRatingsAdapter", "getItem");
-        return beerRatings.get(position);
-    }
-
-    @Override
-    public long getItemId(int arg0) {
-        Log.i("BeerRatingsAdapter", "getItemId: " + arg0);
-        return arg0;
-    }
 }
 

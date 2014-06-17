@@ -31,6 +31,6 @@ public class BeerRating {
     }
 
     public String toString(){
-        return element1 + element2;
+        return element1 + " " + element2;
     }
 }

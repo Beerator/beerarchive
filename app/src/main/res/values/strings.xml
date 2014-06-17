@@ -17,5 +17,6 @@
     <string name="abv">ABV</string>
     <string name="rate_beer">Rate!</string>
     <string name="load_ratings">Load previous ratings</string>
+    <string name="ratings">Ratings</string>
 
 </resources>
