@@ -18,5 +18,8 @@
     <string name="rate_beer">Rate!</string>
     <string name="load_ratings">Load previous ratings</string>
     <string name="ratings">Ratings</string>
+    <string name="fb_app_id">892320204116447</string>
+    <string name="login_intro">If you\'re seeing this then you need to login.  Click the button</string>
+    <string name="login">Login</string>
 
 </resources>

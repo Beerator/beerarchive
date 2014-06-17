@@ -94,7 +94,8 @@ public class BeerDetailsActivity extends Activity {
                         } else {
                             Log.i("Beer details", "Beer ratings download failed");
                         }
-                        loadRatings();
+                        //Don't display ratings automatically
+                        //loadRatings();
                     }
                 });
             }

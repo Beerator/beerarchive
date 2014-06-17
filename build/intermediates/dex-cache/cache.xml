@@ -2,10 +2,22 @@
 <pre-dex-items>
 
     <item
-        dex="/home/richmose/AndroidStudioProjects/beerarchive/app/build/intermediates/pre-dexed/debug/Parse-1.5.1-fd63b973a97285c49dce4098b255bbb699828119.jar"
-        jar="/home/richmose/AndroidStudioProjects/beerarchive/app/libs/Parse-1.5.1.jar"
+        dex="/home/richard/AndroidStudioProjects/BeerArchive/app/build/intermediates/pre-dexed/debug/classes-d181a18ec3e8bdaf51b94917c6158a23f62f866b.jar"
+        jar="/home/richard/AndroidStudioProjects/BeerArchive/build/intermediates/exploded-aar/BeerArchive/facebook/unspecified/classes.jar"
         jumboMode="false"
         revision="19.1.0"
-        sha1="3d645417e7780d44f32e29a3ec6b729b75aef26c"/>
+        sha1="7274dd84a1281e47bf0b33a8edc070f9ac10703e"/>
+    <item
+        dex="/home/richard/AndroidStudioProjects/BeerArchive/app/build/intermediates/pre-dexed/debug/support-v4-13.0.0-aa7c532d06bcca79f096fbcdfd8fa2c8fc668d43.jar"
+        jar="/opt/android-studio/sdk/extras/android/m2repository/com/android/support/support-v4/13.0.0/support-v4-13.0.0.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="3fe75433da602500cc71fcc1c46e5550291dd45d"/>
+    <item
+        dex="/home/richard/AndroidStudioProjects/BeerArchive/app/build/intermediates/pre-dexed/debug/bolts-bc8e699894b6d1b41069accba780e67dacd631a3.jar"
+        jar="/home/richard/AndroidStudioProjects/BeerArchive/build/intermediates/exploded-aar/BeerArchive/facebook/unspecified/libs/bolts.jar"
+        jumboMode="false"
+        revision="19.1.0"
+        sha1="1e5ba33c837d05dcca9dc40a0ab458f8599d7aef"/>
 
 </pre-dex-items>
