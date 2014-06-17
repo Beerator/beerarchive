@@ -37,7 +37,7 @@ public class BeerDetailsActivity extends Activity {
 
     private ListView ratingsListView;
 
-    //private BeerRatingsAdapter beerRatingsAdapter;
+    private BeerRatingsAdapter beerRatingsAdapter;
 
     private ArrayList<BeerRating> beerRatings = new ArrayList<BeerRating>();
 
@@ -47,12 +47,13 @@ public class BeerDetailsActivity extends Activity {
         setContentView(R.layout.activity_beer_details);
 
         ratingsListView = (ListView) findViewById(R.id.ratingsListView);
-
         View headerView = View.inflate(this, R.layout.activity_beer_details_header, null);
         ratingsListView.addHeaderView(headerView);
 
+        ratingsListView.setAdapter(beerRatingsAdapter);
+
         findViewById(R.id.loadingPanel).setVisibility(View.GONE);
-        findViewById(R.id.ratingsListView).setVisibility(View.GONE);
+        findViewById(R.id.ratingsListView).setVisibility(View.VISIBLE);
 
         final TextView breweryName = (TextView) findViewById(R.id.breweryName);
         final TextView beerName = (TextView) findViewById(R.id.beerName);
@@ -161,14 +162,13 @@ public class BeerDetailsActivity extends Activity {
 
         beerRatings = beer.getRatingsList();
 
-        final BeerRatingsAdapter beerRatingsAdapter
-                = new BeerRatingsAdapter(this, R.layout.beer_rating_item, beerRatings);
+        beerRatingsAdapter = new BeerRatingsAdapter(this, R.layout.beer_rating_item, beerRatings);
 
         beerRatingsAdapter.notifyDataSetChanged();
 
-        Log.i("Beer details", "beerRatings size: " + beerRatings.size());
-
         ratingsListView.setAdapter(beerRatingsAdapter);
+
+        Log.i("Beer details", "beerRatings size: " + beerRatings.size());
 
         findViewById(R.id.ratingsListView).setVisibility(View.VISIBLE);
         findViewById(R.id.loadRatings).setVisibility(View.GONE);
