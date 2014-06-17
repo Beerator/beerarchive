@@ -10,7 +10,10 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/fb_app_id"/>
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/fb_app_id" />
+
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name" >
@@ -41,7 +44,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.rjmoseley.beerarchive.app.BeerListViewActivity" />
         </activity>
-        <activity android:name="com.facebook.LoginActivity"/>
+        <activity android:name="com.facebook.LoginActivity" />
+        <activity
+            android:name=".LoginActivity"
+            android:label="@string/title_activity_login"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.rjmoseley.beerarchive.app.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

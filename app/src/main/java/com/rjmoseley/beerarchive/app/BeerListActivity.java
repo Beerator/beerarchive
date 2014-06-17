@@ -65,30 +65,32 @@ public class BeerListActivity extends Activity {
 
         beerFilterText = (EditText) findViewById(R.id.filter);
         ParseQuery query = new ParseQuery("BeerList");
-        query.orderByAscending(sortKey1).addAscendingOrder(sortKey2)
-                .findInBackground(new FindCallback<ParseObject>() {
-                    @Override
-                    public void done(List<ParseObject> objects, ParseException e) {
-                        if (e == null) {
-                            beerList.clear();
-                            for (ParseObject obj : objects) {
-                                Beer b = new Beer(obj.getString("beer"),
-                                        obj.getString("brewery"),
-                                        obj.getObjectId());
-                                        if (obj.getString("abv") != null) {
-                                            b.setABV(obj.getString("abv"));
-                                        }
-                                beerList.add(b);
-                                //Log.i("Beer download", "Beer added: " + b.toString());
-                            }
-                            Log.i("Beer download", "Beers downloaded: " + beerList.size());
-                            setListViewContent();
-                        } else {
-                            Log.i("Beer download", "Beer download failed");
+        query.orderByAscending(sortKey1);
+        query.addAscendingOrder(sortKey2);
+        query.setLimit(1000);
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                if (e == null) {
+                    beerList.clear();
+                    for (ParseObject obj : objects) {
+                        Beer b = new Beer(obj.getString("beer"),
+                                obj.getString("brewery"),
+                                obj.getObjectId());
+                        if (obj.getString("abv") != null) {
+                            b.setABV(obj.getString("abv"));
                         }
-                        g.setBeerlist(beerList);
+                        beerList.add(b);
+                        //Log.i("Beer download", "Beer added: " + b.toString());
                     }
-                });
+                    Log.i("Beer download", "Beers downloaded: " + beerList.size());
+                    setListViewContent();
+                } else {
+                    Log.i("Beer download", "Beer download failed");
+                }
+                g.setBeerlist(beerList);
+            }
+        });
     }
 
 

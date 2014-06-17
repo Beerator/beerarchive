@@ -150,8 +150,10 @@ public class BeerDetailsActivity extends Activity {
                 Date date = parseRating.getCreatedAt();
                 BeerRating beerRating = new BeerRating(ratingElement1, ratingElement2, date);
                 beer.addRating(beerRating);
+                loadRatings();
             }
         });
+
 
     }
 

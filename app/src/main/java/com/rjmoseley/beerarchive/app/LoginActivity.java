@@ -12,55 +12,55 @@ import android.view.View;
 import android.widget.Button;
 
 import com.facebook.FacebookRequestError;
-import com.facebook.LoginActivity;
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.model.GraphUser;
 import com.parse.LogInCallback;
-import com.parse.Parse;
+import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
-import com.parse.ParseException;
+import com.rjmoseley.beerarchive.app.R;
 
-import java.util.Arrays;
-import java.util.List;
+public class LoginActivity extends Activity {
 
-
-public class MainActivity extends Activity {
+    private Button loginButton;
+    private Dialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_login);
 
-        Log.i("MainActivity", "Initialising Parse & Facebook integration");
-        Parse.initialize(this, getString(R.string.parse_app_id),
-                getString(R.string.parse_client_key));
-        ParseFacebookUtils.initialize(getString(R.string.fb_app_id));
-
-        // Check if there is a currently logged in user
-        // and they are linked to a Facebook account.
-        ParseUser currentUser = ParseUser.getCurrentUser();
-        if ((currentUser != null) && ParseFacebookUtils.isLinked(currentUser)) {
-            Log.i("MainActivity", "User is already logged in");
-            //Below line needed if more data needs to be added to ParseUser from GraphUser
-            //getFacebookDetailsBackground();
-            launchBeerList();
-        } else {
-            launchLoginActivity();
-        }
+        loginButton = (Button) findViewById(R.id.loginButton);
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onLoginButtonClicked();
+            }
+        });
     }
 
-    public void launchLoginActivity() {
-        Log.i("MainActivity", "Launching login");
-        Intent launchLoginActivity = new Intent(this, LoginActivity.class);
-        startActivity(launchLoginActivity);
-    }
+    private void onLoginButtonClicked() {
+        LoginActivity.this.progressDialog = ProgressDialog.show(
+                LoginActivity.this, "", "Logging in...", true);
 
-    public void launchBeerList() {
-        Log.i("MainActivity", "Launching beer list");
-        Intent launchBeerList = new Intent(this, BeerListActivity.class);
-        startActivity(launchBeerList);
+        ParseFacebookUtils.logIn(this, new LogInCallback() {
+            @Override
+            public void done(ParseUser user, ParseException err) {
+                LoginActivity.this.progressDialog.dismiss();
+                if (user == null) {
+                    Log.d("Facebook login", "Uh oh. The user cancelled the Facebook login.");
+                } else if (user.isNew()) {
+                    Log.d("Facebook login", "User signed up and logged in through Facebook!");
+                    getFacebookDetailsBackground();
+                    launchBeerList();
+                } else {
+                    Log.d("Facebook login", "User logged in through Facebook!");
+                    getFacebookDetailsBackground();
+                    launchBeerList();
+                }
+            }
+        });
     }
 
     private void getFacebookDetailsBackground() {
@@ -68,9 +68,9 @@ public class MainActivity extends Activity {
             @Override
             public void onCompleted(GraphUser user, Response response) {
                 if (user != null) {
-                    Log.i("Facebook integration", "Adding more user details");
                     ParseUser.getCurrentUser().put("fbId", user.getId());
                     ParseUser.getCurrentUser().put("name", user.getName());
+                    ParseUser.getCurrentUser().put("username", user.getUsername());
                     ParseUser.getCurrentUser().saveInBackground();
                 } else if (response.getError() != null) {
                     if ((response.getError().getCategory() ==
@@ -88,20 +88,31 @@ public class MainActivity extends Activity {
         }).executeAsync();
     }
 
+    public void launchBeerList() {
+        Log.i("LoginActivity", "Launching beer list");
+        Intent launchBeerList = new Intent(this, BeerListActivity.class);
+        startActivity(launchBeerList);
+    }
+
     private void logoutUser() {
         // Log the user out
         ParseUser.logOut();
         // Go to the login view
-        Log.i("MainActivity", "Restarting login");
+        Log.i("LoginActivity", "Restarting login");
         Intent launchLoginActivity = new Intent(this, LoginActivity.class);
         startActivity(launchLoginActivity);
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        ParseFacebookUtils.finishAuthentication(requestCode, resultCode, data);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.login, menu);
         return true;
     }
 
@@ -114,14 +125,6 @@ public class MainActivity extends Activity {
         if (id == R.id.action_settings) {
             return true;
         }
-        else if (id ==R.id.action_search) {
-            return true;
-        }
-        else if (id == R.id.action_add) {
-            return true;
-        }
         return super.onOptionsItemSelected(item);
     }
-
-
 }
