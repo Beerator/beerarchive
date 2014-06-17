@@ -48,6 +48,9 @@ public class BeerDetailsActivity extends Activity {
 
         ratingsListView = (ListView) findViewById(R.id.ratingsListView);
 
+        View headerView = View.inflate(this, R.layout.activity_beer_details_header, null);
+        ratingsListView.addHeaderView(headerView);
+
         findViewById(R.id.loadingPanel).setVisibility(View.GONE);
         findViewById(R.id.ratingsListView).setVisibility(View.GONE);
 
