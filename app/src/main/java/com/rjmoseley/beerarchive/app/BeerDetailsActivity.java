@@ -18,8 +18,10 @@ import android.widget.TextView;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
 import com.parse.ParseException;
+import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.util.ArrayList;
@@ -40,6 +42,8 @@ public class BeerDetailsActivity extends Activity {
     private BeerRatingsAdapter beerRatingsAdapter;
 
     private ArrayList<BeerRating> beerRatings = new ArrayList<BeerRating>();
+
+    private String ratingSystem = "1-5+";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,9 +89,12 @@ public class BeerDetailsActivity extends Activity {
                         if (e == null) {
                             beer.clearRatings();
                             for (ParseObject obj : objects) {
-                                BeerRating br = new BeerRating(obj.getString("rating1"),
-                                        obj.getString("rating2"),
-                                        obj.getCreatedAt());
+                                BeerRating br = new BeerRating(obj.getString("normRating"),
+                                        obj.getCreatedAt(),
+                                        obj.getObjectId(),
+                                        obj.getString("userId"),
+                                        obj.getString("name"),
+                                        obj.getParseGeoPoint("location"));
                                 beer.addRating(br);
                             }
                             Log.i("Beer details", "Beer ratings downloaded: " + objects.size());
@@ -126,6 +133,7 @@ public class BeerDetailsActivity extends Activity {
     public void rateBeer() {
         findViewById(R.id.ratingLayout).setVisibility(View.GONE);
         findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
+
         NumberPicker np1 = (NumberPicker) findViewById(R.id.numberPicker1);
         String[] np1Strings = np1.getDisplayedValues();
         final String ratingElement1 = np1Strings[np1.getValue()];
@@ -134,27 +142,37 @@ public class BeerDetailsActivity extends Activity {
         String[] np2Strings = np2.getDisplayedValues();
         final String ratingElement2 = np2Strings[np2.getValue()];
 
+        BeerRating tempBR = new BeerRating(ratingElement1+ratingElement2, ratingSystem, new Date());
+        final String normRating = tempBR.getNormRating();
+
         final ParseObject parseRating = new ParseObject("BeerRatings");
 
-        parseRating.put("beerObjectId", beerObjectId);
-        parseRating.put("rating1", ratingElement1);
-        parseRating.put("rating2", ratingElement2);
+        final ParseGeoPoint geoPoint = new ParseGeoPoint();
 
-        Log.i("Beer rating", "Adding rating of " + ratingElement1 + ratingElement2
-                            + " for beer with objectId " + beerObjectId);
+        parseRating.put("beerObjectId", beerObjectId);
+        parseRating.put("normRating", normRating);
+        parseRating.put("ratingSystem", ratingSystem);
+        parseRating.put("name",ParseUser.getCurrentUser().getString("name"));
+        parseRating.put("userId", ParseUser.getCurrentUser().getObjectId());
+        parseRating.put("location", geoPoint);
+
+        Log.i("Beer rating", "Adding rating of " + normRating + " and rating system " + ratingSystem
+                + " for beer with objectId " + beerObjectId);
 
         parseRating.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
                 findViewById(R.id.loadingPanel).setVisibility(View.GONE);
                 Date date = parseRating.getCreatedAt();
-                BeerRating beerRating = new BeerRating(ratingElement1, ratingElement2, date);
+                BeerRating beerRating = new BeerRating(normRating, date);
+                beerRating.setObjectId(parseRating.getObjectId());
+                beerRating.setLocation(geoPoint);
+                beerRating.setUserObjectId(ParseUser.getCurrentUser().getObjectId());
+                beerRating.setUserName(ParseUser.getCurrentUser().getString("name"));
                 beer.addRating(beerRating);
                 loadRatings();
             }
         });
-
-
     }
 
     public void loadRatingsOnClick(View view) {

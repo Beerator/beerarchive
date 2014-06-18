@@ -22,6 +22,8 @@ public class BeerRatingsAdapter extends ArrayAdapter<BeerRating> {
     private Context context;
     private int layoutResourceId;
 
+    private String ratingSystem = "1-5+";
+
     public BeerRatingsAdapter(Context context, int layoutResourceId, ArrayList<BeerRating> beerRatings) {
         super(context, layoutResourceId, beerRatings);
         this.beerRatings = beerRatings;
@@ -49,7 +51,7 @@ public class BeerRatingsAdapter extends ArrayAdapter<BeerRating> {
 
         BeerRating beerRating = beerRatings.get(position);
         //Log.i("BeerRatingsAdapter", beerRating.toString() + " " + beerRating.getDate().toString());
-        holder.rating.setText(beerRating.toString());
+        holder.rating.setText(beerRating.getRating(ratingSystem));
         holder.date.setText(beerRating.getDate().toString());
 
         return row;
