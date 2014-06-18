@@ -47,14 +47,14 @@ public class MainActivity extends Activity {
             //getFacebookDetailsBackground();
             launchBeerList();
         } else {
-            launchLoginActivity();
+            launchBeerLoginActivity();
         }
     }
 
-    public void launchLoginActivity() {
+    public void launchBeerLoginActivity() {
         Log.i("MainActivity", "Launching login");
-        Intent launchLoginActivity = new Intent(this, LoginActivity.class);
-        startActivity(launchLoginActivity);
+        Intent launchBeerLoginActivity = new Intent(this, BeerLoginActivity.class);
+        startActivity(launchBeerLoginActivity);
     }
 
     public void launchBeerList() {

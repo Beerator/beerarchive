@@ -19,9 +19,8 @@ import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
-import com.rjmoseley.beerarchive.app.R;
 
-public class LoginActivity extends Activity {
+public class BeerLoginActivity extends Activity {
 
     private Button loginButton;
     private Dialog progressDialog;
@@ -41,13 +40,13 @@ public class LoginActivity extends Activity {
     }
 
     private void onLoginButtonClicked() {
-        LoginActivity.this.progressDialog = ProgressDialog.show(
-                LoginActivity.this, "", "Logging in...", true);
+        BeerLoginActivity.this.progressDialog = ProgressDialog.show(
+                BeerLoginActivity.this, "", "Logging in...", true);
 
         ParseFacebookUtils.logIn(this, new LogInCallback() {
             @Override
             public void done(ParseUser user, ParseException err) {
-                LoginActivity.this.progressDialog.dismiss();
+                BeerLoginActivity.this.progressDialog.dismiss();
                 if (user == null) {
                     Log.d("Facebook login", "Uh oh. The user cancelled the Facebook login.");
                 } else if (user.isNew()) {
@@ -99,7 +98,7 @@ public class LoginActivity extends Activity {
         ParseUser.logOut();
         // Go to the login view
         Log.i("LoginActivity", "Restarting login");
-        Intent launchLoginActivity = new Intent(this, LoginActivity.class);
+        Intent launchLoginActivity = new Intent(this, BeerLoginActivity.class);
         startActivity(launchLoginActivity);
     }
 

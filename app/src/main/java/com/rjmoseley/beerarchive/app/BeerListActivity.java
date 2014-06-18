@@ -166,6 +166,11 @@ public class BeerListActivity extends Activity {
             beerFilterText.setText("");
             downloadBeers();
         }
+        else if (id == R.id.action_logout) {
+            Intent launchBeerLoginActivity = new Intent(this, BeerLoginActivity.class);
+            startActivity(launchBeerLoginActivity);
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
