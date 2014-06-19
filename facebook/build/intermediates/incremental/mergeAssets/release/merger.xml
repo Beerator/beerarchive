@@ -2,10 +2,10 @@
 <merger version="2" >
 
     <dataSet config="main" >
-        <source path="/home/richard/AndroidStudioProjects/BeerArchive/facebook/src/main/assets" />
+        <source path="/home/richmose/AndroidStudioProjects/beerarchive/facebook/src/main/assets" />
     </dataSet>
     <dataSet config="release" >
-        <source path="/home/richard/AndroidStudioProjects/BeerArchive/facebook/src/release/assets" />
+        <source path="/home/richmose/AndroidStudioProjects/beerarchive/facebook/src/release/assets" />
     </dataSet>
 
 </merger>
