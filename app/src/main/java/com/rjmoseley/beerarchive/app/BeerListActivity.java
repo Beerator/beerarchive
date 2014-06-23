@@ -64,7 +64,7 @@ public class BeerListActivity extends Activity {
         findViewById(R.id.beerListView).setVisibility(View.GONE);
 
         beerFilterText = (EditText) findViewById(R.id.filter);
-        ParseQuery query = new ParseQuery("BeerList");
+        ParseQuery query = new ParseQuery("beer");
         query.orderByAscending(sortKey1);
         query.addAscendingOrder(sortKey2);
         query.setLimit(1000);
@@ -74,7 +74,7 @@ public class BeerListActivity extends Activity {
                 if (e == null) {
                     beerList.clear();
                     for (ParseObject obj : objects) {
-                        Beer b = new Beer(obj.getString("beer"),
+                        Beer b = new Beer(obj.getString("beerName"),
                                 obj.getString("brewery"),
                                 obj.getObjectId());
                         if (obj.getString("abv") != null) {

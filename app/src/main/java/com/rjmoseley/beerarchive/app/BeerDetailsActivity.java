@@ -81,7 +81,7 @@ public class BeerDetailsActivity extends Activity {
                 }
 
                 //Download beer ratings in background
-                final ParseQuery query = new ParseQuery("BeerRatings");
+                final ParseQuery query = new ParseQuery("beerRating");
                 query.whereEqualTo("beerObjectId", objectId);
                 query.orderByDescending("createdAt").findInBackground(new FindCallback<ParseObject>() {
                     @Override
@@ -92,8 +92,8 @@ public class BeerDetailsActivity extends Activity {
                                 BeerRating br = new BeerRating(obj.getString("normRating"),
                                         obj.getCreatedAt(),
                                         obj.getObjectId(),
-                                        obj.getString("userId"),
-                                        obj.getString("name"),
+                                        obj.getString("userObjectId"),
+                                        obj.getString("userDisplayName"),
                                         obj.getParseGeoPoint("location"));
                                 beer.addRating(br);
                             }
@@ -145,15 +145,15 @@ public class BeerDetailsActivity extends Activity {
         BeerRating tempBR = new BeerRating(ratingElement1+ratingElement2, ratingSystem, new Date());
         final String normRating = tempBR.getNormRating();
 
-        final ParseObject parseRating = new ParseObject("BeerRatings");
+        final ParseObject parseRating = new ParseObject("beerRating");
 
         final ParseGeoPoint geoPoint = new ParseGeoPoint();
 
         parseRating.put("beerObjectId", beerObjectId);
         parseRating.put("normRating", normRating);
         parseRating.put("ratingSystem", ratingSystem);
-        parseRating.put("name",ParseUser.getCurrentUser().getString("name"));
-        parseRating.put("userId", ParseUser.getCurrentUser().getObjectId());
+        parseRating.put("userDisplayName",ParseUser.getCurrentUser().getString("displayName"));
+        parseRating.put("userObjectId", ParseUser.getCurrentUser().getObjectId());
         parseRating.put("location", geoPoint);
 
         Log.i("Beer rating", "Adding rating of " + normRating + " and rating system " + ratingSystem

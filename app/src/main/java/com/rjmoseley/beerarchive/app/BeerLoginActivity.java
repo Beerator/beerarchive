@@ -51,25 +51,26 @@ public class BeerLoginActivity extends Activity {
                     Log.d("Facebook login", "Uh oh. The user cancelled the Facebook login.");
                 } else if (user.isNew()) {
                     Log.d("Facebook login", "User signed up and logged in through Facebook!");
-                    getFacebookDetailsBackground();
+                    getDetailsBackground();
                     launchBeerList();
                 } else {
                     Log.d("Facebook login", "User logged in through Facebook!");
-                    getFacebookDetailsBackground();
+                    getDetailsBackground();
                     launchBeerList();
                 }
             }
         });
     }
 
-    private void getFacebookDetailsBackground() {
+    private void getDetailsBackground() {
         Request.newMeRequest(ParseFacebookUtils.getSession(), new Request.GraphUserCallback() {
             @Override
             public void onCompleted(GraphUser user, Response response) {
                 if (user != null) {
                     ParseUser.getCurrentUser().put("fbId", user.getId());
                     ParseUser.getCurrentUser().put("name", user.getName());
-                    ParseUser.getCurrentUser().put("username", user.getUsername());
+                    String displayName = user.getFirstName() + " " + user.getLastName().charAt(0);
+                    ParseUser.getCurrentUser().put("displayName", displayName);
                     ParseUser.getCurrentUser().saveInBackground();
                 } else if (response.getError() != null) {
                     if ((response.getError().getCategory() ==

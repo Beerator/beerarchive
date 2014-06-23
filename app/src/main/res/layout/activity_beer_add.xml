@@ -19,7 +19,7 @@
             android:text="@string/brewery_name"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <EditText android:id="@+id/breweryName"
+        <EditText android:id="@+id/etBreweryName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
@@ -38,7 +38,7 @@
             android:text="@string/beer_name"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <EditText android:id="@+id/beerName"
+        <EditText android:id="@+id/etBeerName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
@@ -58,7 +58,7 @@
             android:text="@string/abv"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <EditText android:id="@+id/abv"
+        <EditText android:id="@+id/etAbv"
             android:inputType="numberDecimal"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

@@ -16,12 +16,13 @@
     <string name="add_beer">Add Beer</string>
     <string name="title_activity_beer_details">Beer Details</string>
     <string name="abv">ABV</string>
+    <string name="country">Country</string>
     <string name="rate_beer">Rate!</string>
     <string name="load_ratings">Load previous ratings</string>
     <string name="ratings">Ratings</string>
     <string name="fb_app_id">892320204116447</string>
-    <string name="parse_app_id">7TlbR0Q2rGmZDaHsmDh6YwVBwkREhlQObLY6kvvo</string>
-    <string name="parse_client_key">2h6aF1mhOnShpJ77Ky1PgWENL14WDC39ZWk4gBjL</string>
+    <string name="parse_app_id">HoS88PNeP8Fv0XE9PHTHsanhMNjRmoVYLuSjh4BE</string>
+    <string name="parse_client_key">x8ykueuNyO1z954RDXFsjxyCduM1zNbcLUfF6UQl</string>
     <string name="login_intro">If you\'re seeing this then you need to login.  Click the button</string>
     <string name="main_activity_text">If you\'re seeing this something went wrong…</string>
     <string name="login">Login</string>

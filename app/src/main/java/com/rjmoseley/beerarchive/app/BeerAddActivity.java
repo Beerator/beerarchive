@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.util.ArrayList;
@@ -28,18 +29,24 @@ public class BeerAddActivity extends Activity {
 
     public void addBeer(View view) {
         //Add the beer to the Parse DB
-        EditText beerInput = (EditText) findViewById(R.id.beerName);
-        EditText breweryInput = (EditText) findViewById(R.id.breweryName);
-        EditText abvInput = (EditText) findViewById(R.id.abv);
+        EditText beerInput = (EditText) findViewById(R.id.etBeerName);
+        EditText breweryInput = (EditText) findViewById(R.id.etBreweryName);
+        EditText abvInput = (EditText) findViewById(R.id.etAbv);
         final String beerString = beerInput.getText().toString();
         final String breweryString = breweryInput.getText().toString();
         final String abvString = abvInput.getText().toString();
+        final String userString = ParseUser.getCurrentUser().getObjectId();
         if ((beerString.length() > 0) && (breweryString.length() > 0)) {
-            final ParseObject newParseBeer = new ParseObject("BeerList");
-            newParseBeer.put("beer", beerString);
+            final ParseObject newParseBeer = new ParseObject("beer");
+            newParseBeer.put("beerName", beerString);
             newParseBeer.put("brewery", breweryString);
+            newParseBeer.put("userObjectId", userString);
+            newParseBeer.put("countryOfOrigin", null);
             if (abvString.length() > 0) {
                 newParseBeer.put("abv", abvString);
+            }
+            else {
+                newParseBeer.put("abv", null);
             }
             Log.i("Beer Add", "Adding (Brewery, Beer): " + breweryString + ", " + beerString);
             newParseBeer.saveInBackground(new SaveCallback() {
