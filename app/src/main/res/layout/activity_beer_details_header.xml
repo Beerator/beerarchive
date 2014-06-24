@@ -129,12 +129,21 @@
         android:layout_gravity="center"
         android:layout_margin="6dp">
 
-        <Button android:id="@+id/loadRatings"
-            android:layout_width="match_parent"
+        <Button android:id="@+id/loadAllRatings"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
             android:text="@string/load_ratings"
-            android:onClick="loadRatingsOnClick" />
+            android:onClick="loadRatingsOnClick"
+            android:layout_weight="1" />
+
+        <Button android:id="@+id/loadMyRatings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top"
+            android:text="@string/load_my_ratings"
+            android:onClick="loadMyRatingsOnClick"
+            android:layout_weight="1" />
 
     </LinearLayout>
 

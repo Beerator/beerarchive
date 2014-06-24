@@ -16,6 +16,7 @@ public class Beer {
     String objectId = null;
     String abv = null;
     ArrayList<BeerRating> ratingsList = null;
+    ArrayList<BeerRating> myRatingsList = null;
 
     public Beer(String name, String brewery, String objectId) {
         super();
@@ -23,6 +24,7 @@ public class Beer {
         this.brewery = brewery;
         this.objectId = objectId;
         this.ratingsList = new ArrayList<BeerRating>();
+        this.myRatingsList = new ArrayList<BeerRating>();
     }
 
     public String getName() {
@@ -49,8 +51,16 @@ public class Beer {
         ratingsList.add(beerRating);
     }
 
+    public void addMyRating(BeerRating beerRating) {
+        myRatingsList.add(beerRating);
+    }
+
     public ArrayList<BeerRating> getRatingsList() {
         return ratingsList;
+    }
+
+    public ArrayList<BeerRating> getMyRatingsList() {
+        return myRatingsList;
     }
 
     public void clearRatings() {

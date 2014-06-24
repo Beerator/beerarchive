@@ -3,6 +3,8 @@ package com.rjmoseley.beerarchive.app;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Criteria;
+import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,6 +19,7 @@ import android.widget.TextView;
 
 import com.parse.FindCallback;
 import com.parse.GetCallback;
+import com.parse.LocationCallback;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
@@ -58,7 +61,8 @@ public class BeerDetailsActivity extends Activity {
 
         findViewById(R.id.loadingPanel).setVisibility(View.GONE);
         findViewById(R.id.ratingsListView).setVisibility(View.VISIBLE);
-        findViewById(R.id.loadRatings).setVisibility(View.GONE);
+        findViewById(R.id.loadAllRatings).setVisibility(View.GONE);
+        findViewById(R.id.loadMyRatings).setVisibility(View.GONE);
 
         final TextView breweryName = (TextView) findViewById(R.id.breweryName);
         final TextView beerName = (TextView) findViewById(R.id.beerName);
@@ -97,14 +101,30 @@ public class BeerDetailsActivity extends Activity {
                                         obj.getString("userDisplayName"),
                                         obj.getParseGeoPoint("location"));
                                 beer.addRating(br);
+                                if (obj.getString("userObjectId").equals(ParseUser.getCurrentUser().getObjectId())) {
+                                    beer.addMyRating(br);
+                                }
                             }
                             Log.i("Beer details", "Beer ratings downloaded: " + objects.size());
+
+                            if (beer.getRatingsList().isEmpty()) {
+                                Log.i("Beer details", "All ratings: none downloaded");
+                            } else {
+                                Log.i("Beer details", "All ratings: " + beer.getRatingsList().size() + " beers downloaded");
+                                findViewById(R.id.loadAllRatings).setVisibility(View.VISIBLE);
+                            }
+                            if (beer.getMyRatingsList().isEmpty()) {
+                                Log.i("Beer details", "My ratings: none downloaded");
+                            } else {
+                                Log.i("Beer details", "My ratings: " + beer.getMyRatingsList().size() + " beers downloaded");
+                                findViewById(R.id.loadMyRatings).setVisibility(View.VISIBLE);
+                            }
                         } else {
                             Log.i("Beer details", "Beer ratings download failed");
                         }
                         //Don't display ratings automatically
                         //loadRatings();
-                        findViewById(R.id.loadRatings).setVisibility(View.VISIBLE);
+
                     }
                 });
             }
@@ -132,6 +152,7 @@ public class BeerDetailsActivity extends Activity {
     }
 
     public void rateBeer() {
+
         findViewById(R.id.ratingLayout).setVisibility(View.GONE);
         findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
 
@@ -143,12 +164,13 @@ public class BeerDetailsActivity extends Activity {
         String[] np2Strings = np2.getDisplayedValues();
         final String ratingElement2 = np2Strings[np2.getValue()];
 
+        final ParseGeoPoint geoPoint = new ParseGeoPoint();
+
         BeerRating tempBR = new BeerRating(ratingElement1+ratingElement2, ratingSystem, new Date());
+
         final String normRating = tempBR.getNormRating();
 
         final ParseObject parseRating = new ParseObject("beerRating");
-
-        final ParseGeoPoint geoPoint = new ParseGeoPoint();
 
         parseRating.put("beerObjectId", beerObjectId);
         parseRating.put("normRating", normRating);
@@ -193,7 +215,28 @@ public class BeerDetailsActivity extends Activity {
         Log.i("Beer details", "beerRatings size: " + beerRatings.size());
 
         findViewById(R.id.ratingsListView).setVisibility(View.VISIBLE);
-        findViewById(R.id.loadRatings).setVisibility(View.GONE);
+        findViewById(R.id.loadAllRatings).setVisibility(View.GONE);
+        findViewById(R.id.loadMyRatings).setVisibility(View.GONE);
+    }
+
+    public void loadMyRatingsOnClick(View view) {
+        loadMyRatings();
+    }
+
+    public void loadMyRatings() {
+
+        beerRatings = beer.getMyRatingsList();
+
+        beerRatingsAdapter = new BeerRatingsAdapter(this, R.layout.beer_rating_item, beerRatings);
+
+        beerRatingsAdapter.notifyDataSetChanged();
+
+        ratingsListView.setAdapter(beerRatingsAdapter);
+
+        Log.i("Beer details", "beerRatings size: " + beerRatings.size());
+
+        findViewById(R.id.ratingsListView).setVisibility(View.VISIBLE);
+        findViewById(R.id.loadMyRatings).setVisibility(View.GONE);
     }
 
     @Override

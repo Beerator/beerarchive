@@ -18,7 +18,8 @@
     <string name="abv">ABV</string>
     <string name="country">Country</string>
     <string name="rate_beer">Rate!</string>
-    <string name="load_ratings">Load previous ratings</string>
+    <string name="load_ratings">Load all ratings</string>
+    <string name="load_my_ratings">Load my ratings</string>
     <string name="ratings">Ratings</string>
     <string name="fb_app_id">892320204116447</string>
     <string name="parse_app_id">HoS88PNeP8Fv0XE9PHTHsanhMNjRmoVYLuSjh4BE</string>

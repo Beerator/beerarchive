@@ -36,12 +36,13 @@ public class BeerAddActivity extends Activity {
         final String breweryString = breweryInput.getText().toString();
         final String abvString = abvInput.getText().toString();
         final String userString = ParseUser.getCurrentUser().getObjectId();
+        final String countryOfOriginString = "";
         if ((beerString.length() > 0) && (breweryString.length() > 0)) {
             final ParseObject newParseBeer = new ParseObject("beer");
             newParseBeer.put("beerName", beerString);
             newParseBeer.put("brewery", breweryString);
             newParseBeer.put("userObjectId", userString);
-            newParseBeer.put("countryOfOrigin", null);
+            newParseBeer.put("countryOfOrigin", countryOfOriginString);
             if (abvString.length() > 0) {
                 newParseBeer.put("abv", abvString);
             }
