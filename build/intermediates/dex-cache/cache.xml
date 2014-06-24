@@ -2,10 +2,10 @@
 <pre-dex-items>
 
     <item
-        dex="/home/richmose/AndroidStudioProjects/beerarchive/app/build/intermediates/pre-dexed/debug/classes-53a7459c2a1fcf8504f7da0c01921c91605cb170.jar"
-        jar="/home/richmose/AndroidStudioProjects/beerarchive/build/intermediates/exploded-aar/beerarchive/facebook/unspecified/classes.jar"
+        dex="/home/richard/AndroidStudioProjects/BeerArchive/app/build/intermediates/pre-dexed/debug/classes-d181a18ec3e8bdaf51b94917c6158a23f62f866b.jar"
+        jar="/home/richard/AndroidStudioProjects/BeerArchive/build/intermediates/exploded-aar/BeerArchive/facebook/unspecified/classes.jar"
         jumboMode="false"
         revision="19.1.0"
-        sha1="356b1908cf4846a5b21240520185f30cdc6bf066"/>
+        sha1="2aff67bf0dbf88785f995849969e40731ac66794"/>
 
 </pre-dex-items>

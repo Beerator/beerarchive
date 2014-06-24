@@ -1,4 +1,4 @@
-package com.rjmoseley.beerarchive.app;
+package com.rjmoseley.beerator.app;
 
 import com.parse.ParseGeoPoint;
 

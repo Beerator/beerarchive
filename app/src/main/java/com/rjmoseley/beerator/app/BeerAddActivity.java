@@ -1,4 +1,4 @@
-package com.rjmoseley.beerarchive.app;
+package com.rjmoseley.beerator.app;
 
 import android.app.Activity;
 import android.content.Context;

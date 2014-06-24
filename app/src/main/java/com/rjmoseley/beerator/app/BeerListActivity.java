@@ -1,4 +1,4 @@
-package com.rjmoseley.beerarchive.app;
+package com.rjmoseley.beerator.app;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -16,7 +16,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.parse.FindCallback;
-import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;

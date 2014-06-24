@@ -1,10 +1,6 @@
-package com.rjmoseley.beerarchive.app;
-
-import android.widget.ArrayAdapter;
+package com.rjmoseley.beerator.app;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Created by richmose on 11/06/14.

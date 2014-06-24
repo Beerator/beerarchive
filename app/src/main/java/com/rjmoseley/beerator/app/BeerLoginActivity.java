@@ -1,4 +1,4 @@
-package com.rjmoseley.beerarchive.app;
+package com.rjmoseley.beerator.app;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.facebook.FacebookRequestError;
 import com.facebook.Request;
@@ -23,6 +24,8 @@ import com.parse.ParseUser;
 public class BeerLoginActivity extends Activity {
 
     private Button loginButton;
+    private Button logoutButton;
+    private Button launchAppButton;
     private Dialog progressDialog;
 
     @Override
@@ -37,9 +40,48 @@ public class BeerLoginActivity extends Activity {
                 onLoginButtonClicked();
             }
         });
+
+        logoutButton = (Button) findViewById(R.id.logoutButton);
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onLogoutButtonClicked();
+            }
+        });
+
+        launchAppButton = (Button) findViewById(R.id.launchApp);
+        launchAppButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                launchBeerList();
+            }
+        });
+
+        updateCurrentStatus();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateCurrentStatus();
+    }
+
+    private void updateCurrentStatus() {
+        TextView currentStatus = (TextView) findViewById(R.id.currentStatus);
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        if (currentUser != null) {
+            currentStatus.setText(R.string.logged_in);
+            findViewById(R.id.loginButton).setVisibility(View.GONE);
+            findViewById(R.id.logoutButtonLayout).setVisibility(View.VISIBLE);
+        } else {
+            currentStatus.setText(R.string.logged_out);
+            findViewById(R.id.loginButton).setVisibility(View.VISIBLE);
+            findViewById(R.id.logoutButtonLayout).setVisibility(View.GONE);
+        }
     }
 
     private void onLoginButtonClicked() {
+
         BeerLoginActivity.this.progressDialog = ProgressDialog.show(
                 BeerLoginActivity.this, "", "Logging in...", true);
 
@@ -61,6 +103,7 @@ public class BeerLoginActivity extends Activity {
             }
         });
     }
+
 
     private void getDetailsBackground() {
         Request.newMeRequest(ParseFacebookUtils.getSession(), new Request.GraphUserCallback() {
@@ -94,13 +137,19 @@ public class BeerLoginActivity extends Activity {
         startActivity(launchBeerList);
     }
 
+    private void onLogoutButtonClicked() {
+        BeerLoginActivity.this.progressDialog = ProgressDialog.show(
+                BeerLoginActivity.this, "", "Logging out...", true);
+        logoutUser();
+    }
+
     private void logoutUser() {
         // Log the user out
         ParseUser.logOut();
         // Go to the login view
         Log.i("LoginActivity", "Restarting login");
-        Intent launchLoginActivity = new Intent(this, BeerLoginActivity.class);
-        startActivity(launchLoginActivity);
+        Intent launchMainActivity = new Intent(this, MainActivity.class);
+        startActivity(launchMainActivity);
     }
 
     @Override
