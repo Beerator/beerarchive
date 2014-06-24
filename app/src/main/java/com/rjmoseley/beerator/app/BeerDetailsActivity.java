@@ -12,6 +12,7 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 
 import com.parse.FindCallback;
+import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
@@ -166,12 +167,16 @@ public class BeerDetailsActivity extends Activity {
 
         final ParseObject parseRating = new ParseObject("beerRating");
 
+        ParseACL defaultACL = new ParseACL();
+        defaultACL.setPublicReadAccess(true);
+
         parseRating.put("beerObjectId", beerObjectId);
         parseRating.put("normRating", normRating);
         parseRating.put("ratingSystem", ratingSystem);
         parseRating.put("userDisplayName",ParseUser.getCurrentUser().getString("displayName"));
         parseRating.put("userObjectId", ParseUser.getCurrentUser().getObjectId());
         parseRating.put("location", geoPoint);
+        parseRating.setACL(defaultACL);
 
         Log.i("Beer rating", "Adding rating of " + normRating + " and rating system " + ratingSystem
                 + " for beer with objectId " + beerObjectId);

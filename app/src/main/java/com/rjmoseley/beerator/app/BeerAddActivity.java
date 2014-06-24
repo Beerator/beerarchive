@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.parse.Parse;
+import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
@@ -42,6 +44,9 @@ public class BeerAddActivity extends Activity {
             newParseBeer.put("brewery", breweryString);
             newParseBeer.put("userObjectId", userString);
             newParseBeer.put("countryOfOrigin", countryOfOriginString);
+            ParseACL defaultACL = new ParseACL();
+            defaultACL.setPublicReadAccess(true);
+            newParseBeer.setACL(defaultACL);
             if (abvString.length() > 0) {
                 newParseBeer.put("abv", abvString);
             }
