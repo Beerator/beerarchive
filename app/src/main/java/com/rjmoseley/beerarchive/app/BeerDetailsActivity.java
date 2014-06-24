@@ -58,6 +58,7 @@ public class BeerDetailsActivity extends Activity {
 
         findViewById(R.id.loadingPanel).setVisibility(View.GONE);
         findViewById(R.id.ratingsListView).setVisibility(View.VISIBLE);
+        findViewById(R.id.loadRatings).setVisibility(View.GONE);
 
         final TextView breweryName = (TextView) findViewById(R.id.breweryName);
         final TextView beerName = (TextView) findViewById(R.id.beerName);
@@ -103,6 +104,7 @@ public class BeerDetailsActivity extends Activity {
                         }
                         //Don't display ratings automatically
                         //loadRatings();
+                        findViewById(R.id.loadRatings).setVisibility(View.VISIBLE);
                     }
                 });
             }
@@ -123,7 +125,6 @@ public class BeerDetailsActivity extends Activity {
         np2.setMaxValue(2);
         np2.setValue(1);
         np2.setWrapSelectorWheel(false);
-
     }
 
     public void rateBeerOnClick(View view) {
@@ -168,7 +169,7 @@ public class BeerDetailsActivity extends Activity {
                 beerRating.setObjectId(parseRating.getObjectId());
                 beerRating.setLocation(geoPoint);
                 beerRating.setUserObjectId(ParseUser.getCurrentUser().getObjectId());
-                beerRating.setUserName(ParseUser.getCurrentUser().getString("name"));
+                beerRating.setUserName(ParseUser.getCurrentUser().getString("displayName"));
                 beer.addRating(beerRating);
                 loadRatings();
             }

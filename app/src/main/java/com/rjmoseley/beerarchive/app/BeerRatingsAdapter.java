@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +42,7 @@ public class BeerRatingsAdapter extends ArrayAdapter<BeerRating> {
 
             holder = new RatingsHolder();
             holder.rating = (TextView)row.findViewById(R.id.rating);
-            holder.date = (TextView)row.findViewById(R.id.date);
+            holder.details = (TextView)row.findViewById(R.id.details);
 
             row.setTag(holder);
         }
@@ -49,17 +50,29 @@ public class BeerRatingsAdapter extends ArrayAdapter<BeerRating> {
             holder = (RatingsHolder)row.getTag();
         }
 
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm, dd/MM/yy");
+
         BeerRating beerRating = beerRatings.get(position);
-        //Log.i("BeerRatingsAdapter", beerRating.toString() + " " + beerRating.getDate().toString());
+
+        String detailsString;
+
+        if (beerRating.getUserName() == null) {
+            detailsString = dateFormat.format(beerRating.getDate());
+        } else {
+            detailsString = beerRating.getUserName() + ", "
+                    + dateFormat.format(beerRating.getDate());
+        }
+
+        //Log.i("BeerRatingsAdapter", beerRating.toString() + " " + detailsString);
         holder.rating.setText(beerRating.getRating(ratingSystem));
-        holder.date.setText(beerRating.getDate().toString());
+        holder.details.setText(detailsString);
 
         return row;
     }
 
     private class RatingsHolder {
         public TextView rating;
-        public TextView date;
+        public TextView details;
     }
 
 }
