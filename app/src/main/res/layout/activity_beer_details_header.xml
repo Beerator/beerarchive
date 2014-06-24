@@ -134,7 +134,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="top"
             android:text="@string/load_ratings"
-            android:onClick="loadRatingsOnClick"
+            android:onClick="loadAllRatingsOnClick"
             android:layout_weight="1" />
 
         <Button android:id="@+id/loadMyRatings"

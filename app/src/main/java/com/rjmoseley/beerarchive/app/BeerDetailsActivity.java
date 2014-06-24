@@ -107,17 +107,19 @@ public class BeerDetailsActivity extends Activity {
                             }
                             Log.i("Beer details", "Beer ratings downloaded: " + objects.size());
 
+                            //Identify if there are ratings in the all ratings list
                             if (beer.getRatingsList().isEmpty()) {
                                 Log.i("Beer details", "All ratings: none downloaded");
                             } else {
                                 Log.i("Beer details", "All ratings: " + beer.getRatingsList().size() + " beers downloaded");
                                 findViewById(R.id.loadAllRatings).setVisibility(View.VISIBLE);
-                            }
-                            if (beer.getMyRatingsList().isEmpty()) {
-                                Log.i("Beer details", "My ratings: none downloaded");
-                            } else {
-                                Log.i("Beer details", "My ratings: " + beer.getMyRatingsList().size() + " beers downloaded");
-                                findViewById(R.id.loadMyRatings).setVisibility(View.VISIBLE);
+                                //If there are ratings, are there some of my ratings?
+                                if (beer.getMyRatingsList().isEmpty()) {
+                                    Log.i("Beer details", "My ratings: none downloaded");
+                                } else {
+                                    Log.i("Beer details", "My ratings: " + beer.getMyRatingsList().size() + " beers downloaded");
+                                    findViewById(R.id.loadMyRatings).setVisibility(View.VISIBLE);
+                                }
                             }
                         } else {
                             Log.i("Beer details", "Beer ratings download failed");
@@ -193,16 +195,17 @@ public class BeerDetailsActivity extends Activity {
                 beerRating.setUserObjectId(ParseUser.getCurrentUser().getObjectId());
                 beerRating.setUserName(ParseUser.getCurrentUser().getString("displayName"));
                 beer.addRating(beerRating);
-                loadRatings();
+                beer.addMyRating(beerRating);
             }
         });
     }
 
-    public void loadRatingsOnClick(View view) {
-        loadRatings();
+    public void loadAllRatingsOnClick(View view) {
+        loadAllRatings();
     }
 
-    public void loadRatings() {
+    public void loadAllRatings() {
+        Log.i("Beer details", "Displaying all ratings");
 
         beerRatings = beer.getRatingsList();
 
@@ -212,7 +215,7 @@ public class BeerDetailsActivity extends Activity {
 
         ratingsListView.setAdapter(beerRatingsAdapter);
 
-        Log.i("Beer details", "beerRatings size: " + beerRatings.size());
+        Log.i("Beer details", "All beerRatings size: " + beerRatings.size());
 
         findViewById(R.id.ratingsListView).setVisibility(View.VISIBLE);
         findViewById(R.id.loadAllRatings).setVisibility(View.GONE);
@@ -224,6 +227,7 @@ public class BeerDetailsActivity extends Activity {
     }
 
     public void loadMyRatings() {
+        Log.i("Beer details", "Displaying my ratings");
 
         beerRatings = beer.getMyRatingsList();
 
@@ -233,7 +237,7 @@ public class BeerDetailsActivity extends Activity {
 
         ratingsListView.setAdapter(beerRatingsAdapter);
 
-        Log.i("Beer details", "beerRatings size: " + beerRatings.size());
+        Log.i("Beer details", "My beerRatings size: " + beerRatings.size());
 
         findViewById(R.id.ratingsListView).setVisibility(View.VISIBLE);
         findViewById(R.id.loadMyRatings).setVisibility(View.GONE);

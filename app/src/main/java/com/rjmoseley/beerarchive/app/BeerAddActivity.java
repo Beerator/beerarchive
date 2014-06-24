@@ -24,7 +24,6 @@ public class BeerAddActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_beer_add);
-
     }
 
     public void addBeer(View view) {
@@ -45,9 +44,6 @@ public class BeerAddActivity extends Activity {
             newParseBeer.put("countryOfOrigin", countryOfOriginString);
             if (abvString.length() > 0) {
                 newParseBeer.put("abv", abvString);
-            }
-            else {
-                newParseBeer.put("abv", null);
             }
             Log.i("Beer Add", "Adding (Brewery, Beer): " + breweryString + ", " + beerString);
             newParseBeer.saveInBackground(new SaveCallback() {
@@ -75,7 +71,6 @@ public class BeerAddActivity extends Activity {
             Toast toast = Toast.makeText(context, text, duration);
             toast.show();
         }
-
     }
 
     public void cancel(View view) {
