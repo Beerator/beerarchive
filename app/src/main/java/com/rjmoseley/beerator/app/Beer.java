@@ -1,6 +1,8 @@
 package com.rjmoseley.beerator.app;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * Created by richmose on 11/06/14.
@@ -61,6 +63,21 @@ public class Beer {
 
     public void clearRatings() {
         ratingsList.clear();
+    }
+
+    public void sortRatings() {
+        Collections.sort(ratingsList, new Comparator<BeerRating>() {
+            @Override
+            public int compare(BeerRating beerRating, BeerRating beerRating2) {
+                return beerRating2.getDate().compareTo(beerRating.getDate());
+            }
+        });
+        Collections.sort(myRatingsList, new Comparator<BeerRating>() {
+            @Override
+            public int compare(BeerRating beerRating, BeerRating beerRating2) {
+                return beerRating2.getDate().compareTo(beerRating.getDate());
+            }
+        });
     }
 
     public String get(String key) {

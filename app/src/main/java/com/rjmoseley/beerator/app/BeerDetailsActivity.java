@@ -193,6 +193,8 @@ public class BeerDetailsActivity extends Activity {
                 beerRating.setUserName(ParseUser.getCurrentUser().getString("displayName"));
                 beer.addRating(beerRating);
                 beer.addMyRating(beerRating);
+                beer.sortRatings();
+                beerRatingsAdapter.notifyDataSetChanged();
             }
         });
     }
