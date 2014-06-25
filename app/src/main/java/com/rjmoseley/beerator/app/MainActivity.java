@@ -13,8 +13,10 @@ import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.model.GraphUser;
 import com.parse.Parse;
+import com.parse.ParseAnalytics;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
+import com.parse.PushService;
 
 
 public class MainActivity extends Activity {
@@ -28,6 +30,9 @@ public class MainActivity extends Activity {
         Parse.initialize(this, getString(R.string.parse_app_id),
                 getString(R.string.parse_client_key));
         ParseFacebookUtils.initialize(getString(R.string.fb_app_id));
+
+        PushService.setDefaultPushCallback(this, MainActivity.class);
+        ParseAnalytics.trackAppOpened(getIntent());
 
         // Check if there is a currently logged in user
         // and they are linked to a Facebook account.
