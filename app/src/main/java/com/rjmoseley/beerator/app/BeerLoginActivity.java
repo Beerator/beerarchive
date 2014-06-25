@@ -24,6 +24,9 @@ import com.parse.ParseFacebookUtils;
 import com.parse.ParseInstallation;
 import com.parse.ParseUser;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class BeerLoginActivity extends Activity {
 
     private Button loginButton;
@@ -106,7 +109,9 @@ public class BeerLoginActivity extends Activity {
         BeerLoginActivity.this.progressDialog = ProgressDialog.show(
                 BeerLoginActivity.this, "", "Logging in...", true);
 
-        ParseFacebookUtils.logIn(this, new LogInCallback() {
+        List<String> permissions = Arrays.asList("public_profile", "user_friends");
+
+        ParseFacebookUtils.logIn(permissions, this, new LogInCallback() {
             @Override
             public void done(ParseUser user, ParseException err) {
                 BeerLoginActivity.this.progressDialog.dismiss();
@@ -172,6 +177,7 @@ public class BeerLoginActivity extends Activity {
 
     private void logoutUser() {
         // Log the user out
+        ParseFacebookUtils.getSession().closeAndClearTokenInformation();
         ParseUser.logOut();
         // Go to the login view
         Log.i("LoginActivity", "Restarting login");

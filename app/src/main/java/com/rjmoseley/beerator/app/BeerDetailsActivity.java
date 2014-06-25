@@ -252,15 +252,15 @@ public class BeerDetailsActivity extends Activity {
         Request.newMyFriendsRequest(ParseFacebookUtils.getSession(), new Request.GraphUserListCallback() {
             @Override
             public void onCompleted(List<GraphUser> users, Response response) {
+                //Returned list of friends with Beerator
                 if (users != null) {
                     List<String> friendsList = new ArrayList<String>();
                     for (GraphUser user : users) {
                         friendsList.add(user.getId());
                     }
-                    Log.i("BeerRatingAdd", friendsList.size() + " friends found to send push notification to");
+                    Log.i("BeerRatingAdd", friendsList.size() + " Beerator friends found");
 
-                    // Construct a ParseUser query that will find friends whose
-                    // facebook IDs are contained in the current user's friend list.
+                    //New query of Installations to find those to send push to
                     ParseQuery<ParseInstallation> query = ParseInstallation.getQuery();
                     query.whereContainedIn("fbId", friendsList);
 
