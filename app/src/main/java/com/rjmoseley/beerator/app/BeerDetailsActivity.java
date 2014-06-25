@@ -18,11 +18,18 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.Request;
+import com.facebook.Response;
+import com.facebook.model.GraphUser;
 import com.parse.FindCallback;
+import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseException;
+import com.parse.ParseFacebookUtils;
 import com.parse.ParseGeoPoint;
+import com.parse.ParseInstallation;
 import com.parse.ParseObject;
+import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
@@ -201,7 +208,7 @@ public class BeerDetailsActivity extends Activity {
             }
         }
 
-        BeerRating tempBR = new BeerRating(ratingElement1+ratingElement2, ratingSystem, new Date());
+        final BeerRating tempBR = new BeerRating(ratingElement1+ratingElement2, ratingSystem, new Date());
 
         final String normRating = tempBR.getNormRating();
 
@@ -240,6 +247,34 @@ public class BeerDetailsActivity extends Activity {
                 }
             }
         });
+
+        //Do push notification
+        Request.newMyFriendsRequest(ParseFacebookUtils.getSession(), new Request.GraphUserListCallback() {
+            @Override
+            public void onCompleted(List<GraphUser> users, Response response) {
+                if (users != null) {
+                    List<String> friendsList = new ArrayList<String>();
+                    for (GraphUser user : users) {
+                        friendsList.add(user.getId());
+                    }
+                    Log.i("BeerRatingAdd", friendsList.size() + " friends found to send push notification to");
+
+                    // Construct a ParseUser query that will find friends whose
+                    // facebook IDs are contained in the current user's friend list.
+                    ParseQuery<ParseInstallation> query = ParseInstallation.getQuery();
+                    query.whereContainedIn("fbId", friendsList);
+
+                    ParsePush push = new ParsePush();
+                    push.setQuery(query);
+                    String message = ParseUser.getCurrentUser().getString("displayName") + " rated "
+                            + beer.getBrewery() + " " + beer.getName() + " at "
+                            + tempBR.getRating(ratingSystem) + "!";
+                    push.setMessage(message);
+                    push.sendInBackground();
+                }
+            }
+        }).executeAsync();
+
     }
 
     public void loadAllRatingsOnClick(View view) {

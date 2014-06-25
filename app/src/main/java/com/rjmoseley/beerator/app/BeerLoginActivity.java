@@ -134,6 +134,8 @@ public class BeerLoginActivity extends Activity {
                     Log.i("Facebook integration", "Adding more user details");
                     ParseUser.getCurrentUser().put("fbId", user.getId());
                     ParseUser.getCurrentUser().put("name", user.getName());
+                    String displayName = user.getFirstName() + " " + user.getLastName().charAt(0);
+                    ParseUser.getCurrentUser().put("displayName", displayName);
                     ParseUser.getCurrentUser().saveInBackground();
                     ParseInstallation.getCurrentInstallation().put("fbId", user.getId());
                     ParseInstallation.getCurrentInstallation().put("name", user.getName());
