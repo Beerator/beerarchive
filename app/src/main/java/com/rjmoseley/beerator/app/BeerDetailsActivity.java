@@ -194,7 +194,9 @@ public class BeerDetailsActivity extends Activity {
                 beer.addRating(beerRating);
                 beer.addMyRating(beerRating);
                 beer.sortRatings();
-                beerRatingsAdapter.notifyDataSetChanged();
+                if (beerRatingsAdapter != null) {
+                    beerRatingsAdapter.notifyDataSetChanged();
+                }
             }
         });
     }
