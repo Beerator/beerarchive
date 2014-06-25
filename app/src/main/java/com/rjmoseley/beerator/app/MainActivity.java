@@ -44,7 +44,7 @@ public class MainActivity extends Activity {
         if ((currentUser != null) && ParseFacebookUtils.isLinked(currentUser)) {
             Log.i("MainActivity", "User is already logged in");
             //Below line needed if more data needs to be added to ParseUser from GraphUser
-            //getFacebookDetailsBackground();
+            getFacebookDetailsBackground();
             launchBeerList();
         } else {
             launchBeerLoginActivity();
@@ -61,6 +61,45 @@ public class MainActivity extends Activity {
         Log.i("MainActivity", "Launching beer list");
         Intent launchBeerList = new Intent(this, BeerListActivity.class);
         startActivity(launchBeerList);
+    }
+
+    private void getFacebookDetailsBackground() {
+        Request.newMeRequest(ParseFacebookUtils.getSession(), new Request.GraphUserCallback() {
+            @Override
+            public void onCompleted(GraphUser user, Response response) {
+                if (user != null) {
+                    Log.i("Facebook integration", "Adding more user details");
+                    ParseUser.getCurrentUser().put("fbId", user.getId());
+                    ParseUser.getCurrentUser().put("name", user.getName());
+                    ParseUser.getCurrentUser().saveInBackground();
+                    ParseInstallation.getCurrentInstallation().put("fbId", user.getId());
+                    ParseInstallation.getCurrentInstallation().put("name", user.getName());
+                    ParseInstallation.getCurrentInstallation().put("userObjectId",
+                            ParseUser.getCurrentUser().getObjectId());
+                    ParseInstallation.getCurrentInstallation().saveInBackground();
+                } else if (response.getError() != null) {
+                    if ((response.getError().getCategory() ==
+                            FacebookRequestError.Category.AUTHENTICATION_RETRY) ||
+                            (response.getError().getCategory() ==
+                                    FacebookRequestError.Category.AUTHENTICATION_REOPEN_SESSION)) {
+                        Log.d("Facebook integration", "The facebook session was invalidated.");
+                        logoutUser();
+                    } else {
+                        Log.d("Facebook integration", "Some other error: "
+                                + response.getError().getErrorMessage());
+                    }
+                }
+            }
+        }).executeAsync();
+    }
+
+    private void logoutUser() {
+        // Log the user out
+        ParseUser.logOut();
+        // Go to the login view
+        Log.i("MainActivity", "Restarting login");
+        Intent launchLoginActivity = new Intent(this, LoginActivity.class);
+        startActivity(launchLoginActivity);
     }
 
     @Override
