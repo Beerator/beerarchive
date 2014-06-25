@@ -15,6 +15,7 @@ import com.facebook.model.GraphUser;
 import com.parse.Parse;
 import com.parse.ParseAnalytics;
 import com.parse.ParseFacebookUtils;
+import com.parse.ParseInstallation;
 import com.parse.ParseUser;
 import com.parse.PushService;
 
@@ -30,6 +31,9 @@ public class MainActivity extends Activity {
         Parse.initialize(this, getString(R.string.parse_app_id),
                 getString(R.string.parse_client_key));
         ParseFacebookUtils.initialize(getString(R.string.fb_app_id));
+
+        // Save the current Installation to Parse.
+        ParseInstallation.getCurrentInstallation().saveInBackground();
 
         PushService.setDefaultPushCallback(this, MainActivity.class);
         ParseAnalytics.trackAppOpened(getIntent());
@@ -58,40 +62,6 @@ public class MainActivity extends Activity {
         Intent launchBeerList = new Intent(this, BeerListActivity.class);
         startActivity(launchBeerList);
     }
-
-/*    private void getFacebookDetailsBackground() {
-        Request.newMeRequest(ParseFacebookUtils.getSession(), new Request.GraphUserCallback() {
-            @Override
-            public void onCompleted(GraphUser user, Response response) {
-                if (user != null) {
-                    Log.i("Facebook integration", "Adding more user details");
-                    ParseUser.getCurrentUser().put("fbId", user.getId());
-                    ParseUser.getCurrentUser().put("name", user.getName());
-                    ParseUser.getCurrentUser().saveInBackground();
-                } else if (response.getError() != null) {
-                    if ((response.getError().getCategory() ==
-                            FacebookRequestError.Category.AUTHENTICATION_RETRY) ||
-                            (response.getError().getCategory() ==
-                                    FacebookRequestError.Category.AUTHENTICATION_REOPEN_SESSION)) {
-                        Log.d("Facebook integration", "The facebook session was invalidated.");
-                        logoutUser();
-                    } else {
-                        Log.d("Facebook integration", "Some other error: "
-                                + response.getError().getErrorMessage());
-                    }
-                }
-            }
-        }).executeAsync();
-    }*/
-
-/*    private void logoutUser() {
-        // Log the user out
-        ParseUser.logOut();
-        // Go to the login view
-        Log.i("MainActivity", "Restarting login");
-        Intent launchLoginActivity = new Intent(this, LoginActivity.class);
-        startActivity(launchLoginActivity);
-    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
