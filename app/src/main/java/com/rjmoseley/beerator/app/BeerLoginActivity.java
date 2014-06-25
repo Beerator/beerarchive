@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -112,8 +114,16 @@ public class BeerLoginActivity extends Activity {
                 if (user != null) {
                     ParseUser.getCurrentUser().put("fbId", user.getId());
                     ParseUser.getCurrentUser().put("name", user.getName());
-                    String displayName = user.getFirstName() + " " + user.getLastName().charAt(0);
-                    ParseUser.getCurrentUser().put("displayName", displayName);
+                    String displayNameDefault = user.getFirstName() + " "
+                            + user.getLastName().charAt(0);
+/*                    SharedPreferences sharedPrefs = PreferenceManager
+                            .getDefaultSharedPreferences(BeerLoginActivity.this);
+                    PreferenceManager.setDefaultValues(BeerLoginActivity.this, R.xml.preferences, false);
+                    String displayNamePref = sharedPrefs
+                            .getString("user_display_name", displayNameDefault);
+*/
+                    ParseUser.getCurrentUser().put("displayName", displayNameDefault);
+
                     ParseUser.getCurrentUser().saveInBackground();
                 } else if (response.getError() != null) {
                     if ((response.getError().getCategory() ==

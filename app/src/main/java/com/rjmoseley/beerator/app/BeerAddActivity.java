@@ -2,7 +2,9 @@ package com.rjmoseley.beerator.app;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -44,9 +46,11 @@ public class BeerAddActivity extends Activity {
             newParseBeer.put("brewery", breweryString);
             newParseBeer.put("userObjectId", userString);
             newParseBeer.put("countryOfOrigin", countryOfOriginString);
-            ParseACL defaultACL = new ParseACL();
-            defaultACL.setPublicReadAccess(true);
-            newParseBeer.setACL(defaultACL);
+
+            ParseACL acl = new ParseACL();
+            acl.setPublicReadAccess(true);
+            newParseBeer.setACL(acl);
+
             if (abvString.length() > 0) {
                 newParseBeer.put("abv", abvString);
             }

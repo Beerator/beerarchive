@@ -54,7 +54,7 @@ public class MainActivity extends Activity {
         startActivity(launchBeerList);
     }
 
-    private void getFacebookDetailsBackground() {
+/*    private void getFacebookDetailsBackground() {
         Request.newMeRequest(ParseFacebookUtils.getSession(), new Request.GraphUserCallback() {
             @Override
             public void onCompleted(GraphUser user, Response response) {
@@ -77,16 +77,16 @@ public class MainActivity extends Activity {
                 }
             }
         }).executeAsync();
-    }
+    }*/
 
-    private void logoutUser() {
+/*    private void logoutUser() {
         // Log the user out
         ParseUser.logOut();
         // Go to the login view
         Log.i("MainActivity", "Restarting login");
         Intent launchLoginActivity = new Intent(this, LoginActivity.class);
         startActivity(launchLoginActivity);
-    }
+    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -103,12 +103,6 @@ public class MainActivity extends Activity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
-            return true;
-        }
-        else if (id ==R.id.action_search) {
-            return true;
-        }
-        else if (id == R.id.action_add) {
             return true;
         }
         return super.onOptionsItemSelected(item);

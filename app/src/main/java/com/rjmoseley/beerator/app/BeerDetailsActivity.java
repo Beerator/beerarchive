@@ -1,8 +1,14 @@
 package com.rjmoseley.beerator.app;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -10,6 +16,7 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.parse.FindCallback;
 import com.parse.ParseACL;
@@ -40,6 +47,10 @@ public class BeerDetailsActivity extends Activity {
     private ArrayList<BeerRating> beerRatings = new ArrayList<BeerRating>();
 
     private String ratingSystem = "1-5+";
+
+    private LocationManager locationManager;
+    private Criteria criteria;
+    private String locationProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,6 +136,7 @@ public class BeerDetailsActivity extends Activity {
             }
         }
 
+
         NumberPicker np1 = (NumberPicker) findViewById(R.id.numberPicker1);
         String[] np1Strings = {"5", "4", "3", "2", "1"};
         np1.setDisplayedValues(np1Strings);
@@ -148,6 +160,9 @@ public class BeerDetailsActivity extends Activity {
 
     public void rateBeer() {
 
+        SharedPreferences sharedPrefs = PreferenceManager
+                .getDefaultSharedPreferences(this);
+
         findViewById(R.id.ratingLayout).setVisibility(View.GONE);
         findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
 
@@ -161,14 +176,36 @@ public class BeerDetailsActivity extends Activity {
 
         final ParseGeoPoint geoPoint = new ParseGeoPoint();
 
+        if (sharedPrefs.getBoolean("geotag", true)) {
+            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            criteria = new Criteria();
+            criteria.setAccuracy(Criteria.ACCURACY_COARSE);
+            criteria.setCostAllowed(false);
+
+            locationProvider = locationManager.getBestProvider(criteria, true);
+            Log.i("Location", "Location provider chosen: "+ locationProvider);
+
+            if (locationProvider != null) {
+                Location location = locationManager.getLastKnownLocation(locationProvider);
+                if (location != null) {
+                    Log.i("Location", "Location: " + location.toString());
+                    geoPoint.setLatitude(location.getLatitude());
+                    geoPoint.setLongitude(location.getLongitude());
+                } else {
+                    Toast.makeText(this, "Unable to get location.  Check your device settings",
+                            Toast.LENGTH_LONG).show();
+                }
+            } else {
+                Toast.makeText(this, "Unable to get location provider.  Check your device settings",
+                        Toast.LENGTH_LONG).show();
+            }
+        }
+
         BeerRating tempBR = new BeerRating(ratingElement1+ratingElement2, ratingSystem, new Date());
 
         final String normRating = tempBR.getNormRating();
 
         final ParseObject parseRating = new ParseObject("beerRating");
-
-        ParseACL defaultACL = new ParseACL();
-        defaultACL.setPublicReadAccess(true);
 
         parseRating.put("beerObjectId", beerObjectId);
         parseRating.put("normRating", normRating);
@@ -176,7 +213,11 @@ public class BeerDetailsActivity extends Activity {
         parseRating.put("userDisplayName",ParseUser.getCurrentUser().getString("displayName"));
         parseRating.put("userObjectId", ParseUser.getCurrentUser().getObjectId());
         parseRating.put("location", geoPoint);
-        parseRating.setACL(defaultACL);
+
+        //Sort out the ACL
+        ParseACL acl = new ParseACL(ParseUser.getCurrentUser());
+        acl.setPublicReadAccess(sharedPrefs.getBoolean("public_ratings", true));
+        parseRating.setACL(acl);
 
         Log.i("Beer rating", "Adding rating of " + normRating + " and rating system " + ratingSystem
                 + " for beer with objectId " + beerObjectId);

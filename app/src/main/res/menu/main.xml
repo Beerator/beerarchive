@@ -2,21 +2,5 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.rjmoseley.beerator.app.MainActivity" >
 
-    <item android:id="@+id/action_add"
-        android:title="@string/action_add"
-        android:orderInCategory="1"
-        android:showAsAction="always"
-        android:icon="@drawable/ic_action_new"/>
-
-    <item android:id="@+id/action_search"
-        android:title="@string/action_search"
-        android:showAsAction="always"
-        android:orderInCategory="50"
-        android:icon="@drawable/ic_action_search" />
-
-    <item android:id="@+id/action_settings"
-        android:title="@string/action_settings"
-        android:orderInCategory="100"
-        android:showAsAction="never" />
 
 </menu>

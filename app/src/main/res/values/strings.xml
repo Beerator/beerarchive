@@ -33,5 +33,20 @@
     <string name="logged_out">You need to be logged in with Facebook to use Beerator</string>
     <string name="current_status">Current Authentication Status</string>
     <string name="title_activity_login">Beerator Login</string>
+    <string name="title_activity_setting">Settings</string>
+
+    <string name="user_settings">User Settings</string>
+    <string name="display_name_title">User Display Name</string>
+    <string name="display_name_summary">Your display name for public ratings</string>
+    <string name="display_name_dialog_title">User display name</string>
+
+    <string name="sharing_settings">Sharing Settings</string>
+    <string name="public_ratings_title">Public Ratings</string>
+    <string name="public_ratings_summary_on">Future ratings will be public</string>
+    <string name="public_ratings_summary_off">Future ratings will be private</string>
+
+    <string name="geotag_title">Enable GeoTagging</string>
+    <string name="geotag_summary_on">Your location will be included with future ratings</string>
+    <string name="geotag_summary_off">Your location will not be shared</string>
 
 </resources>
