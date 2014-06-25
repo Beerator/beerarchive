@@ -39,6 +39,8 @@ public class BeerListActivity extends Activity {
 
     final Globals g = Globals.getInstance();
 
+    public final static String AUTH_ACTION = "com.rjmoseley.beerator.app.MESSAGE";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -174,6 +176,8 @@ public class BeerListActivity extends Activity {
         }
         else if (id == R.id.action_logout) {
             Intent launchBeerLoginActivity = new Intent(this, BeerLoginActivity.class);
+            String message = "logout";
+            launchBeerLoginActivity.putExtra(AUTH_ACTION, message);
             startActivity(launchBeerLoginActivity);
             return true;
         }

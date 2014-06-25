@@ -21,6 +21,7 @@ import com.facebook.model.GraphUser;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
+import com.parse.ParseInstallation;
 import com.parse.ParseUser;
 
 public class BeerLoginActivity extends Activity {
@@ -60,6 +61,24 @@ public class BeerLoginActivity extends Activity {
         });
 
         updateCurrentStatus();
+
+        Intent intent = getIntent();
+        String message = intent.getStringExtra(BeerListActivity.AUTH_ACTION);
+        if (message != null) {
+            if (message.equals("logout")) {
+                onLogoutButtonClicked();
+            }
+        }
+
+        // Check if there is a currently logged in user
+        // and they are linked to a Facebook account.
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        if ((currentUser != null) && ParseFacebookUtils.isLinked(currentUser)) {
+            Log.i("LoginActivity", "User is already logged in");
+            //Below line needed if more data needs to be added to ParseUser from GraphUser
+            getDetailsBackground();
+            launchBeerList();
+        }
     }
 
     @Override
@@ -112,19 +131,15 @@ public class BeerLoginActivity extends Activity {
             @Override
             public void onCompleted(GraphUser user, Response response) {
                 if (user != null) {
+                    Log.i("Facebook integration", "Adding more user details");
                     ParseUser.getCurrentUser().put("fbId", user.getId());
                     ParseUser.getCurrentUser().put("name", user.getName());
-                    String displayNameDefault = user.getFirstName() + " "
-                            + user.getLastName().charAt(0);
-/*                    SharedPreferences sharedPrefs = PreferenceManager
-                            .getDefaultSharedPreferences(BeerLoginActivity.this);
-                    PreferenceManager.setDefaultValues(BeerLoginActivity.this, R.xml.preferences, false);
-                    String displayNamePref = sharedPrefs
-                            .getString("user_display_name", displayNameDefault);
-*/
-                    ParseUser.getCurrentUser().put("displayName", displayNameDefault);
-
                     ParseUser.getCurrentUser().saveInBackground();
+                    ParseInstallation.getCurrentInstallation().put("fbId", user.getId());
+                    ParseInstallation.getCurrentInstallation().put("name", user.getName());
+                    ParseInstallation.getCurrentInstallation().put("userObjectId",
+                            ParseUser.getCurrentUser().getObjectId());
+                    ParseInstallation.getCurrentInstallation().saveInBackground();
                 } else if (response.getError() != null) {
                     if ((response.getError().getCategory() ==
                             FacebookRequestError.Category.AUTHENTICATION_RETRY) ||
