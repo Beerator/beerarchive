@@ -1,8 +1,10 @@
-package com.rjmoseley.beerarchive.app;
+package com.rjmoseley.beerator.app;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -10,6 +12,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.parse.Parse;
+import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
@@ -24,7 +28,6 @@ public class BeerAddActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_beer_add);
-
     }
 
     public void addBeer(View view) {
@@ -36,17 +39,20 @@ public class BeerAddActivity extends Activity {
         final String breweryString = breweryInput.getText().toString();
         final String abvString = abvInput.getText().toString();
         final String userString = ParseUser.getCurrentUser().getObjectId();
+        final String countryOfOriginString = "";
         if ((beerString.length() > 0) && (breweryString.length() > 0)) {
             final ParseObject newParseBeer = new ParseObject("beer");
             newParseBeer.put("beerName", beerString);
             newParseBeer.put("brewery", breweryString);
             newParseBeer.put("userObjectId", userString);
-            newParseBeer.put("countryOfOrigin", null);
+            newParseBeer.put("countryOfOrigin", countryOfOriginString);
+
+            ParseACL acl = new ParseACL();
+            acl.setPublicReadAccess(true);
+            newParseBeer.setACL(acl);
+
             if (abvString.length() > 0) {
                 newParseBeer.put("abv", abvString);
-            }
-            else {
-                newParseBeer.put("abv", null);
             }
             Log.i("Beer Add", "Adding (Brewery, Beer): " + breweryString + ", " + beerString);
             newParseBeer.saveInBackground(new SaveCallback() {
@@ -74,7 +80,6 @@ public class BeerAddActivity extends Activity {
             Toast toast = Toast.makeText(context, text, duration);
             toast.show();
         }
-
     }
 
     public void cancel(View view) {

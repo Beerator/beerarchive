@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent">
+
+<!--
+    <PreferenceCategory
+        android:title="@string/user_settings"
+        android:key="user_settings">
+
+        <EditTextPreference
+            android:key="user_display_name"
+            android:title="@string/display_name_title"
+            android:summary="@string/display_name_summary"
+            android:dialogTitle="@string/display_name_dialog_title" />
+
+    </PreferenceCategory>
+-->
+
+    <PreferenceCategory
+        android:title="@string/sharing_settings"
+        android:key="second_category">
+
+        <SwitchPreference
+            android:key="public_ratings"
+            android:summaryOn="@string/public_ratings_summary_on"
+            android:summaryOff="@string/public_ratings_summary_off"
+            android:title="@string/public_ratings_title"
+            android:defaultValue="true"
+            />
+
+        <SwitchPreference
+            android:key="geotag"
+            android:summaryOn="@string/geotag_summary_on"
+            android:summaryOff="@string/geotag_summary_off"
+            android:title="@string/geotag_title"
+            android:defaultValue="true"
+            />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

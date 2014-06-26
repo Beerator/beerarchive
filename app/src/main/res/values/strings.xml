@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Beer Archive</string>
+    <string name="app_name">Beerator</string>
     <string name="hello_world">Hello world!</string>
     <string name="cancel">Cancel</string>
     <string name="action_settings">Settings</string>
@@ -9,7 +9,7 @@
     <string name="action_search">Search</string>
     <string name="action_logout">Logout</string>
     <string name="action_refresh">Refresh</string>
-    <string name="title_activity_beer_list_view">BeerListViewActivity</string>
+    <string name="title_activity_beer_list_view">Beer List</string>
     <string name="title_activity_beer_add">Add Beer</string>
     <string name="beer_name">Beer Name</string>
     <string name="brewery_name">Brewery</string>
@@ -18,14 +18,35 @@
     <string name="abv">ABV</string>
     <string name="country">Country</string>
     <string name="rate_beer">Rate!</string>
-    <string name="load_ratings">Load previous ratings</string>
+    <string name="load_ratings">Load all ratings</string>
+    <string name="load_my_ratings">Load my ratings</string>
     <string name="ratings">Ratings</string>
-    <string name="fb_app_id">892320204116447</string>
+    <string name="fb_app_id">1631654133725596</string>
     <string name="parse_app_id">HoS88PNeP8Fv0XE9PHTHsanhMNjRmoVYLuSjh4BE</string>
     <string name="parse_client_key">x8ykueuNyO1z954RDXFsjxyCduM1zNbcLUfF6UQl</string>
-    <string name="login_intro">If you\'re seeing this then you need to login.  Click the button</string>
+    <string name="login_intro"></string>
     <string name="main_activity_text">If you\'re seeing this something went wrong…</string>
     <string name="login">Login</string>
-    <string name="title_activity_login">LoginActivity</string>
+    <string name="logout">Logout</string>
+    <string name="logged_in">You are currently logged in</string>
+    <string name="launch_app">Launch Beerator</string>
+    <string name="logged_out">You need to be logged in with Facebook to use Beerator</string>
+    <string name="current_status">Current Authentication Status</string>
+    <string name="title_activity_login">Beerator Login</string>
+    <string name="title_activity_setting">Settings</string>
+
+    <string name="user_settings">User Settings</string>
+    <string name="display_name_title">User Display Name</string>
+    <string name="display_name_summary">Your display name for public ratings</string>
+    <string name="display_name_dialog_title">User display name</string>
+
+    <string name="sharing_settings">Sharing Settings</string>
+    <string name="public_ratings_title">Public Ratings</string>
+    <string name="public_ratings_summary_on">Future ratings will be public</string>
+    <string name="public_ratings_summary_off">Future ratings will be private</string>
+
+    <string name="geotag_title">Enable GeoTagging</string>
+    <string name="geotag_summary_on">Your location will be included with future ratings</string>
+    <string name="geotag_summary_off">Your location will not be shared</string>
 
 </resources>

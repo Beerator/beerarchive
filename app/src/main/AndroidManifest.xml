@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.rjmoseley.beerarchive.app" >
+    package="com.rjmoseley.beerator.app" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+
+    <permission android:protectionLevel="signature"
+        android:name="com.rjmoseley.beerator.app.permission.C2D_MESSAGE" />
+    <uses-permission android:name="com.rjmoseley.beerator.app.permission.C2D_MESSAGE" />
 
     <application
         android:allowBackup="true"
@@ -25,7 +35,8 @@
         </activity>
         <activity
             android:name=".BeerListActivity"
-            android:label="@string/app_name">
+            android:label="@string/title_activity_beer_list_view"
+            android:windowSoftInputMode="stateHidden" >
             >
         </activity>
         <activity
@@ -34,7 +45,7 @@
             android:parentActivityName=".BeerListActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.rjmoseley.beerarchive.app.BeerListViewActivity" />
+                android:value=".BeerListViewActivity" />
         </activity>
         <activity
             android:name=".BeerDetailsActivity"
@@ -42,17 +53,41 @@
             android:parentActivityName=".BeerListActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.rjmoseley.beerarchive.app.BeerListViewActivity" />
+                android:value=".BeerListViewActivity" />
         </activity>
         <activity android:name="com.facebook.LoginActivity" />
         <activity
             android:name=".BeerLoginActivity"
-            android:label="@string/title_activity_login"
-            android:parentActivityName=".MainActivity" >
+            android:label="@string/title_activity_login" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.rjmoseley.beerarchive.app.MainActivity" />
+                android:value=".MainActivity" />
         </activity>
+        <activity
+            android:name=".SettingActivity"
+            android:label="@string/title_activity_setting"
+            android:parentActivityName=".BeerListActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".BeerListActivity" />
+        </activity>
+
+        <service android:name="com.parse.PushService" />
+        <receiver android:name="com.parse.ParseBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.USER_PRESENT" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name="com.parse.GcmBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+                <category android:name="com.rjmoseley.beerator.app" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

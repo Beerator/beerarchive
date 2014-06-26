@@ -1,4 +1,4 @@
-package com.rjmoseley.beerarchive.app;
+package com.rjmoseley.beerator.app;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -16,7 +16,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.parse.FindCallback;
-import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -39,6 +38,8 @@ public class BeerListActivity extends Activity {
     private String sortKey2 = "beer";
 
     final Globals g = Globals.getInstance();
+
+    public final static String AUTH_ACTION = "com.rjmoseley.beerator.app.MESSAGE";
 
 
     @Override
@@ -138,8 +139,13 @@ public class BeerListActivity extends Activity {
         });
     }
 
-
-
+    @Override
+    public void onBackPressed(){
+        Intent a = new Intent(Intent.ACTION_MAIN);
+        a.addCategory(Intent.CATEGORY_HOME);
+        a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(a);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -155,6 +161,8 @@ public class BeerListActivity extends Activity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
+            Intent i = new Intent(this, SettingActivity.class);
+            startActivity(i);
             return true;
         }
         else if (id == R.id.action_add) {
@@ -168,6 +176,8 @@ public class BeerListActivity extends Activity {
         }
         else if (id == R.id.action_logout) {
             Intent launchBeerLoginActivity = new Intent(this, BeerLoginActivity.class);
+            String message = "logout";
+            launchBeerLoginActivity.putExtra(AUTH_ACTION, message);
             startActivity(launchBeerLoginActivity);
             return true;
         }
