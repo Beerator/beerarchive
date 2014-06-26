@@ -3,42 +3,49 @@
 
     <string name="app_name">Beerator</string>
     <string name="hello_world">Hello world!</string>
-    <string name="cancel">Cancel</string>
     <string name="main_activity_text">If you\'re seeing this something went wrong…</string>
 
+    <!--Application IDs for initialisation-->
     <string name="fb_app_id">1631654133725596</string>
     <string name="parse_app_id">HoS88PNeP8Fv0XE9PHTHsanhMNjRmoVYLuSjh4BE</string>
     <string name="parse_client_key">x8ykueuNyO1z954RDXFsjxyCduM1zNbcLUfF6UQl</string>
 
+    <!--Action bar items-->
     <string name="action_settings">Settings</string>
     <string name="action_add">Add Beer</string>
     <string name="action_search">Search</string>
     <string name="action_logout">Logout</string>
     <string name="action_refresh">Refresh</string>
 
+    <!--Activity titles-->
     <string name="title_activity_beer_list_view">Beer List</string>
     <string name="title_activity_beer_add">Add Beer</string>
     <string name="title_activity_login">Beerator Login</string>
     <string name="title_activity_setting">Settings</string>
     <string name="title_activity_beer_details">Beer Details</string>
 
+    <!--Beer parameters-->
     <string name="beer_name">Beer Name</string>
     <string name="brewery_name">Brewery</string>
     <string name="abv">ABV</string>
     <string name="country">Country</string>
     <string name="ratings">Ratings</string>
 
+    <!--Add beer buttons-->
     <string name="add_beer">Add Beer</string>
+    <string name="cancel">Cancel</string>
 
+    <!--Beer details buttons-->
     <string name="rate_beer">Rate!</string>
     <string name="load_ratings">Load all ratings</string>
     <string name="load_my_ratings">Load my ratings</string>
 
+    <!--Authentication and Login screen-->
     <string name="login_top">Welcome to Beerator</string>
     <string name="login_bottom">Beerator uses Facebook for authentication and to provide social
                         features.  No information is posted on Facebook at any time.
                         \n\nBy default your beer ratings are public and include your location.
-                        \nThese settings can be changed in the settings menu.</string>
+                        This can be changed in the settings menu.</string>
     <string name="login">Login</string>
     <string name="logout">Logout</string>
     <string name="logged_in">You are currently logged in</string>
@@ -46,20 +53,18 @@
     <string name="logged_out">Please login with Facebook to use Beerator</string>
     <string name="current_status">Current Authentication Status</string>
 
+    <!--Settings-->
     <string name="user_settings">User Settings</string>
     <string name="display_name_title">User Display Name</string>
     <string name="display_name_summary">Your display name for public ratings</string>
     <string name="display_name_dialog_title">User display name</string>
-
     <string name="sharing_settings">Sharing Settings</string>
     <string name="public_ratings_title">Public Ratings</string>
     <string name="public_ratings_summary_on">Future ratings will be made public</string>
     <string name="public_ratings_summary_off">Future ratings will be private</string>
-
     <string name="geotag_title">Enable GeoTagging</string>
     <string name="geotag_summary_on">Your ratings will be tagged with your location</string>
     <string name="geotag_summary_off">Your location will not be shared</string>
-
     <string name="push_settings">Notification Settings</string>
     <string name="push_receive_enabled_title">Receive Notifications</string>
     <string name="push_receive_enabled_summary_on">You will receive notifications</string>

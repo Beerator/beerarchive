@@ -18,6 +18,7 @@ import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.model.GraphUser;
@@ -34,8 +35,12 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -54,6 +59,8 @@ public class BeerDetailsActivity extends Activity {
     private ArrayList<BeerRating> beerRatings = new ArrayList<BeerRating>();
 
     private String ratingSystem = "1-5+";
+
+    private static final String TAG = "BeerDetails";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,13 +85,13 @@ public class BeerDetailsActivity extends Activity {
         Intent intent = getIntent();
         String objectId = intent.getStringExtra("objectId");
         beerObjectId = objectId;
-        Log.i("Beer details", "objectId: " + objectId);
+        Crashlytics.log(Log.INFO, TAG, "objectId: " + objectId);
 
         Globals g = Globals.getInstance();
         beerList = g.getBeerList();
         for (Beer b : beerList) {
             if (b.getObjectId().equals(objectId)) {
-                Log.i("Beer details", "Beer details found " + b.toString());
+                Crashlytics.log(Log.INFO, TAG, "Beer details found " + b.toString());
                 beer = b;
                 beerName.setText(beer.getName());
                 breweryName.setText(beer.getBrewery());
@@ -112,24 +119,24 @@ public class BeerDetailsActivity extends Activity {
                                     beer.addMyRating(br);
                                 }
                             }
-                            Log.i("Beer details", "Beer ratings downloaded: " + objects.size());
+                            Crashlytics.log(Log.INFO, TAG, "Beer ratings downloaded: " + objects.size());
 
                             //Identify if there are ratings in the all ratings list
                             if (beer.getRatingsList().isEmpty()) {
-                                Log.i("Beer details", "All ratings: none downloaded");
+                                Crashlytics.log(Log.INFO, TAG, "All ratings: none downloaded");
                             } else {
-                                Log.i("Beer details", "All ratings: " + beer.getRatingsList().size() + " beers downloaded");
+                                Crashlytics.log(Log.INFO, TAG, "All ratings: " + beer.getRatingsList().size() + " beers downloaded");
                                 findViewById(R.id.loadAllRatings).setVisibility(View.VISIBLE);
                                 //If there are ratings, are there some of my ratings?
                                 if (beer.getMyRatingsList().isEmpty()) {
-                                    Log.i("Beer details", "My ratings: none downloaded");
+                                    Crashlytics.log(Log.INFO, TAG, "My ratings: none downloaded");
                                 } else {
-                                    Log.i("Beer details", "My ratings: " + beer.getMyRatingsList().size() + " beers downloaded");
+                                    Crashlytics.log(Log.INFO, TAG, "My ratings: " + beer.getMyRatingsList().size() + " beers downloaded");
                                     findViewById(R.id.loadMyRatings).setVisibility(View.VISIBLE);
                                 }
                             }
                         } else {
-                            Log.i("Beer details", "Beer ratings download failed");
+                            Crashlytics.log(Log.INFO, TAG, "Beer ratings download failed");
                         }
                         //Don't display ratings automatically
                         //loadRatings();
@@ -186,21 +193,21 @@ public class BeerDetailsActivity extends Activity {
             criteria.setCostAllowed(false);
 
             String locationProvider = locationManager.getBestProvider(criteria, true);
-            Log.i("Location", "Location provider chosen: "+ locationProvider);
+            Crashlytics.log(Log.INFO, TAG, "Location provider chosen: "+ locationProvider);
 
             if (locationProvider != null) {
                 Location location = locationManager.getLastKnownLocation(locationProvider);
                 if (location != null) {
-                    Log.i("Location", "Location: " + location.toString());
+                    Crashlytics.log(Log.INFO, TAG, "Location: " + location.toString());
                     geoPoint.setLatitude(location.getLatitude());
                     geoPoint.setLongitude(location.getLongitude());
                 } else {
                     Toast.makeText(this, "Unable to get location.  Check your device settings",
-                            Toast.LENGTH_LONG).show();
+                            Toast.LENGTH_SHORT).show();
                 }
             } else {
                 Toast.makeText(this, "Unable to get location provider.  Check your device settings",
-                        Toast.LENGTH_LONG).show();
+                        Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -222,7 +229,7 @@ public class BeerDetailsActivity extends Activity {
         acl.setPublicReadAccess(sharedPrefs.getBoolean("public_ratings", true));
         parseRating.setACL(acl);
 
-        Log.i("Beer rating", "Adding rating of " + normRating + " and rating system " + ratingSystem
+        Crashlytics.log(Log.INFO, TAG, "Adding rating of " + normRating + " and rating system " + ratingSystem
                 + " for beer with objectId " + beerObjectId);
 
         parseRating.saveInBackground(new SaveCallback() {
@@ -254,7 +261,7 @@ public class BeerDetailsActivity extends Activity {
                     for (GraphUser user : users) {
                         friendsList.add(user.getId());
                     }
-                    Log.i("BeerRatingAdd", friendsList.size() + " Beerator friends found");
+                    Crashlytics.log(Log.INFO, TAG, friendsList.size() + " Beerator friends found");
 
                     //New query of Installations to find those to send push to
                     ParseQuery<ParseInstallation> query = ParseInstallation.getQuery();
@@ -265,7 +272,15 @@ public class BeerDetailsActivity extends Activity {
                     String message = ParseUser.getCurrentUser().getString("displayName") + " rated "
                             + beer.getBrewery() + " " + beer.getName() + " at "
                             + tempBR.getRating(ratingSystem) + "!";
-                    push.setMessage(message);
+                    JSONObject data = new JSONObject();
+                    try {
+                        data.put("alert", message);
+                        data.put("beerObjectId", beer.getObjectId());
+                        data.put("action", "com.rjmoseley.beerator.app.BEER_NOTIFICATION");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    push.setData(data);
                     push.sendInBackground();
                 }
             }
@@ -277,7 +292,7 @@ public class BeerDetailsActivity extends Activity {
     }
 
     public void loadAllRatings() {
-        Log.i("Beer details", "Displaying all ratings");
+        Crashlytics.log(Log.INFO, TAG, "Displaying all ratings");
 
         beerRatings = beer.getRatingsList();
 
@@ -287,7 +302,7 @@ public class BeerDetailsActivity extends Activity {
 
         ratingsListView.setAdapter(beerRatingsAdapter);
 
-        Log.i("Beer details", "All beerRatings size: " + beerRatings.size());
+        Crashlytics.log(Log.INFO, TAG, "All beerRatings size: " + beerRatings.size());
 
         findViewById(R.id.ratingsListView).setVisibility(View.VISIBLE);
         findViewById(R.id.loadAllRatings).setVisibility(View.GONE);
@@ -299,7 +314,7 @@ public class BeerDetailsActivity extends Activity {
     }
 
     public void loadMyRatings() {
-        Log.i("Beer details", "Displaying my ratings");
+        Crashlytics.log(Log.INFO, TAG, "Displaying my ratings");
 
         beerRatings = beer.getMyRatingsList();
 
@@ -309,7 +324,7 @@ public class BeerDetailsActivity extends Activity {
 
         ratingsListView.setAdapter(beerRatingsAdapter);
 
-        Log.i("Beer details", "My beerRatings size: " + beerRatings.size());
+        Crashlytics.log(Log.INFO, TAG, "My beerRatings size: " + beerRatings.size());
 
         findViewById(R.id.ratingsListView).setVisibility(View.VISIBLE);
         findViewById(R.id.loadMyRatings).setVisibility(View.GONE);

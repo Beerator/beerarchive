@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseException;
@@ -23,6 +24,8 @@ import java.util.ArrayList;
 
 
 public class BeerAddActivity extends Activity {
+
+    private static final String TAG = "BeerAdd";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +57,7 @@ public class BeerAddActivity extends Activity {
             if (abvString.length() > 0) {
                 newParseBeer.put("abv", abvString);
             }
-            Log.i("Beer Add", "Adding (Brewery, Beer): " + breweryString + ", " + beerString);
+            Crashlytics.log(Log.INFO, TAG, "Adding (Brewery, Beer): " + breweryString + ", " + beerString);
             newParseBeer.saveInBackground(new SaveCallback() {
                 //Once saved to parse grab objectId and save locally
                 @Override
@@ -75,7 +78,7 @@ public class BeerAddActivity extends Activity {
         else {
             Context context = getApplicationContext();
             CharSequence text = "Brewery and Beer Name cannot be empty";
-            Log.i("Beer Add", "Not adding beer, Brewery and Beer Name cannot be empty");
+            Crashlytics.log(Log.INFO, TAG, "Not adding beer, Brewery and Beer Name cannot be empty");
             int duration = Toast.LENGTH_SHORT;
             Toast toast = Toast.makeText(context, text, duration);
             toast.show();

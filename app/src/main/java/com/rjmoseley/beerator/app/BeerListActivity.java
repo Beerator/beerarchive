@@ -15,12 +15,17 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -39,8 +44,9 @@ public class BeerListActivity extends Activity {
 
     final Globals g = Globals.getInstance();
 
-    public final static String AUTH_ACTION = "com.rjmoseley.beerator.app.MESSAGE";
+    private static final String TAG = "BeerList";
 
+    public final static String AUTH_ACTION = "com.rjmoseley.beerator.app.MESSAGE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,10 +60,29 @@ public class BeerListActivity extends Activity {
     }
 
     @Override
-    public void onResume() {
+    protected void onResume() {
         super.onResume();
-        //Refresh the beer list when resuming this activity
-        //setListViewContent();
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            try {
+                Intent intent = getIntent();
+                String action = intent.getAction();
+                JSONObject json = new JSONObject(intent.getExtras().getString("com.parse.Data"));
+                Log.d(TAG, "got action " + action + " with:");
+                Iterator itr = json.keys();
+                while (itr.hasNext()) {
+                    String key = (String) itr.next();
+                    Log.d(TAG, "..." + key + " => " + json.getString(key));
+                }
+                String objectId = json.getString("beerObjectId");
+                Crashlytics.log(Log.INFO, TAG, "Beer in notification is " + objectId);
+                Intent launchBeerDetails = new Intent(getApplicationContext(), BeerDetailsActivity.class);
+                launchBeerDetails.putExtra("objectId", objectId);
+                startActivity(launchBeerDetails);
+            } catch (JSONException e) {
+                Log.d(TAG, "JSONException: " + e.getMessage());
+            }
+        }
     }
 
     private void downloadBeers() {
@@ -82,12 +107,12 @@ public class BeerListActivity extends Activity {
                             b.setABV(obj.getString("abv"));
                         }
                         beerList.add(b);
-                        //Log.i("Beer download", "Beer added: " + b.toString());
+                        //Crashlytics.log(Log.INFO, "Beer download", "Beer added: " + b.toString());
                     }
-                    Log.i("Beer download", "Beers downloaded: " + beerList.size());
+                    Crashlytics.log(Log.INFO, TAG, "Beers downloaded: " + beerList.size());
                     setListViewContent();
                 } else {
-                    Log.i("Beer download", "Beer download failed");
+                    Crashlytics.log(Log.INFO, TAG, "Beer download failed");
                 }
                 g.setBeerlist(beerList);
             }
@@ -96,7 +121,7 @@ public class BeerListActivity extends Activity {
 
     private void setListViewContent() {
         final BeerAdapter beerAdapter = new BeerAdapter(this, R.layout.beer_list_item, beerList);
-        Log.i("Beer List", "Beers listed: " + beerList.size());
+        Crashlytics.log(Log.INFO, TAG, "Beers listed: " + beerList.size());
 
         beerFilterText.addTextChangedListener(new TextWatcher() {
             @Override
@@ -106,7 +131,7 @@ public class BeerListActivity extends Activity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                Log.i("FilterText", "Text: " + charSequence.toString() + ", Start: " + start
+                Crashlytics.log(Log.INFO, "FilterText", "Text: " + charSequence.toString() + ", Start: " + start
                                             + ", Before: " + before + ", Count: " + count);
                 if (count < before) beerAdapter.resetData();
                 if (count == 0) beerAdapter.resetData();
@@ -130,7 +155,7 @@ public class BeerListActivity extends Activity {
                 RelativeLayout rl = (RelativeLayout)view;
                 TextView tv = (TextView) rl.findViewById(R.id.objectId);
                 String objectId = tv.getText().toString();
-                Log.i("Beer List", "Selected beer is " + objectId);
+                Crashlytics.log(Log.INFO, TAG, "Selected beer is " + objectId);
                 Intent launchBeerDetails = new Intent(getApplicationContext(), BeerDetailsActivity.class);
                 launchBeerDetails.putExtra("objectId", objectId);
                 startActivity(launchBeerDetails);

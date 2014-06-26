@@ -9,10 +9,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.crashlytics.android.Crashlytics;
 import com.parse.ParseInstallation;
 
 public class SettingActivity extends PreferenceActivity  implements
         SharedPreferences.OnSharedPreferenceChangeListener {
+    private static final String TAG = "Settings";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +41,7 @@ public class SettingActivity extends PreferenceActivity  implements
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
         if(key.equals("push_receive_enabled")) {
             Boolean pushEnabled = prefs.getBoolean("push_receive_enabled", true);
-            Log.i("Settings", "PushEnabled set to " + pushEnabled.toString());
+            Crashlytics.log(Log.INFO, TAG, "PushEnabled set to " + pushEnabled.toString());
             ParseInstallation.getCurrentInstallation().put("pushEnabled", pushEnabled);
             ParseInstallation.getCurrentInstallation().saveInBackground();
         }
