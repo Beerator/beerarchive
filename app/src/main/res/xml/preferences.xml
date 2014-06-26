@@ -17,12 +17,11 @@
 
     </PreferenceCategory>
 -->
-
     <PreferenceCategory
         android:title="@string/sharing_settings"
-        android:key="second_category">
+        android:key="sharing_category">
 
-        <SwitchPreference
+        <CheckBoxPreference
             android:key="public_ratings"
             android:summaryOn="@string/public_ratings_summary_on"
             android:summaryOff="@string/public_ratings_summary_off"
@@ -30,7 +29,7 @@
             android:defaultValue="true"
             />
 
-        <SwitchPreference
+        <CheckBoxPreference
             android:key="geotag"
             android:summaryOn="@string/geotag_summary_on"
             android:summaryOff="@string/geotag_summary_off"
@@ -39,5 +38,18 @@
             />
 
     </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/push_settings"
+        android:key="push_settings">
+
+        <CheckBoxPreference
+            android:key="push_receive_enabled"
+            android:title="@string/push_receive_enabled_title"
+            android:summaryOn="@string/push_receive_enabled_summary_on"
+            android:summaryOff="@string/push_receive_enabled_summary_off"
+            android:defaultValue="true"
+            />
+        </PreferenceCategory>
 
 </PreferenceScreen>

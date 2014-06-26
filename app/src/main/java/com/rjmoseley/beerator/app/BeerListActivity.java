@@ -94,7 +94,6 @@ public class BeerListActivity extends Activity {
         });
     }
 
-
     private void setListViewContent() {
         final BeerAdapter beerAdapter = new BeerAdapter(this, R.layout.beer_list_item, beerList);
         Log.i("Beer List", "Beers listed: " + beerList.size());

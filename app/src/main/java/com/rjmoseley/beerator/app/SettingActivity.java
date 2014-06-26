@@ -1,12 +1,18 @@
 package com.rjmoseley.beerator.app;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class SettingActivity extends PreferenceActivity {
+import com.parse.ParseInstallation;
+
+public class SettingActivity extends PreferenceActivity  implements
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -14,6 +20,30 @@ public class SettingActivity extends PreferenceActivity {
         addPreferencesFromResource(R.xml.preferences);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Set up a listener whenever a key changes
+        getPreferenceScreen().getSharedPreferences()
+                .registerOnSharedPreferenceChangeListener(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Unregister the listener whenever a key changes
+        getPreferenceScreen().getSharedPreferences()
+                .unregisterOnSharedPreferenceChangeListener(this);
+    }
+
+    public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+        if(key.equals("push_receive_enabled")) {
+            Boolean pushEnabled = prefs.getBoolean("push_receive_enabled", true);
+            Log.i("Settings", "PushEnabled set to " + pushEnabled.toString());
+            ParseInstallation.getCurrentInstallation().put("pushEnabled", pushEnabled);
+            ParseInstallation.getCurrentInstallation().saveInBackground();
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

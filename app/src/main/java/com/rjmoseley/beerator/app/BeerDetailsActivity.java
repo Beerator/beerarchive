@@ -55,10 +55,6 @@ public class BeerDetailsActivity extends Activity {
 
     private String ratingSystem = "1-5+";
 
-    private LocationManager locationManager;
-    private Criteria criteria;
-    private String locationProvider;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -167,7 +163,7 @@ public class BeerDetailsActivity extends Activity {
 
     public void rateBeer() {
 
-        SharedPreferences sharedPrefs = PreferenceManager
+        final SharedPreferences sharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(this);
 
         findViewById(R.id.ratingLayout).setVisibility(View.GONE);
@@ -184,12 +180,12 @@ public class BeerDetailsActivity extends Activity {
         final ParseGeoPoint geoPoint = new ParseGeoPoint();
 
         if (sharedPrefs.getBoolean("geotag", true)) {
-            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            criteria = new Criteria();
+            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            Criteria criteria = new Criteria();
             criteria.setAccuracy(Criteria.ACCURACY_COARSE);
             criteria.setCostAllowed(false);
 
-            locationProvider = locationManager.getBestProvider(criteria, true);
+            String locationProvider = locationManager.getBestProvider(criteria, true);
             Log.i("Location", "Location provider chosen: "+ locationProvider);
 
             if (locationProvider != null) {
@@ -263,7 +259,7 @@ public class BeerDetailsActivity extends Activity {
                     //New query of Installations to find those to send push to
                     ParseQuery<ParseInstallation> query = ParseInstallation.getQuery();
                     query.whereContainedIn("fbId", friendsList);
-
+                    query.whereNotEqualTo("pushEnabled", false);
                     ParsePush push = new ParsePush();
                     push.setQuery(query);
                     String message = ParseUser.getCurrentUser().getString("displayName") + " rated "
@@ -274,7 +270,6 @@ public class BeerDetailsActivity extends Activity {
                 }
             }
         }).executeAsync();
-
     }
 
     public void loadAllRatingsOnClick(View view) {

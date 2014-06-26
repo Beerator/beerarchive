@@ -19,6 +19,7 @@ import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.model.GraphUser;
 import com.parse.LogInCallback;
+import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseInstallation;
@@ -29,9 +30,6 @@ import java.util.List;
 
 public class BeerLoginActivity extends Activity {
 
-    private Button loginButton;
-    private Button logoutButton;
-    private Button launchAppButton;
     private Dialog progressDialog;
 
     @Override
@@ -39,7 +37,7 @@ public class BeerLoginActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        loginButton = (Button) findViewById(R.id.loginButton);
+        Button loginButton = (Button) findViewById(R.id.loginButton);
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -47,7 +45,7 @@ public class BeerLoginActivity extends Activity {
             }
         });
 
-        logoutButton = (Button) findViewById(R.id.logoutButton);
+        Button logoutButton = (Button) findViewById(R.id.logoutButton);
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -55,7 +53,7 @@ public class BeerLoginActivity extends Activity {
             }
         });
 
-        launchAppButton = (Button) findViewById(R.id.launchApp);
+        Button launchAppButton = (Button) findViewById(R.id.launchApp);
         launchAppButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -105,7 +103,6 @@ public class BeerLoginActivity extends Activity {
     }
 
     private void onLoginButtonClicked() {
-
         BeerLoginActivity.this.progressDialog = ProgressDialog.show(
                 BeerLoginActivity.this, "", "Logging in...", true);
 
@@ -130,12 +127,14 @@ public class BeerLoginActivity extends Activity {
         });
     }
 
-
     private void getDetailsBackground() {
         Request.newMeRequest(ParseFacebookUtils.getSession(), new Request.GraphUserCallback() {
             @Override
             public void onCompleted(GraphUser user, Response response) {
                 if (user != null) {
+                    SharedPreferences sharedPrefs = PreferenceManager
+                            .getDefaultSharedPreferences(BeerLoginActivity.this);
+
                     Log.i("Facebook integration", "Adding more user details");
                     ParseUser.getCurrentUser().put("fbId", user.getId());
                     ParseUser.getCurrentUser().put("name", user.getName());
@@ -146,6 +145,8 @@ public class BeerLoginActivity extends Activity {
                     ParseInstallation.getCurrentInstallation().put("name", user.getName());
                     ParseInstallation.getCurrentInstallation().put("userObjectId",
                             ParseUser.getCurrentUser().getObjectId());
+                    Boolean pushEnabled = sharedPrefs.getBoolean("push_receive_enabled", true);
+                    ParseInstallation.getCurrentInstallation().put("pushEnabled", pushEnabled);
                     ParseInstallation.getCurrentInstallation().saveInBackground();
                 } else if (response.getError() != null) {
                     if ((response.getError().getCategory() ==

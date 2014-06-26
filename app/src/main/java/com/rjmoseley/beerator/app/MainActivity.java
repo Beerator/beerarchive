@@ -35,7 +35,7 @@ public class MainActivity extends Activity {
         // Save the current Installation to Parse.
         ParseInstallation.getCurrentInstallation().saveInBackground();
 
-        PushService.setDefaultPushCallback(this, MainActivity.class);
+        PushService.setDefaultPushCallback(this, MainActivity.class, R.drawable.ic_stat_beerglass);
         ParseAnalytics.trackAppOpened(getIntent());
 
         launchBeerLoginActivity();
