@@ -34,6 +34,7 @@ import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
+import com.parse.SendCallback;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -45,8 +46,6 @@ import java.util.List;
 
 
 public class BeerDetailsActivity extends Activity {
-
-    private ArrayList<Beer> beerList = new ArrayList<Beer>();
 
     private String beerObjectId;
 
@@ -85,68 +84,93 @@ public class BeerDetailsActivity extends Activity {
         Intent intent = getIntent();
         String objectId = intent.getStringExtra("objectId");
         beerObjectId = objectId;
-        Crashlytics.log(Log.INFO, TAG, "objectId: " + objectId);
 
+        Crashlytics.log(Log.INFO, TAG, "Finding beer details for " + objectId);
         Globals g = Globals.getInstance();
-        beerList = g.getBeerList();
-        for (Beer b : beerList) {
-            if (b.getObjectId().equals(objectId)) {
-                Crashlytics.log(Log.INFO, TAG, "Beer details found " + b.toString());
-                beer = b;
-                beerName.setText(beer.getName());
-                breweryName.setText(beer.getBrewery());
-                if (beer.getABV() != null) {
-                    abv.setText(beer.getABV() + " %");
+        ArrayList<Beer> beerList = g.getBeerList();
+        if (beerList.isEmpty()) {
+            Crashlytics.log(Log.INFO, TAG, "beerList is empty");
+            ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("beer");
+            try {
+                ParseObject b = query.get(objectId);
+                beer = new Beer(b.getString("beerName"), b.getString("brewery"), b.getObjectId());
+                if (b.getString("abv") != null) {
+                    beer.setABV(b.getString("abv"));
                 }
-
-                //Download beer ratings in background
-                final ParseQuery query = new ParseQuery("beerRating");
-                query.whereEqualTo("beerObjectId", objectId);
-                query.orderByDescending("createdAt").findInBackground(new FindCallback<ParseObject>() {
-                    @Override
-                    public void done(List<ParseObject> objects, ParseException e) {
-                        if (e == null) {
-                            beer.clearRatings();
-                            for (ParseObject obj : objects) {
-                                BeerRating br = new BeerRating(obj.getString("normRating"),
-                                        obj.getCreatedAt(),
-                                        obj.getObjectId(),
-                                        obj.getString("userObjectId"),
-                                        obj.getString("userDisplayName"),
-                                        obj.getParseGeoPoint("location"));
-                                beer.addRating(br);
-                                if (obj.getString("userObjectId").equals(ParseUser.getCurrentUser().getObjectId())) {
-                                    beer.addMyRating(br);
-                                }
-                            }
-                            Crashlytics.log(Log.INFO, TAG, "Beer ratings downloaded: " + objects.size());
-
-                            //Identify if there are ratings in the all ratings list
-                            if (beer.getRatingsList().isEmpty()) {
-                                Crashlytics.log(Log.INFO, TAG, "All ratings: none downloaded");
-                            } else {
-                                Crashlytics.log(Log.INFO, TAG, "All ratings: " + beer.getRatingsList().size() + " beers downloaded");
-                                findViewById(R.id.loadAllRatings).setVisibility(View.VISIBLE);
-                                //If there are ratings, are there some of my ratings?
-                                if (beer.getMyRatingsList().isEmpty()) {
-                                    Crashlytics.log(Log.INFO, TAG, "My ratings: none downloaded");
-                                } else {
-                                    Crashlytics.log(Log.INFO, TAG, "My ratings: " + beer.getMyRatingsList().size() + " beers downloaded");
-                                    findViewById(R.id.loadMyRatings).setVisibility(View.VISIBLE);
-                                }
-                            }
-                        } else {
-                            Crashlytics.log(Log.INFO, TAG, "Beer ratings download failed");
-                        }
-                        //Don't display ratings automatically
-                        //loadRatings();
-
-                    }
-                });
+                Crashlytics.log(Log.INFO, TAG, "Beer details downloaded for beer " + beer.toString());
+            } catch (ParseException e) {
+                Toast.makeText(this, "Failed to find beer details", Toast.LENGTH_SHORT).show();
+                Crashlytics.log(Log.INFO, TAG, "Failed to download beer details, exiting BeerDetails");
+                Crashlytics.logException(e);
+                e.printStackTrace();
+                finish();
+            }
+        } else {
+            for (Beer b : beerList) {
+                if (b.getObjectId().equals(objectId)) {
+                    beer = b;
+                    Crashlytics.log(Log.INFO, TAG, "Beer details found from beerList for " + beer.toString());
+                }
             }
         }
 
+        //Setting TextView items to the beer values
+        beerName.setText(beer.getName());
+        breweryName.setText(beer.getBrewery());
+        if (beer.getABV() != null) {
+            abv.setText(beer.getABV() + " %");
+        }
 
+        //Download beer ratings in background
+        Crashlytics.log(Log.INFO, TAG, "Downloading beer ratings");
+        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("beerRating");
+        query.whereEqualTo("beerObjectId", objectId);
+        query.orderByDescending("createdAt");
+        query.findInBackground(new FindCallback<ParseObject>() {
+            @Override
+            public void done(List<ParseObject> objects, ParseException e) {
+                if (e == null) {
+                    beer.clearRatings();
+                    for (ParseObject obj : objects) {
+                        BeerRating br = new BeerRating(obj.getString("normRating"),
+                                obj.getCreatedAt(),
+                                obj.getObjectId(),
+                                obj.getString("userObjectId"),
+                                obj.getString("userDisplayName"),
+                                obj.getParseGeoPoint("location"));
+                        beer.addRating(br);
+                        if (obj.getString("userObjectId").equals(ParseUser.getCurrentUser().getObjectId())) {
+                            beer.addMyRating(br);
+                        }
+                    }
+                    Crashlytics.log(Log.INFO, TAG, "Beer ratings downloaded: " + objects.size());
+
+                    //Identify if there are ratings in the all ratings list
+                    if (beer.getRatingsList().isEmpty()) {
+                        Crashlytics.log(Log.INFO, TAG, "All ratings: none downloaded");
+                    } else {
+                        Crashlytics.log(Log.INFO, TAG, "All ratings: " + beer.getRatingsList().size() + " beers downloaded");
+                        findViewById(R.id.loadAllRatings).setVisibility(View.VISIBLE);
+                        //If there are ratings, are there some of my ratings?
+                        if (beer.getMyRatingsList().isEmpty()) {
+                            Crashlytics.log(Log.INFO, TAG, "My ratings: none downloaded");
+                        } else {
+                            Crashlytics.log(Log.INFO, TAG, "My ratings: " + beer.getMyRatingsList().size() + " beers downloaded");
+                            findViewById(R.id.loadMyRatings).setVisibility(View.VISIBLE);
+                        }
+                    }
+                } else {
+                    Toast.makeText(BeerDetailsActivity.this, "Failed to download beer ratings",
+                            Toast.LENGTH_SHORT).show();
+                    Crashlytics.log(Log.INFO, TAG, "Beer ratings download failed");
+                    Crashlytics.log(Log.INFO, TAG, e.getMessage());
+                    Crashlytics.logException(e);
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        //Setup the ratings pickers
         NumberPicker np1 = (NumberPicker) findViewById(R.id.numberPicker1);
         String[] np1Strings = {"5", "4", "3", "2", "1"};
         np1.setDisplayedValues(np1Strings);
@@ -169,7 +193,7 @@ public class BeerDetailsActivity extends Activity {
     }
 
     public void rateBeer() {
-
+        Crashlytics.log(Log.INFO, TAG, "Adding beer rating");
         final SharedPreferences sharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(this);
 
@@ -187,6 +211,7 @@ public class BeerDetailsActivity extends Activity {
         final ParseGeoPoint geoPoint = new ParseGeoPoint();
 
         if (sharedPrefs.getBoolean("geotag", true)) {
+            Crashlytics.log(Log.INFO, TAG, "Attempting to GeoTag");
             LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
             Criteria criteria = new Criteria();
             criteria.setAccuracy(Criteria.ACCURACY_COARSE);
@@ -202,10 +227,12 @@ public class BeerDetailsActivity extends Activity {
                     geoPoint.setLatitude(location.getLatitude());
                     geoPoint.setLongitude(location.getLongitude());
                 } else {
+                    Crashlytics.log(Log.INFO, TAG, "Unable to get location");
                     Toast.makeText(this, "Unable to get location.  Check your device settings",
                             Toast.LENGTH_SHORT).show();
                 }
             } else {
+                Crashlytics.log(Log.INFO, TAG, "Unable to get location provider");
                 Toast.makeText(this, "Unable to get location provider.  Check your device settings",
                         Toast.LENGTH_SHORT).show();
             }
@@ -214,6 +241,7 @@ public class BeerDetailsActivity extends Activity {
         final BeerRating tempBR = new BeerRating(ratingElement1+ratingElement2, ratingSystem, new Date());
 
         final String normRating = tempBR.getNormRating();
+        Crashlytics.log(Log.INFO, TAG, "Normalised rating = " + normRating);
 
         final ParseObject parseRating = new ParseObject("beerRating");
 
@@ -227,6 +255,7 @@ public class BeerDetailsActivity extends Activity {
         //Sort out the ACL
         ParseACL acl = new ParseACL(ParseUser.getCurrentUser());
         acl.setPublicReadAccess(sharedPrefs.getBoolean("public_ratings", true));
+        Crashlytics.log(Log.INFO, TAG, "Public rating: " + sharedPrefs.getBoolean("public_ratings", true));
         parseRating.setACL(acl);
 
         Crashlytics.log(Log.INFO, TAG, "Adding rating of " + normRating + " and rating system " + ratingSystem
@@ -235,18 +264,27 @@ public class BeerDetailsActivity extends Activity {
         parseRating.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                findViewById(R.id.loadingPanel).setVisibility(View.GONE);
-                Date date = parseRating.getCreatedAt();
-                BeerRating beerRating = new BeerRating(normRating, date);
-                beerRating.setObjectId(parseRating.getObjectId());
-                beerRating.setLocation(geoPoint);
-                beerRating.setUserObjectId(ParseUser.getCurrentUser().getObjectId());
-                beerRating.setUserName(ParseUser.getCurrentUser().getString("displayName"));
-                beer.addRating(beerRating);
-                beer.addMyRating(beerRating);
-                beer.sortRatings();
-                if (beerRatingsAdapter != null) {
-                    beerRatingsAdapter.notifyDataSetChanged();
+                if (e == null) {
+                    findViewById(R.id.loadingPanel).setVisibility(View.GONE);
+                    Date date = parseRating.getCreatedAt();
+                    BeerRating beerRating = new BeerRating(normRating, date);
+                    beerRating.setObjectId(parseRating.getObjectId());
+                    beerRating.setLocation(geoPoint);
+                    beerRating.setUserObjectId(ParseUser.getCurrentUser().getObjectId());
+                    beerRating.setUserName(ParseUser.getCurrentUser().getString("displayName"));
+                    beer.addRating(beerRating);
+                    beer.addMyRating(beerRating);
+                    beer.sortRatings();
+                    if (beerRatingsAdapter != null) {
+                        beerRatingsAdapter.notifyDataSetChanged();
+                    }
+                } else {
+                    Toast.makeText(BeerDetailsActivity.this, "Failed to save rating",
+                            Toast.LENGTH_SHORT).show();
+                    Crashlytics.log(Log.INFO, TAG, "Beer ratings save failed");
+                    Crashlytics.log(Log.INFO, TAG, e.getMessage());
+                    Crashlytics.logException(e);
+                    e.printStackTrace();
                 }
             }
         });
@@ -278,10 +316,25 @@ public class BeerDetailsActivity extends Activity {
                         data.put("beerObjectId", beer.getObjectId());
                         data.put("action", "com.rjmoseley.beerator.app.BEER_NOTIFICATION");
                     } catch (JSONException e) {
+                        Crashlytics.log(Log.INFO, TAG, "JSON Exception");
+                        Crashlytics.log(Log.INFO, TAG, e.getMessage());
+                        Crashlytics.logException(e);
                         e.printStackTrace();
                     }
                     push.setData(data);
-                    push.sendInBackground();
+                    push.sendInBackground(new SendCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if (e == null) {
+                                Crashlytics.log(Log.INFO, TAG, "Notification sent successfully");
+                            } else {
+                                Crashlytics.log(Log.INFO, TAG, "Failed to send notification");
+                                Crashlytics.log(Log.INFO, TAG, e.getMessage());
+                                Crashlytics.logException(e);
+                                e.printStackTrace();
+                            }
+                        }
+                    });
                 }
             }
         }).executeAsync();
