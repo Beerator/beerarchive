@@ -92,7 +92,8 @@ public class BeerAddActivity extends Activity {
                     } else {
                         Toast.makeText(BeerAddActivity.this, "Failed to add new beer", Toast.LENGTH_SHORT).show();
                         Crashlytics.log(Log.INFO, TAG, "Failed to save new beer");
-                        Crashlytics.log(Log.INFO, TAG, e.getMessage());
+                        Crashlytics.log(Log.INFO, TAG, "Code: " + e.getCode()
+                                + ", Message: " + e.getMessage());
                         Crashlytics.logException(e);
                         e.printStackTrace();
                     }

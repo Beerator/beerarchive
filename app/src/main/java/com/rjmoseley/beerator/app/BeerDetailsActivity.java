@@ -171,7 +171,8 @@ public class BeerDetailsActivity extends Activity {
                     Toast.makeText(BeerDetailsActivity.this, "Failed to download beer ratings",
                             Toast.LENGTH_SHORT).show();
                     Crashlytics.log(Log.INFO, TAG, "Beer ratings download failed");
-                    Crashlytics.log(Log.INFO, TAG, e.getMessage());
+                    Crashlytics.log(Log.INFO, TAG, "Code: " + e.getCode()
+                            + ", Message: " + e.getMessage());
                     Crashlytics.logException(e);
                     e.printStackTrace();
                 }
@@ -307,7 +308,8 @@ public class BeerDetailsActivity extends Activity {
                     Toast.makeText(BeerDetailsActivity.this, "Failed to save rating",
                             Toast.LENGTH_SHORT).show();
                     Crashlytics.log(Log.INFO, TAG, "Beer ratings save failed");
-                    Crashlytics.log(Log.INFO, TAG, e.getMessage());
+                    Crashlytics.log(Log.INFO, TAG, "Code: " + e.getCode()
+                            + ", Message: " + e.getMessage());
                     Crashlytics.logException(e);
                     e.printStackTrace();
                 }
@@ -356,7 +358,8 @@ public class BeerDetailsActivity extends Activity {
                                     Crashlytics.log(Log.INFO, TAG, "Notification sent successfully");
                                 } else {
                                     Crashlytics.log(Log.INFO, TAG, "Failed to send notification");
-                                    Crashlytics.log(Log.INFO, TAG, e.getMessage());
+                                    Crashlytics.log(Log.INFO, TAG, "Code: " + e.getCode()
+                                            + ", Message: " + e.getMessage());
                                     Crashlytics.logException(e);
                                     e.printStackTrace();
                                 }

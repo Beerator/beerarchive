@@ -28,6 +28,7 @@ import com.parse.ParseQuery;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -145,7 +146,8 @@ public class BeerListActivity extends Activity {
                 } else {
                     Toast.makeText(BeerListActivity.this, "Beer download failed", Toast.LENGTH_SHORT).show();
                     Crashlytics.log(Log.INFO, TAG, "Beer download failed");
-                    Crashlytics.log(Log.INFO, TAG, e.getMessage());
+                    Crashlytics.log(Log.INFO, TAG, "Code: " + e.getCode()
+                            + ", Message: " + e.getMessage());
                     Crashlytics.logException(e);
                     e.printStackTrace();
                 }
