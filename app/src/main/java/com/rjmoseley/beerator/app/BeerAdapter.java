@@ -135,4 +135,17 @@ public class BeerAdapter extends ArrayAdapter<Beer> {
         beerList = beerListOrig;
         notifyDataSetChanged();
     }
+
+    /* Possible fix for issue #22 suggested by
+    https://stackoverflow.com/questions/15194835/filtering-custom-adapter-indexoutofboundsexception
+     */
+    @Override
+    public int getCount() {
+        return beerList.size();
+    }
+
+    @Override
+    public Beer getItem(int pos) {
+        return beerList.get(pos);
+    }
 }
