@@ -293,58 +293,63 @@ public class BeerDetailsActivity extends Activity {
             }
         });
 
-        //Do push notification
-        Request.newMyFriendsRequest(ParseFacebookUtils.getSession(), new Request.GraphUserListCallback() {
-            @Override
-            public void onCompleted(List<GraphUser> users, Response response) {
-                //Returned list of friends with Beerator
-                if (users != null) {
-                    List<String> friendsList = new ArrayList<String>();
-                    for (GraphUser user : users) {
-                        friendsList.add(user.getId());
-                    }
-                    Crashlytics.log(Log.INFO, TAG, friendsList.size() + " Beerator friends found");
-
-                    //New query of Installations to find those to send push to
-                    ParseQuery<ParseInstallation> query = ParseInstallation.getQuery();
-                    query.whereContainedIn("fbId", friendsList);
-                    query.whereNotEqualTo("pushEnabled", false);
-                    ParsePush push = new ParsePush();
-                    push.setQuery(query);
-                    String message = ParseUser.getCurrentUser().getString("displayName") + " rated "
-                            + beer.getBrewery() + " " + beer.getName() + " at "
-                            + tempBR.getRating(ratingSystem) + "!";
-                    JSONObject data = new JSONObject();
-                    try {
-                        data.put("alert", message);
-                        data.put("beerObjectId", beer.getObjectId());
-                        data.put("action", "com.rjmoseley.beerator.app.BEER_NOTIFICATION");
-                    } catch (JSONException e) {
-                        Crashlytics.log(Log.INFO, TAG, "JSON Exception");
-                        Crashlytics.log(Log.INFO, TAG, e.getMessage());
-                        Crashlytics.logException(e);
-                        e.printStackTrace();
-                    }
-                    push.setData(data);
-                    push.sendInBackground(new SendCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            if (e == null) {
-                                Crashlytics.log(Log.INFO, TAG, "Notification sent successfully");
-                            } else {
-                                Crashlytics.log(Log.INFO, TAG, "Failed to send notification");
-                                Crashlytics.log(Log.INFO, TAG, e.getMessage());
-                                Crashlytics.logException(e);
-                                e.printStackTrace();
-                            }
+        //Do push notification if it's enabled
+        if (sharedPrefs.getBoolean("push_send_enabled", true)) {
+            Crashlytics.log(Log.INFO, TAG, "Push notification sending is enabled, getting friend list");
+            Request.newMyFriendsRequest(ParseFacebookUtils.getSession(), new Request.GraphUserListCallback() {
+                @Override
+                public void onCompleted(List<GraphUser> users, Response response) {
+                    //Returned list of friends with Beerator
+                    if (users != null) {
+                        List<String> friendsList = new ArrayList<String>();
+                        for (GraphUser user : users) {
+                            friendsList.add(user.getId());
                         }
-                    });
-                } else if (response.getError() != null) {
+                        Crashlytics.log(Log.INFO, TAG, friendsList.size() + " Beerator friends found");
+
+                        //New query of Installations to find those to send push to
+                        ParseQuery<ParseInstallation> query = ParseInstallation.getQuery();
+                        query.whereContainedIn("fbId", friendsList);
+                        query.whereNotEqualTo("pushEnabled", false);
+                        ParsePush push = new ParsePush();
+                        push.setQuery(query);
+                        String message = ParseUser.getCurrentUser().getString("displayName") + " rated "
+                                + beer.getBrewery() + " " + beer.getName() + " at "
+                                + tempBR.getRating(ratingSystem) + "!";
+                        JSONObject data = new JSONObject();
+                        try {
+                            data.put("alert", message);
+                            data.put("beerObjectId", beer.getObjectId());
+                            data.put("action", "com.rjmoseley.beerator.app.BEER_NOTIFICATION");
+                        } catch (JSONException e) {
+                            Crashlytics.log(Log.INFO, TAG, "JSON Exception");
+                            Crashlytics.log(Log.INFO, TAG, e.getMessage());
+                            Crashlytics.logException(e);
+                            e.printStackTrace();
+                        }
+                        push.setData(data);
+                        push.sendInBackground(new SendCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                if (e == null) {
+                                    Crashlytics.log(Log.INFO, TAG, "Notification sent successfully");
+                                } else {
+                                    Crashlytics.log(Log.INFO, TAG, "Failed to send notification");
+                                    Crashlytics.log(Log.INFO, TAG, e.getMessage());
+                                    Crashlytics.logException(e);
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    } else if (response.getError() != null) {
                         Crashlytics.log(Log.INFO, TAG, "Facebook error: " + response.getError().getErrorCode()
                                 + ", " + response.getError().getErrorMessage());
+                    }
                 }
-            }
-        }).executeAsync();
+            }).executeAsync();
+        } else {
+            Crashlytics.log(Log.INFO, TAG, "Push notification sending is disabled, not sending notification");
+        }
     }
 
     public void loadAllRatingsOnClick(View view) {

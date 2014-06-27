@@ -4,19 +4,19 @@
     android:layout_height="wrap_content"
     android:layout_width="match_parent">
 
-<!--
-    <PreferenceCategory
-        android:title="@string/user_settings"
-        android:key="user_settings">
+    <!--
+        <PreferenceCategory
+            android:title="@string/user_settings"
+            android:key="user_settings">
 
-        <EditTextPreference
-            android:key="user_display_name"
-            android:title="@string/display_name_title"
-            android:summary="@string/display_name_summary"
-            android:dialogTitle="@string/display_name_dialog_title" />
+            <EditTextPreference
+                android:key="user_display_name"
+                android:title="@string/display_name_title"
+                android:summary="@string/display_name_summary"
+                android:dialogTitle="@string/display_name_dialog_title" />
 
-    </PreferenceCategory>
--->
+        </PreferenceCategory>
+    -->
     <PreferenceCategory
         android:title="@string/sharing_settings"
         android:key="sharing_category">
@@ -50,6 +50,16 @@
             android:summaryOff="@string/push_receive_enabled_summary_off"
             android:defaultValue="true"
             />
-        </PreferenceCategory>
+
+        <CheckBoxPreference
+            android:key="push_send_enabled"
+            android:title="@string/push_send_enabled_title"
+            android:summaryOn="@string/push_send_enabled_summary_on"
+            android:summaryOff="@string/push_send_enabled_summary_off"
+            android:defaultValue="true"
+            android:dependency="public_ratings"
+            />
+
+    </PreferenceCategory>
 
 </PreferenceScreen>

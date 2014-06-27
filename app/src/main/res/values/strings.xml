@@ -69,5 +69,8 @@
     <string name="push_receive_enabled_title">Receive Notifications</string>
     <string name="push_receive_enabled_summary_on">You will receive notifications</string>
     <string name="push_receive_enabled_summary_off">You will not receive notifications</string>
+    <string name="push_send_enabled_title">Send Notifications</string>
+    <string name="push_send_enabled_summary_on">Rating notifications will be sent</string>
+    <string name="push_send_enabled_summary_off">No notifications will be sent</string>
 
 </resources>

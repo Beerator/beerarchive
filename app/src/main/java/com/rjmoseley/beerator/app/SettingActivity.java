@@ -3,11 +3,13 @@ package com.rjmoseley.beerator.app;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.CheckBox;
 
 import com.crashlytics.android.Crashlytics;
 import com.parse.ParseInstallation;
@@ -42,11 +44,15 @@ public class SettingActivity extends PreferenceActivity  implements
     }
 
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-        if(key.equals("push_receive_enabled")) {
+        if (key.equals("push_receive_enabled")) {
             Boolean pushEnabled = prefs.getBoolean("push_receive_enabled", true);
             Crashlytics.log(Log.INFO, TAG, "PushEnabled set to " + pushEnabled.toString());
             ParseInstallation.getCurrentInstallation().put("pushEnabled", pushEnabled);
             ParseInstallation.getCurrentInstallation().saveInBackground();
+        } else if (key.equals("public_ratings")) {
+            Boolean publicRatings = prefs.getBoolean("public_ratings", true);
+            CheckBoxPreference pref = (CheckBoxPreference)findPreference("push_send_enabled");
+            pref.setChecked(publicRatings);
         }
     }
 
