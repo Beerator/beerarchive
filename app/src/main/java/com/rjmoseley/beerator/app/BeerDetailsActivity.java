@@ -19,12 +19,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
-import com.facebook.FacebookRequestError;
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.model.GraphUser;
 import com.parse.FindCallback;
-import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
@@ -42,7 +40,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 
@@ -269,6 +266,7 @@ public class BeerDetailsActivity extends Activity {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
+                    Crashlytics.log(Log.INFO, TAG, "Beer rating saved to Parse successfully");
                     findViewById(R.id.loadingPanel).setVisibility(View.GONE);
                     Date date = parseRating.getCreatedAt();
                     BeerRating beerRating = new BeerRating(normRating, date);
@@ -280,7 +278,12 @@ public class BeerDetailsActivity extends Activity {
                     beer.addMyRating(beerRating);
                     beer.sortRatings();
                     if (beerRatingsAdapter != null) {
+                        //beerRatings are already on display so add to them
                         beerRatingsAdapter.notifyDataSetChanged();
+                    } else {
+                        //beerRatings are not currently displayed so display the buttons
+                        findViewById(R.id.loadAllRatings).setVisibility(View.VISIBLE);
+                        findViewById(R.id.loadMyRatings).setVisibility(View.VISIBLE);
                     }
                 } else {
                     Toast.makeText(BeerDetailsActivity.this, "Failed to save rating",
