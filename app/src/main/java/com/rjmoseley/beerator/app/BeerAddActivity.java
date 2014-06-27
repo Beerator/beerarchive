@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseException;
@@ -24,14 +25,18 @@ import java.util.ArrayList;
 
 public class BeerAddActivity extends Activity {
 
+    private static final String TAG = "BeerAdd";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_beer_add);
+        Crashlytics.log(Log.INFO, TAG, "Created");
     }
 
     public void addBeer(View view) {
         //Add the beer to the Parse DB
+        Crashlytics.log(Log.INFO, TAG, "Adding a new beer");
         EditText beerInput = (EditText) findViewById(R.id.etBeerName);
         EditText breweryInput = (EditText) findViewById(R.id.etBreweryName);
         EditText abvInput = (EditText) findViewById(R.id.etAbv);
@@ -54,28 +59,39 @@ public class BeerAddActivity extends Activity {
             if (abvString.length() > 0) {
                 newParseBeer.put("abv", abvString);
             }
-            Log.i("Beer Add", "Adding (Brewery, Beer): " + breweryString + ", " + beerString);
+            Crashlytics.log(Log.INFO, TAG, "Adding: " + breweryString + ", " + beerString + ", " + abvString);
             newParseBeer.saveInBackground(new SaveCallback() {
                 //Once saved to parse grab objectId and save locally
                 @Override
                 public void done(ParseException e) {
-                    final String objectId = newParseBeer.getObjectId();
-                    Globals g = Globals.getInstance();
-                    ArrayList<Beer> beerList = g.getBeerList();
-                    Beer newBeer = new Beer(beerString, breweryString, objectId);
-                    if (abvString.length() > 0) {
-                        newBeer.setABV(abvString);
+                    if (e == null) {
+                        Crashlytics.log(Log.INFO, TAG, "Beer saved successfully");
+                        final String objectId = newParseBeer.getObjectId();
+                        Globals g = Globals.getInstance();
+                        ArrayList<Beer> beerList = g.getBeerList();
+                        Beer newBeer = new Beer(beerString, breweryString, objectId);
+                        if (abvString.length() > 0) {
+                            newBeer.setABV(abvString);
+                        }
+                        beerList.add(newBeer);
+                        Crashlytics.log(Log.INFO, TAG, "Beer added to beerList");
+                        g.setBeerlist(beerList);
+                        finish();
+                    } else {
+                        Toast.makeText(BeerAddActivity.this, "Failed to add new beer", Toast.LENGTH_SHORT).show();
+                        Crashlytics.log(Log.INFO, TAG, "Failed to save new beer");
+                        Crashlytics.log(Log.INFO, TAG, e.getMessage());
+                        Crashlytics.logException(e);
+                        e.printStackTrace();
                     }
-                    beerList.add(newBeer);
-                    g.setBeerlist(beerList);
                 }
             });
-            finish();
+
         }
         else {
             Context context = getApplicationContext();
             CharSequence text = "Brewery and Beer Name cannot be empty";
-            Log.i("Beer Add", "Not adding beer, Brewery and Beer Name cannot be empty");
+            Crashlytics.log(Log.INFO, TAG, "Not adding beer, Brewery and Beer Name cannot be empty");
             int duration = Toast.LENGTH_SHORT;
             Toast toast = Toast.makeText(context, text, duration);
             toast.show();

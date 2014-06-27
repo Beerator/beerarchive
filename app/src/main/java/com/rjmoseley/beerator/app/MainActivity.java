@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.crashlytics.android.Crashlytics;
 import com.facebook.FacebookRequestError;
 import com.facebook.LoginActivity;
 import com.facebook.Request;
@@ -22,27 +23,33 @@ import com.parse.PushService;
 
 public class MainActivity extends Activity {
 
+    private static final String TAG = "Main";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Crashlytics.start(this);
         setContentView(R.layout.activity_main);
+        Crashlytics.log(Log.INFO, TAG, "Created");
 
-        Log.i("MainActivity", "Initialising Parse & Facebook integration");
+        Crashlytics.log(Log.INFO, TAG, "Initialising Parse & Facebook integration");
         Parse.initialize(this, getString(R.string.parse_app_id),
                 getString(R.string.parse_client_key));
         ParseFacebookUtils.initialize(getString(R.string.fb_app_id));
 
         // Save the current Installation to Parse.
+        Crashlytics.log(Log.INFO, TAG, "Saving Installation data");
         ParseInstallation.getCurrentInstallation().saveInBackground();
 
-        PushService.setDefaultPushCallback(this, MainActivity.class);
+        Crashlytics.log(Log.INFO, TAG, "Setting up push notifications");
+        PushService.setDefaultPushCallback(this, BeerListActivity.class, R.drawable.ic_stat_beerglass);
         ParseAnalytics.trackAppOpened(getIntent());
 
         launchBeerLoginActivity();
     }
 
     private void launchBeerLoginActivity() {
-        Log.i("MainActivity", "Launching login");
+        Crashlytics.log(Log.INFO, TAG, "Launching BeerLoginActivity");
         Intent launchBeerLoginActivity = new Intent(this, BeerLoginActivity.class);
         startActivity(launchBeerLoginActivity);
     }

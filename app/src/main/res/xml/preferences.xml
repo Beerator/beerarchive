@@ -4,25 +4,24 @@
     android:layout_height="wrap_content"
     android:layout_width="match_parent">
 
-<!--
-    <PreferenceCategory
-        android:title="@string/user_settings"
-        android:key="user_settings">
+    <!--
+        <PreferenceCategory
+            android:title="@string/user_settings"
+            android:key="user_settings">
 
-        <EditTextPreference
-            android:key="user_display_name"
-            android:title="@string/display_name_title"
-            android:summary="@string/display_name_summary"
-            android:dialogTitle="@string/display_name_dialog_title" />
+            <EditTextPreference
+                android:key="user_display_name"
+                android:title="@string/display_name_title"
+                android:summary="@string/display_name_summary"
+                android:dialogTitle="@string/display_name_dialog_title" />
 
-    </PreferenceCategory>
--->
-
+        </PreferenceCategory>
+    -->
     <PreferenceCategory
         android:title="@string/sharing_settings"
-        android:key="second_category">
+        android:key="sharing_category">
 
-        <SwitchPreference
+        <CheckBoxPreference
             android:key="public_ratings"
             android:summaryOn="@string/public_ratings_summary_on"
             android:summaryOff="@string/public_ratings_summary_off"
@@ -30,12 +29,35 @@
             android:defaultValue="true"
             />
 
-        <SwitchPreference
+        <CheckBoxPreference
             android:key="geotag"
             android:summaryOn="@string/geotag_summary_on"
             android:summaryOff="@string/geotag_summary_off"
             android:title="@string/geotag_title"
             android:defaultValue="true"
+            />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/push_settings"
+        android:key="push_settings">
+
+        <CheckBoxPreference
+            android:key="push_receive_enabled"
+            android:title="@string/push_receive_enabled_title"
+            android:summaryOn="@string/push_receive_enabled_summary_on"
+            android:summaryOff="@string/push_receive_enabled_summary_off"
+            android:defaultValue="true"
+            />
+
+        <CheckBoxPreference
+            android:key="push_send_enabled"
+            android:title="@string/push_send_enabled_title"
+            android:summaryOn="@string/push_send_enabled_summary_on"
+            android:summaryOff="@string/push_send_enabled_summary_off"
+            android:defaultValue="true"
+            android:dependency="public_ratings"
             />
 
     </PreferenceCategory>

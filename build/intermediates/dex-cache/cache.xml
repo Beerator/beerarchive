@@ -2,10 +2,10 @@
 <pre-dex-items>
 
     <item
-        dex="/home/richard/AndroidStudioProjects/BeerArchive/app/build/intermediates/pre-dexed/debug/classes-d181a18ec3e8bdaf51b94917c6158a23f62f866b.jar"
-        jar="/home/richard/AndroidStudioProjects/BeerArchive/build/intermediates/exploded-aar/BeerArchive/facebook/unspecified/classes.jar"
+        dex="/home/richmose/AndroidStudioProjects/beerarchive/app/build/intermediates/pre-dexed/debug/crashlytics-1.1.11-7a2d55aab4ead23b131925fa6ac3cf75cf6414b4.jar"
+        jar="/home/richmose/.gradle/caches/modules-2/files-2.1/com.crashlytics.android/crashlytics/1.1.11/b8189e9eef2f07fae743e05d7fe7e69daebe98d1/crashlytics-1.1.11.jar"
         jumboMode="false"
         revision="19.1.0"
-        sha1="2aff67bf0dbf88785f995849969e40731ac66794"/>
+        sha1="b8189e9eef2f07fae743e05d7fe7e69daebe98d1"/>
 
 </pre-dex-items>

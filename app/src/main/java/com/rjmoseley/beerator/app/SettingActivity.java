@@ -1,19 +1,60 @@
 package com.rjmoseley.beerator.app;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.CheckBox;
 
-public class SettingActivity extends PreferenceActivity {
+import com.crashlytics.android.Crashlytics;
+import com.parse.ParseInstallation;
+
+public class SettingActivity extends PreferenceActivity  implements
+        SharedPreferences.OnSharedPreferenceChangeListener {
+    private static final String TAG = "Settings";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
+        Crashlytics.log(Log.INFO, TAG, "Created");
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Set up a listener whenever a key changes
+        getPreferenceScreen().getSharedPreferences()
+                .registerOnSharedPreferenceChangeListener(this);
+        Crashlytics.log(Log.INFO, TAG, "Resumed");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Unregister the listener whenever a key changes
+        getPreferenceScreen().getSharedPreferences()
+                .unregisterOnSharedPreferenceChangeListener(this);
+        Crashlytics.log(Log.INFO, TAG, "Paused");
+    }
+
+    public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+        if (key.equals("push_receive_enabled")) {
+            Boolean pushEnabled = prefs.getBoolean("push_receive_enabled", true);
+            Crashlytics.log(Log.INFO, TAG, "PushEnabled set to " + pushEnabled.toString());
+            ParseInstallation.getCurrentInstallation().put("pushEnabled", pushEnabled);
+            ParseInstallation.getCurrentInstallation().saveInBackground();
+        } else if (key.equals("public_ratings")) {
+            Boolean publicRatings = prefs.getBoolean("public_ratings", true);
+            CheckBoxPreference pref = (CheckBoxPreference)findPreference("push_send_enabled");
+            pref.setChecked(publicRatings);
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

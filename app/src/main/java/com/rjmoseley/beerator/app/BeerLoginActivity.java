@@ -13,12 +13,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.facebook.FacebookRequestError;
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.model.GraphUser;
 import com.parse.LogInCallback;
+import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseInstallation;
@@ -29,17 +32,17 @@ import java.util.List;
 
 public class BeerLoginActivity extends Activity {
 
-    private Button loginButton;
-    private Button logoutButton;
-    private Button launchAppButton;
     private Dialog progressDialog;
+
+    private static final String TAG = "BeerLogin";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        Crashlytics.log(Log.INFO, TAG, "Created");
 
-        loginButton = (Button) findViewById(R.id.loginButton);
+        Button loginButton = (Button) findViewById(R.id.loginButton);
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -47,7 +50,7 @@ public class BeerLoginActivity extends Activity {
             }
         });
 
-        logoutButton = (Button) findViewById(R.id.logoutButton);
+        Button logoutButton = (Button) findViewById(R.id.logoutButton);
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -55,7 +58,7 @@ public class BeerLoginActivity extends Activity {
             }
         });
 
-        launchAppButton = (Button) findViewById(R.id.launchApp);
+        Button launchAppButton = (Button) findViewById(R.id.launchApp);
         launchAppButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -69,6 +72,7 @@ public class BeerLoginActivity extends Activity {
         String message = intent.getStringExtra(BeerListActivity.AUTH_ACTION);
         if (message != null) {
             if (message.equals("logout")) {
+                Crashlytics.log(Log.INFO, TAG, "Logout requested via Intent");
                 onLogoutButtonClicked();
             }
         }
@@ -77,7 +81,7 @@ public class BeerLoginActivity extends Activity {
         // and they are linked to a Facebook account.
         ParseUser currentUser = ParseUser.getCurrentUser();
         if ((currentUser != null) && ParseFacebookUtils.isLinked(currentUser)) {
-            Log.i("LoginActivity", "User is already logged in");
+            Crashlytics.log(Log.INFO, TAG, "User is already logged in");
             //Below line needed if more data needs to be added to ParseUser from GraphUser
             getDetailsBackground();
             launchBeerList();
@@ -87,6 +91,7 @@ public class BeerLoginActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        Crashlytics.log(Log.INFO, TAG, "Resumed");
         updateCurrentStatus();
     }
 
@@ -94,10 +99,12 @@ public class BeerLoginActivity extends Activity {
         TextView currentStatus = (TextView) findViewById(R.id.currentStatus);
         ParseUser currentUser = ParseUser.getCurrentUser();
         if (currentUser != null) {
+            Crashlytics.log(Log.INFO, TAG, "User is currently logged in");
             currentStatus.setText(R.string.logged_in);
             findViewById(R.id.loginButton).setVisibility(View.GONE);
             findViewById(R.id.logoutButtonLayout).setVisibility(View.VISIBLE);
         } else {
+            Crashlytics.log(Log.INFO, TAG, "User is currently logged out");
             currentStatus.setText(R.string.logged_out);
             findViewById(R.id.loginButton).setVisibility(View.VISIBLE);
             findViewById(R.id.logoutButtonLayout).setVisibility(View.GONE);
@@ -105,7 +112,7 @@ public class BeerLoginActivity extends Activity {
     }
 
     private void onLoginButtonClicked() {
-
+        Crashlytics.log(Log.INFO, TAG, "Login button pressed");
         BeerLoginActivity.this.progressDialog = ProgressDialog.show(
                 BeerLoginActivity.this, "", "Logging in...", true);
 
@@ -113,30 +120,38 @@ public class BeerLoginActivity extends Activity {
 
         ParseFacebookUtils.logIn(permissions, this, new LogInCallback() {
             @Override
-            public void done(ParseUser user, ParseException err) {
+            public void done(ParseUser user, ParseException e) {
                 BeerLoginActivity.this.progressDialog.dismiss();
                 if (user == null) {
-                    Log.d("Facebook login", "Uh oh. The user cancelled the Facebook login.");
+                    Crashlytics.log(Log.INFO, TAG, "The user cancelled the Facebook login");
                 } else if (user.isNew()) {
-                    Log.d("Facebook login", "User signed up and logged in through Facebook!");
+                    Crashlytics.log(Log.INFO, TAG, "User signed up and logged in through Facebook!");
                     getDetailsBackground();
                     launchBeerList();
                 } else {
-                    Log.d("Facebook login", "User logged in through Facebook!");
+                    Crashlytics.log(Log.INFO, TAG, "User logged in through Facebook!");
                     getDetailsBackground();
                     launchBeerList();
+                }
+                if (e != null) {
+                    Crashlytics.log(Log.INFO, TAG, "Exception was raised during login");
+                    Crashlytics.log(Log.INFO, TAG, e.getMessage());
+                    Crashlytics.logException(e);
+                    e.printStackTrace();
                 }
             }
         });
     }
-
 
     private void getDetailsBackground() {
         Request.newMeRequest(ParseFacebookUtils.getSession(), new Request.GraphUserCallback() {
             @Override
             public void onCompleted(GraphUser user, Response response) {
                 if (user != null) {
-                    Log.i("Facebook integration", "Adding more user details");
+                    SharedPreferences sharedPrefs = PreferenceManager
+                            .getDefaultSharedPreferences(BeerLoginActivity.this);
+
+                    Crashlytics.log(Log.INFO, TAG, "Adding more user details");
                     ParseUser.getCurrentUser().put("fbId", user.getId());
                     ParseUser.getCurrentUser().put("name", user.getName());
                     String displayName = user.getFirstName() + " " + user.getLastName().charAt(0);
@@ -146,16 +161,18 @@ public class BeerLoginActivity extends Activity {
                     ParseInstallation.getCurrentInstallation().put("name", user.getName());
                     ParseInstallation.getCurrentInstallation().put("userObjectId",
                             ParseUser.getCurrentUser().getObjectId());
+                    Boolean pushEnabled = sharedPrefs.getBoolean("push_receive_enabled", true);
+                    ParseInstallation.getCurrentInstallation().put("pushEnabled", pushEnabled);
                     ParseInstallation.getCurrentInstallation().saveInBackground();
                 } else if (response.getError() != null) {
                     if ((response.getError().getCategory() ==
                             FacebookRequestError.Category.AUTHENTICATION_RETRY) ||
                             (response.getError().getCategory() ==
                                     FacebookRequestError.Category.AUTHENTICATION_REOPEN_SESSION)) {
-                        Log.d("Facebook integration", "The facebook session was invalidated.");
+                        Crashlytics.log(Log.INFO, TAG, "The facebook session was invalidated.");
                         logoutUser();
                     } else {
-                        Log.d("Facebook integration", "Some other error: "
+                        Crashlytics.log(Log.INFO, TAG, "Some other error: "
                                 + response.getError().getErrorMessage());
                     }
                 }
@@ -164,7 +181,7 @@ public class BeerLoginActivity extends Activity {
     }
 
     public void launchBeerList() {
-        Log.i("LoginActivity", "Launching beer list");
+        Crashlytics.log(Log.INFO, TAG, "Launching beer list");
         Intent launchBeerList = new Intent(this, BeerListActivity.class);
         startActivity(launchBeerList);
     }
@@ -177,12 +194,22 @@ public class BeerLoginActivity extends Activity {
 
     private void logoutUser() {
         // Log the user out
+        Crashlytics.log(Log.INFO, TAG, "Logging user out");
         ParseFacebookUtils.getSession().closeAndClearTokenInformation();
         ParseUser.logOut();
         // Go to the login view
-        Log.i("LoginActivity", "Restarting login");
+        Crashlytics.log(Log.INFO, TAG, "Returning to MainActivity");
         Intent launchMainActivity = new Intent(this, MainActivity.class);
         startActivity(launchMainActivity);
+    }
+
+    @Override
+    public void onBackPressed(){
+        Crashlytics.log(Log.INFO, TAG, "Back button pressed, launching home screen");
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
     @Override
