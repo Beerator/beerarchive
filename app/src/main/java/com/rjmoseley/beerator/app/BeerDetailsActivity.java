@@ -24,6 +24,7 @@ import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.model.GraphUser;
 import com.parse.FindCallback;
+import com.parse.LocationCallback;
 import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
@@ -217,36 +218,6 @@ public class BeerDetailsActivity extends Activity {
         String[] np2Strings = np2.getDisplayedValues();
         final String ratingElement2 = np2Strings[np2.getValue()];
 
-        final ParseGeoPoint geoPoint = new ParseGeoPoint();
-
-        if (sharedPrefs.getBoolean("geotag", true)) {
-            Crashlytics.log(Log.INFO, TAG, "Attempting to GeoTag");
-            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            Criteria criteria = new Criteria();
-            criteria.setAccuracy(Criteria.ACCURACY_COARSE);
-            criteria.setCostAllowed(false);
-
-            String locationProvider = locationManager.getBestProvider(criteria, true);
-            Crashlytics.log(Log.INFO, TAG, "Location provider chosen: "+ locationProvider);
-
-            if (locationProvider != null) {
-                Location location = locationManager.getLastKnownLocation(locationProvider);
-                if (location != null) {
-                    Crashlytics.log(Log.INFO, TAG, "Location: " + location.toString());
-                    geoPoint.setLatitude(location.getLatitude());
-                    geoPoint.setLongitude(location.getLongitude());
-                } else {
-                    Crashlytics.log(Log.INFO, TAG, "Unable to get location");
-                    Toast.makeText(this, "Unable to get location.  Check your device settings",
-                            Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                Crashlytics.log(Log.INFO, TAG, "Unable to get location provider");
-                Toast.makeText(this, "Unable to get location provider.  Check your device settings",
-                        Toast.LENGTH_SHORT).show();
-            }
-        }
-
         final BeerRating tempBR = new BeerRating(ratingElement1+ratingElement2, ratingSystem, new Date());
 
         final String normRating = tempBR.getNormRating();
@@ -259,13 +230,35 @@ public class BeerDetailsActivity extends Activity {
         parseRating.put("ratingSystem", ratingSystem);
         parseRating.put("userDisplayName",ParseUser.getCurrentUser().getString("displayName"));
         parseRating.put("userObjectId", ParseUser.getCurrentUser().getObjectId());
-        parseRating.put("location", geoPoint);
+
 
         //Sort out the ACL
         ParseACL acl = new ParseACL(ParseUser.getCurrentUser());
         acl.setPublicReadAccess(sharedPrefs.getBoolean("public_ratings", true));
         Crashlytics.log(Log.INFO, TAG, "Public rating: " + sharedPrefs.getBoolean("public_ratings", true));
         parseRating.setACL(acl);
+
+        if (sharedPrefs.getBoolean("geotag", true)) {
+            Crashlytics.log(Log.INFO, TAG, "Attempting to GeoTag");
+            Criteria criteria = new Criteria();
+            criteria.setAccuracy(Criteria.ACCURACY_COARSE);
+            criteria.setCostAllowed(false);
+            ParseGeoPoint.getCurrentLocationInBackground(5000, criteria, new LocationCallback() {
+                @Override
+                public void done(ParseGeoPoint parseGeoPoint, ParseException e) {
+                    if (e == null) {
+                        parseRating.put("location", parseGeoPoint);
+                        parseRating.saveInBackground();
+                        Crashlytics.log(Log.INFO, TAG, "Saving geoPoint");
+                    } else {
+                        Crashlytics.log(Log.INFO, TAG, "Unable to get location");
+                        Toast.makeText(BeerDetailsActivity.this, "Unable to get location",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+
 
         Crashlytics.log(Log.INFO, TAG, "Adding rating of " + normRating + " and rating system " + ratingSystem
                 + " for beer with objectId " + beerObjectId);
@@ -279,7 +272,12 @@ public class BeerDetailsActivity extends Activity {
                     Date date = parseRating.getCreatedAt();
                     BeerRating beerRating = new BeerRating(normRating, date);
                     beerRating.setObjectId(parseRating.getObjectId());
-                    beerRating.setLocation(geoPoint);
+                    try {
+                        beerRating.setLocation(parseRating.getParseGeoPoint("location"));
+                    } catch (NullPointerException e2) {
+                        Crashlytics.log(Log.INFO, TAG, "No geoPoint to add to rating at present");
+                        Crashlytics.log(Log.INFO, TAG, e2.getMessage());
+                    }
                     beerRating.setUserObjectId(ParseUser.getCurrentUser().getObjectId());
                     beerRating.setUserName(ParseUser.getCurrentUser().getString("displayName"));
                     beer.addRating(beerRating);
