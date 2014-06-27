@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.parse.FindCallback;
@@ -54,6 +55,8 @@ public class BeerListActivity extends Activity {
 
         setContentView(R.layout.activity_beer_list);
 
+        Crashlytics.log(Log.INFO, TAG, "Created");
+
         beerListView = (ListView) findViewById(R.id.beerListView);
 
         downloadBeers();
@@ -62,21 +65,24 @@ public class BeerListActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        Crashlytics.log(Log.INFO, TAG, "Resumed");
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             try {
+                Crashlytics.log(Log.INFO, TAG, "Intent bundle exists, checking for com.parse.Data");
                 Intent intent = getIntent();
                 String action = intent.getAction();
                 JSONObject json = new JSONObject(intent.getExtras().getString("com.parse.Data"));
-                Log.d(TAG, "got action " + action + " with:");
+                Crashlytics.log(Log.INFO, TAG, "Got action " + action + " with:");
                 Iterator itr = json.keys();
                 while (itr.hasNext()) {
                     String key = (String) itr.next();
-                    Log.d(TAG, "..." + key + " => " + json.getString(key));
+                    Crashlytics.log(Log.INFO, TAG, "..." + key + " => " + json.getString(key));
                 }
                 String objectId = json.getString("beerObjectId");
                 Crashlytics.log(Log.INFO, TAG, "Beer in notification is " + objectId);
-                Intent launchBeerDetails = new Intent(getApplicationContext(), BeerDetailsActivity.class);
+                Crashlytics.log(Log.INFO, TAG, "Launching BeerDetailsActivity");
+                        Intent launchBeerDetails = new Intent(getApplicationContext(), BeerDetailsActivity.class);
                 launchBeerDetails.putExtra("objectId", objectId);
                 startActivity(launchBeerDetails);
             } catch (JSONException e) {
@@ -86,17 +92,19 @@ public class BeerListActivity extends Activity {
     }
 
     private void downloadBeers() {
+        Crashlytics.log(Log.INFO, TAG, "Downloading beers");
         findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
         findViewById(R.id.beerListView).setVisibility(View.GONE);
 
         beerFilterText = (EditText) findViewById(R.id.filter);
-        ParseQuery query = new ParseQuery("beer");
+        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("beer");
         query.orderByAscending(sortKey1);
         query.addAscendingOrder(sortKey2);
         query.setLimit(1000);
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> objects, ParseException e) {
+                Crashlytics.log(Log.INFO, TAG, "Query finished");
                 if (e == null) {
                     beerList.clear();
                     for (ParseObject obj : objects) {
@@ -107,14 +115,18 @@ public class BeerListActivity extends Activity {
                             b.setABV(obj.getString("abv"));
                         }
                         beerList.add(b);
-                        //Crashlytics.log(Log.INFO, "Beer download", "Beer added: " + b.toString());
                     }
                     Crashlytics.log(Log.INFO, TAG, "Beers downloaded: " + beerList.size());
                     setListViewContent();
+                    Crashlytics.log(Log.INFO, TAG, "Saving beerList to Globals");
+                    g.setBeerlist(beerList);
                 } else {
+                    Toast.makeText(BeerListActivity.this, "Beer download failed", Toast.LENGTH_SHORT).show();
                     Crashlytics.log(Log.INFO, TAG, "Beer download failed");
+                    Crashlytics.log(Log.INFO, TAG, e.getMessage());
+                    Crashlytics.logException(e);
+                    e.printStackTrace();
                 }
-                g.setBeerlist(beerList);
             }
         });
     }
@@ -165,6 +177,7 @@ public class BeerListActivity extends Activity {
 
     @Override
     public void onBackPressed(){
+        Crashlytics.log(Log.INFO, TAG, "Back button pressed, launching home screen");
         Intent a = new Intent(Intent.ACTION_MAIN);
         a.addCategory(Intent.CATEGORY_HOME);
         a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -185,20 +198,24 @@ public class BeerListActivity extends Activity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
+            Crashlytics.log(Log.INFO, TAG, "Settings selected from menu");
             Intent i = new Intent(this, SettingActivity.class);
             startActivity(i);
             return true;
         }
         else if (id == R.id.action_add) {
+            Crashlytics.log(Log.INFO, TAG, "Add selected from menu");
             Intent launchAddBeer = new Intent(this, BeerAddActivity.class);
             startActivity(launchAddBeer);
             return true;
         }
         else if (id == R.id.action_refresh) {
+            Crashlytics.log(Log.INFO, TAG, "Refresh selected from menu");
             beerFilterText.setText("");
             downloadBeers();
         }
         else if (id == R.id.action_logout) {
+            Crashlytics.log(Log.INFO, TAG, "Logout selected from menu");
             Intent launchBeerLoginActivity = new Intent(this, BeerLoginActivity.class);
             String message = "logout";
             launchBeerLoginActivity.putExtra(AUTH_ACTION, message);

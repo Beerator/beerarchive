@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.facebook.FacebookRequestError;
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.model.GraphUser;
@@ -338,6 +339,9 @@ public class BeerDetailsActivity extends Activity {
                             }
                         }
                     });
+                } else if (response.getError() != null) {
+                        Crashlytics.log(Log.INFO, TAG, "Facebook error: " + response.getError().getErrorCode()
+                                + ", " + response.getError().getErrorMessage());
                 }
             }
         }).executeAsync();

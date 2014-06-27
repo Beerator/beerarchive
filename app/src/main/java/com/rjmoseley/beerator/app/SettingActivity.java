@@ -20,6 +20,7 @@ public class SettingActivity extends PreferenceActivity  implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
+        Crashlytics.log(Log.INFO, TAG, "Created");
     }
 
     @Override
@@ -28,6 +29,7 @@ public class SettingActivity extends PreferenceActivity  implements
         // Set up a listener whenever a key changes
         getPreferenceScreen().getSharedPreferences()
                 .registerOnSharedPreferenceChangeListener(this);
+        Crashlytics.log(Log.INFO, TAG, "Resumed");
     }
 
     @Override
@@ -36,6 +38,7 @@ public class SettingActivity extends PreferenceActivity  implements
         // Unregister the listener whenever a key changes
         getPreferenceScreen().getSharedPreferences()
                 .unregisterOnSharedPreferenceChangeListener(this);
+        Crashlytics.log(Log.INFO, TAG, "Paused");
     }
 
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {

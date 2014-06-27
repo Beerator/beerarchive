@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.facebook.FacebookRequestError;
@@ -39,6 +40,7 @@ public class BeerLoginActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        Crashlytics.log(Log.INFO, TAG, "Created");
 
         Button loginButton = (Button) findViewById(R.id.loginButton);
         loginButton.setOnClickListener(new View.OnClickListener() {
@@ -70,6 +72,7 @@ public class BeerLoginActivity extends Activity {
         String message = intent.getStringExtra(BeerListActivity.AUTH_ACTION);
         if (message != null) {
             if (message.equals("logout")) {
+                Crashlytics.log(Log.INFO, TAG, "Logout requested via Intent");
                 onLogoutButtonClicked();
             }
         }
@@ -88,6 +91,7 @@ public class BeerLoginActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        Crashlytics.log(Log.INFO, TAG, "Resumed");
         updateCurrentStatus();
     }
 
@@ -95,10 +99,12 @@ public class BeerLoginActivity extends Activity {
         TextView currentStatus = (TextView) findViewById(R.id.currentStatus);
         ParseUser currentUser = ParseUser.getCurrentUser();
         if (currentUser != null) {
+            Crashlytics.log(Log.INFO, TAG, "User is currently logged in");
             currentStatus.setText(R.string.logged_in);
             findViewById(R.id.loginButton).setVisibility(View.GONE);
             findViewById(R.id.logoutButtonLayout).setVisibility(View.VISIBLE);
         } else {
+            Crashlytics.log(Log.INFO, TAG, "User is currently logged out");
             currentStatus.setText(R.string.logged_out);
             findViewById(R.id.loginButton).setVisibility(View.VISIBLE);
             findViewById(R.id.logoutButtonLayout).setVisibility(View.GONE);
@@ -106,6 +112,7 @@ public class BeerLoginActivity extends Activity {
     }
 
     private void onLoginButtonClicked() {
+        Crashlytics.log(Log.INFO, TAG, "Login button pressed");
         BeerLoginActivity.this.progressDialog = ProgressDialog.show(
                 BeerLoginActivity.this, "", "Logging in...", true);
 
@@ -113,10 +120,10 @@ public class BeerLoginActivity extends Activity {
 
         ParseFacebookUtils.logIn(permissions, this, new LogInCallback() {
             @Override
-            public void done(ParseUser user, ParseException err) {
+            public void done(ParseUser user, ParseException e) {
                 BeerLoginActivity.this.progressDialog.dismiss();
                 if (user == null) {
-                    Crashlytics.log(Log.INFO, TAG, "Uh oh. The user cancelled the Facebook login.");
+                    Crashlytics.log(Log.INFO, TAG, "The user cancelled the Facebook login");
                 } else if (user.isNew()) {
                     Crashlytics.log(Log.INFO, TAG, "User signed up and logged in through Facebook!");
                     getDetailsBackground();
@@ -125,6 +132,12 @@ public class BeerLoginActivity extends Activity {
                     Crashlytics.log(Log.INFO, TAG, "User logged in through Facebook!");
                     getDetailsBackground();
                     launchBeerList();
+                }
+                if (e != null) {
+                    Crashlytics.log(Log.INFO, TAG, "Exception was raised during login");
+                    Crashlytics.log(Log.INFO, TAG, e.getMessage());
+                    Crashlytics.logException(e);
+                    e.printStackTrace();
                 }
             }
         });
@@ -181,20 +194,22 @@ public class BeerLoginActivity extends Activity {
 
     private void logoutUser() {
         // Log the user out
+        Crashlytics.log(Log.INFO, TAG, "Logging user out");
         ParseFacebookUtils.getSession().closeAndClearTokenInformation();
         ParseUser.logOut();
         // Go to the login view
-        Crashlytics.log(Log.INFO, TAG, "Restarting login");
+        Crashlytics.log(Log.INFO, TAG, "Returning to MainActivity");
         Intent launchMainActivity = new Intent(this, MainActivity.class);
         startActivity(launchMainActivity);
     }
 
     @Override
     public void onBackPressed(){
-        Intent a = new Intent(Intent.ACTION_MAIN);
-        a.addCategory(Intent.CATEGORY_HOME);
-        a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(a);
+        Crashlytics.log(Log.INFO, TAG, "Back button pressed, launching home screen");
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 
     @Override

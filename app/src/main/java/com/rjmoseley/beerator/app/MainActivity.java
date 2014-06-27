@@ -30,6 +30,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         Crashlytics.start(this);
         setContentView(R.layout.activity_main);
+        Crashlytics.log(Log.INFO, TAG, "Created");
 
         Crashlytics.log(Log.INFO, TAG, "Initialising Parse & Facebook integration");
         Parse.initialize(this, getString(R.string.parse_app_id),
@@ -37,8 +38,10 @@ public class MainActivity extends Activity {
         ParseFacebookUtils.initialize(getString(R.string.fb_app_id));
 
         // Save the current Installation to Parse.
+        Crashlytics.log(Log.INFO, TAG, "Saving Installation data");
         ParseInstallation.getCurrentInstallation().saveInBackground();
 
+        Crashlytics.log(Log.INFO, TAG, "Setting up push notifications");
         PushService.setDefaultPushCallback(this, BeerListActivity.class, R.drawable.ic_stat_beerglass);
         ParseAnalytics.trackAppOpened(getIntent());
 
@@ -46,7 +49,7 @@ public class MainActivity extends Activity {
     }
 
     private void launchBeerLoginActivity() {
-        Crashlytics.log(Log.INFO, TAG, "Launching login");
+        Crashlytics.log(Log.INFO, TAG, "Launching BeerLoginActivity");
         Intent launchBeerLoginActivity = new Intent(this, BeerLoginActivity.class);
         startActivity(launchBeerLoginActivity);
     }
