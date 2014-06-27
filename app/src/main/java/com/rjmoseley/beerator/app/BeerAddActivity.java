@@ -1,6 +1,7 @@
 package com.rjmoseley.beerator.app;
 
 import android.app.Activity;
+import android.app.Service;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,6 +10,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -65,6 +68,11 @@ public class BeerAddActivity extends Activity {
                 @Override
                 public void done(ParseException e) {
                     if (e == null) {
+                        InputMethodManager imm = (InputMethodManager)BeerAddActivity
+                                .this.getSystemService(Service.INPUT_METHOD_SERVICE);
+                        if (imm != null) {
+                            imm.toggleSoftInput(0, InputMethodManager.HIDE_IMPLICIT_ONLY);
+                        }
                         Crashlytics.log(Log.INFO, TAG, "Beer saved successfully");
                         final String objectId = newParseBeer.getObjectId();
                         Globals g = Globals.getInstance();
@@ -99,6 +107,10 @@ public class BeerAddActivity extends Activity {
     }
 
     public void cancel(View view) {
+        InputMethodManager imm = (InputMethodManager)this.getSystemService(Service.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.toggleSoftInput(0, InputMethodManager.HIDE_IMPLICIT_ONLY);
+        }
         finish();
     }
 
