@@ -26,6 +26,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -88,6 +90,12 @@ public class BeerListActivity extends Activity {
             } catch (JSONException e) {
                 Log.d(TAG, "JSONException: " + e.getMessage());
             }
+        }
+        //Sort the beers
+        if (beerList.size() > 0) {
+            Crashlytics.log(Log.INFO, TAG, "Sorting beers");
+            sortBeers("name");
+            sortBeers("brewery");
         }
     }
 
@@ -171,6 +179,15 @@ public class BeerListActivity extends Activity {
                 Intent launchBeerDetails = new Intent(getApplicationContext(), BeerDetailsActivity.class);
                 launchBeerDetails.putExtra("objectId", objectId);
                 startActivity(launchBeerDetails);
+            }
+        });
+    }
+
+    public void sortBeers(final String key) {
+        Collections.sort(beerList, new Comparator<Beer>() {
+            @Override
+            public int compare(Beer beer1, Beer beer2) {
+                return beer1.get(key).compareTo(beer2.get(key));
             }
         });
     }
