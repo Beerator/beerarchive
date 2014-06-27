@@ -144,27 +144,42 @@ public class BeerLoginActivity extends Activity {
     }
 
     private void getDetailsBackground() {
+        Crashlytics.log(Log.INFO, TAG, "Attempting to set up Installation, User and Crashlytics details");
         Request.newMeRequest(ParseFacebookUtils.getSession(), new Request.GraphUserCallback() {
             @Override
             public void onCompleted(GraphUser user, Response response) {
                 if (user != null) {
+                    Crashlytics.log(Log.INFO, TAG, "Facebook query successful");
+                    //Check push notification preference
                     SharedPreferences sharedPrefs = PreferenceManager
                             .getDefaultSharedPreferences(BeerLoginActivity.this);
+                    Boolean pushEnabled = sharedPrefs.getBoolean("push_receive_enabled", true);
 
-                    Crashlytics.log(Log.INFO, TAG, "Adding more user details");
+                    //Setting up User details
                     ParseUser.getCurrentUser().put("fbId", user.getId());
                     ParseUser.getCurrentUser().put("name", user.getName());
                     String displayName = user.getFirstName() + " " + user.getLastName().charAt(0);
                     ParseUser.getCurrentUser().put("displayName", displayName);
                     ParseUser.getCurrentUser().saveInBackground();
+
+                    //Setting up installation details
                     ParseInstallation.getCurrentInstallation().put("fbId", user.getId());
                     ParseInstallation.getCurrentInstallation().put("name", user.getName());
                     ParseInstallation.getCurrentInstallation().put("userObjectId",
                             ParseUser.getCurrentUser().getObjectId());
-                    Boolean pushEnabled = sharedPrefs.getBoolean("push_receive_enabled", true);
                     ParseInstallation.getCurrentInstallation().put("pushEnabled", pushEnabled);
                     ParseInstallation.getCurrentInstallation().saveInBackground();
+
+                    //Setting up crashlytics details
+                    Crashlytics.log(Log.INFO, TAG, "Adding identifiers for Crashlytics");
+                    Crashlytics.setApplicationInstallationIdentifier(ParseInstallation
+                            .getCurrentInstallation().getObjectId());
+                    Crashlytics.setUserIdentifier(ParseUser.getCurrentUser().getObjectId());
+                    Crashlytics.setUserName(user.getName());
+
                 } else if (response.getError() != null) {
+                    Crashlytics.log(Log.INFO, TAG, "Facebook query failed, " +
+                            "unable to setup User, Installation and Crashlytics details");
                     if ((response.getError().getCategory() ==
                             FacebookRequestError.Category.AUTHENTICATION_RETRY) ||
                             (response.getError().getCategory() ==

@@ -29,6 +29,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Crashlytics.start(this);
+
         setContentView(R.layout.activity_main);
         Crashlytics.log(Log.INFO, TAG, "Created");
 
