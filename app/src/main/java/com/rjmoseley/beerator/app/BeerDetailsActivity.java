@@ -66,6 +66,8 @@ public class BeerDetailsActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_beer_details);
 
+        Crashlytics.log(Log.INFO, TAG, "Created");
+
         ratingsListView = (ListView) findViewById(R.id.ratingsListView);
         View headerView = View.inflate(this, R.layout.activity_beer_details_header, null);
         ratingsListView.addHeaderView(headerView);
@@ -101,6 +103,7 @@ public class BeerDetailsActivity extends Activity {
             } catch (ParseException e) {
                 Toast.makeText(this, "Failed to find beer details", Toast.LENGTH_SHORT).show();
                 Crashlytics.log(Log.INFO, TAG, "Failed to download beer details, exiting BeerDetails");
+                Crashlytics.log(Log.INFO, TAG, e.getMessage());
                 Crashlytics.logException(e);
                 e.printStackTrace();
                 finish();
