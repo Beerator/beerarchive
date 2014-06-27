@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.TextView;
@@ -151,12 +152,18 @@ public class BeerDetailsActivity extends Activity {
                         Crashlytics.log(Log.INFO, TAG, "All ratings: none downloaded");
                     } else {
                         Crashlytics.log(Log.INFO, TAG, "All ratings: " + beer.getRatingsList().size() + " beers downloaded");
+                        Button allRatingsButton = (Button) findViewById(R.id.loadAllRatings);
+                        String allText = "All ratings (" + beer.getRatingsList().size() + ")";
+                        allRatingsButton.setText(allText);
                         findViewById(R.id.loadAllRatings).setVisibility(View.VISIBLE);
                         //If there are ratings, are there some of my ratings?
                         if (beer.getMyRatingsList().isEmpty()) {
                             Crashlytics.log(Log.INFO, TAG, "My ratings: none downloaded");
                         } else {
                             Crashlytics.log(Log.INFO, TAG, "My ratings: " + beer.getMyRatingsList().size() + " beers downloaded");
+                            Button myRatingsButton = (Button) findViewById(R.id.loadMyRatings);
+                            String myText = "My ratings (" + beer.getMyRatingsList().size() + ")";
+                            myRatingsButton.setText(myText);
                             findViewById(R.id.loadMyRatings).setVisibility(View.VISIBLE);
                         }
                     }
@@ -277,13 +284,24 @@ public class BeerDetailsActivity extends Activity {
                     beer.addRating(beerRating);
                     beer.addMyRating(beerRating);
                     beer.sortRatings();
+                    //Sort out the button text
+                    Button allRatingsButton = (Button) findViewById(R.id.loadAllRatings);
+                    Button myRatingsButton = (Button) findViewById(R.id.loadMyRatings);
+                    String allText = "All ratings (" + beer.getRatingsList().size() + ")";
+                    String myText = "My ratings (" + beer.getMyRatingsList().size() + ")";
+                    allRatingsButton.setText(allText);
+                    myRatingsButton.setText(myText);
                     if (beerRatingsAdapter != null) {
                         //beerRatings are already on display so add to them
                         beerRatingsAdapter.notifyDataSetChanged();
                     } else {
                         //beerRatings are not currently displayed so display the buttons
-                        findViewById(R.id.loadAllRatings).setVisibility(View.VISIBLE);
-                        findViewById(R.id.loadMyRatings).setVisibility(View.VISIBLE);
+                        if (allRatingsButton.getVisibility() == View.GONE) {
+                            allRatingsButton.setVisibility(View.VISIBLE);
+                        }
+                        if (myRatingsButton.getVisibility() == View.GONE) {
+                            myRatingsButton.setVisibility(View.VISIBLE);
+                        }
                     }
                 } else {
                     Toast.makeText(BeerDetailsActivity.this, "Failed to save rating",
