@@ -87,7 +87,7 @@ public class BeerListActivity extends Activity {
                 String objectId = json.getString("beerObjectId");
                 Crashlytics.log(Log.INFO, TAG, "Beer in notification is " + objectId);
                 Crashlytics.log(Log.INFO, TAG, "Launching BeerDetailsActivity");
-                        Intent launchBeerDetails = new Intent(getApplicationContext(), BeerDetailsActivity.class);
+                Intent launchBeerDetails = new Intent(getApplicationContext(), BeerDetailsActivity.class);
                 launchBeerDetails.putExtra("objectId", objectId);
                 startActivity(launchBeerDetails);
             } catch (JSONException e) {
