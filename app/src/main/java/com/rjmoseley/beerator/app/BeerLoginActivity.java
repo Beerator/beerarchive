@@ -172,9 +172,8 @@ public class BeerLoginActivity extends Activity {
 
                     //Setting up crashlytics details
                     Crashlytics.log(Log.INFO, TAG, "Adding identifiers for Crashlytics");
-                    Crashlytics.setApplicationInstallationIdentifier(ParseInstallation
-                            .getCurrentInstallation().getObjectId());
-                    Crashlytics.setUserIdentifier(ParseUser.getCurrentUser().getObjectId());
+                    Crashlytics.setUserIdentifier(ParseInstallation.getCurrentInstallation()
+                            .getObjectId());
                     Crashlytics.setUserName(user.getName());
 
                 } else if (response.getError() != null) {

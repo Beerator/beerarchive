@@ -81,7 +81,7 @@ public class BeerAdapter extends ArrayAdapter<Beer> {
             // We implement here the filter logic
             if (constraint == null || constraint.length() == 0) {
                 // No filter implemented we return all the list
-                Crashlytics.log(Log.INFO, TAG, "constraint is null");
+                Crashlytics.log(Log.INFO, TAG, "Filter constraint is null");
                 results.values = beerList;
                 results.count = beerList.size();
             }
