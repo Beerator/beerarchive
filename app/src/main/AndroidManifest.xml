@@ -38,16 +38,14 @@
         <activity
             android:name=".BeerListActivity"
             android:label="@string/title_activity_beer_list_view"
-            android:windowSoftInputMode="stateHidden"
-            >
+            android:windowSoftInputMode="stateHidden" >
         </activity>
         <activity
             android:name=".BeerAddActivity"
             android:label="@string/title_activity_beer_add"
-            android:parentActivityName=".BeerListActivity"
-            android:windowSoftInputMode="stateVisible"
             android:launchMode="singleTop"
-            >
+            android:parentActivityName=".BeerListActivity"
+            android:windowSoftInputMode="stateVisible" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".BeerListViewActivity" />
@@ -55,8 +53,7 @@
         <activity
             android:name=".BeerDetailsActivity"
             android:label="@string/title_activity_beer_details"
-            android:parentActivityName=".BeerListActivity"
-            >
+            android:parentActivityName=".BeerListActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".BeerListViewActivity" />
@@ -83,8 +80,9 @@
                 <action android:name="android.intent.action.USER_PRESENT" />
             </intent-filter>
         </receiver>
-        <receiver android:name="com.rjmoseley.beerator.app.BeerNotificationReceiver"
-            android:exported="false">
+        <receiver
+            android:name=".BeerNotificationReceiver"
+            android:exported="false" >
             <intent-filter>
                 <action android:name="com.rjmoseley.beerator.app.BEER_NOTIFICATION" />
             </intent-filter>
@@ -104,7 +102,14 @@
             android:name="com.crashlytics.ApiKey"
             android:value="85a800fab69e352506c2c71eb08d6ff898ee7daa" />
 
-
+        <activity
+            android:name=".RecentRatingsActivity"
+            android:label="@string/title_activity_recent_ratings"
+            android:parentActivityName=".BeerListActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.rjmoseley.beerator.app.BeerListActivity" />
+        </activity>
     </application>
 
 </manifest>

@@ -256,6 +256,11 @@ public class BeerListActivity extends Activity {
             launchBeerLoginActivity.putExtra(AUTH_ACTION, message);
             startActivity(launchBeerLoginActivity);
             return true;
+        } else if (id == R.id.action_recent) {
+            Crashlytics.log(Log.INFO, TAG, "Recent ratings selected from menu");
+            Intent i = new Intent(this, RecentRatingsActivity.class);
+            startActivity(i);
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
