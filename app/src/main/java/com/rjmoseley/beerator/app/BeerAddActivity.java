@@ -13,7 +13,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Adapter;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
@@ -25,12 +28,18 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
+import java.util.MissingResourceException;
 
 
 public class BeerAddActivity extends Activity {
 
     private static final String TAG = "BeerAdd";
     public final static String AUTH_ACTION = "com.rjmoseley.beerator.app.MESSAGE";
+    final Globals g = Globals.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,17 +48,42 @@ public class BeerAddActivity extends Activity {
         Crashlytics.log(Log.INFO, TAG, "Created");
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ArrayAdapter<Country> countryAdapter = new ArrayAdapter<Country>(this,
+                android.R.layout.simple_spinner_item, g.getCountries());
+        Spinner countrySpinner = (Spinner) findViewById(R.id.spinnerCountry);
+        countrySpinner.setAdapter(countryAdapter);
+        Country uk = findCountry("GB");
+        int spinnerPosition = countryAdapter.getPosition(uk);
+        countrySpinner.setSelection(spinnerPosition);
+    }
+
+    private Country findCountry(String countryCode) {
+        for (Country c : g.getCountries()) {
+            if (countryCode.equals(c.getCode()))
+                return c;
+        }
+        return null;
+    }
+
     public void addBeer(View view) {
         //Add the beer to the Parse DB
         Crashlytics.log(Log.INFO, TAG, "Adding a new beer");
+        findViewById(R.id.addBeerButton).setEnabled(false);
+        findViewById(R.id.cancelButton).setEnabled(false);
         EditText beerInput = (EditText) findViewById(R.id.etBeerName);
         EditText breweryInput = (EditText) findViewById(R.id.etBreweryName);
         EditText abvInput = (EditText) findViewById(R.id.etAbv);
+        Spinner countryInput = (Spinner) findViewById(R.id.spinnerCountry);
+        int countryPosition = countryInput.getSelectedItemPosition();
+        final Country countryOfOrigin = g.getCountries().get(countryPosition);
         final String beerString = beerInput.getText().toString();
         final String breweryString = breweryInput.getText().toString();
         final String abvString = abvInput.getText().toString();
         final String userString = ParseUser.getCurrentUser().getObjectId();
-        final String countryOfOriginString = "";
+        final String countryOfOriginString = countryOfOrigin.getCode();
         if ((beerString.length() > 0) && (breweryString.length() > 0)) {
             final ParseObject newParseBeer = new ParseObject("beer");
             newParseBeer.put("beerName", beerString);
@@ -84,6 +118,7 @@ public class BeerAddActivity extends Activity {
                         if (abvString.length() > 0) {
                             newBeer.setABV(abvString);
                         }
+                        newBeer.setCountry(countryOfOrigin);
                         beerList.add(newBeer);
                         Crashlytics.log(Log.INFO, TAG, "Beer added to beerList");
                         g.setBeerlist(beerList);

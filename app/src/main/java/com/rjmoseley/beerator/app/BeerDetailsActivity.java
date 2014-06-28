@@ -84,6 +84,7 @@ public class BeerDetailsActivity extends Activity {
         final TextView breweryName = (TextView) findViewById(R.id.breweryName);
         final TextView beerName = (TextView) findViewById(R.id.beerName);
         final TextView abv = (TextView) findViewById(R.id.abv);
+        final TextView country = (TextView) findViewById(R.id.country);
 
         Intent intent = getIntent();
         String objectId = intent.getStringExtra("objectId");
@@ -124,6 +125,9 @@ public class BeerDetailsActivity extends Activity {
         breweryName.setText(beer.getBrewery());
         if (beer.getABV() != null) {
             abv.setText(beer.getABV() + " %");
+        }
+        if (beer.getCountry() != null) {
+            country.setText(beer.getCountry().toString());
         }
 
         //Download beer ratings in background

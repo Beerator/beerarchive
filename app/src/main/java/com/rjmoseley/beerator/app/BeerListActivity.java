@@ -10,9 +10,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +32,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
+import java.util.MissingResourceException;
 
 
 public class BeerListActivity extends Activity {
@@ -111,6 +115,7 @@ public class BeerListActivity extends Activity {
     private void downloadBeers() {
         Crashlytics.log(Log.INFO, TAG, "Downloading beers");
         //Toast.makeText(this, "Downloading beers", Toast.LENGTH_SHORT).show();
+        setCountryList();
         ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("beer");
         query.orderByAscending("brewery");
         query.addAscendingOrder("beerName");
@@ -127,6 +132,12 @@ public class BeerListActivity extends Activity {
                                 obj.getObjectId());
                         if (obj.getString("abv") != null) {
                             b.setABV(obj.getString("abv"));
+                        }
+                        if (obj.getString("countryOfOrigin") != null) {
+                            Country country = findCountry(obj.getString("countryOfOrigin"));
+                            if (country != null) {
+                                b.setCountry(country);
+                            }
                         }
                         beerList.add(b);
                     }
@@ -200,6 +211,50 @@ public class BeerListActivity extends Activity {
                 return beer1.get(key).compareTo(beer2.get(key));
             }
         });
+    }
+
+    private void setCountryList() {
+        Locale[] locales = Locale.getAvailableLocales();
+        List<Country> countries = new ArrayList<Country>();
+        for (Locale locale : locales) {
+            try {
+                String code = locale.getCountry();
+                String name = locale.getDisplayCountry();
+                if (!"".equals(code) && code.length() == 2
+                        && !"".equals(name)) {
+                    Country country = new Country(code, name);
+                    if (isCountryNew(country, countries)) {
+                        countries.add(country);
+                    }
+                }
+            } catch (MissingResourceException e) {
+                Log.v(TAG, "Missing country code");
+            }
+        }
+        Collections.sort(countries, new Comparator<Country>() {
+            @Override
+            public int compare(Country country, Country country2) {
+                return country.getName().compareTo(country2.getName());
+            }
+        });
+        g.setCountries(countries);
+    }
+
+    private Boolean isCountryNew(Country country, List<Country> countries) {
+        for (Country c : countries) {
+            if (c.getName().equals(country.getName())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private Country findCountry(String countryCode) {
+        for (Country c : g.getCountries()) {
+            if (countryCode.equals(c.getCode()))
+                return c;
+        }
+        return null;
     }
 
     @Override

@@ -13,6 +13,7 @@ public class Beer {
     String brewery = null;
     String objectId = null;
     String abv = null;
+    Country country = null;
     ArrayList<BeerRating> ratingsList = null;
     ArrayList<BeerRating> myRatingsList = null;
 
@@ -43,6 +44,14 @@ public class Beer {
 
     public String getABV() {
         return this.abv;
+    }
+
+    public void setCountry(Country country) {
+        this.country = country;
+    }
+
+    public Country getCountry() {
+        return this.country;
     }
 
     public void addRating(BeerRating beerRating) {

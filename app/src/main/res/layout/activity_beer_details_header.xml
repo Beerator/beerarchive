@@ -73,6 +73,26 @@
         android:layout_gravity="center_horizontal"
         android:layout_margin="6dp">
 
+        <TextView android:id="@+id/tvCountry"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:text="@string/country"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <TextView android:id="@+id/country"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="6dp">
+
         <TextView android:id="@+id/ratings"
             android:layout_width="110dp"
             android:layout_height="wrap_content"
