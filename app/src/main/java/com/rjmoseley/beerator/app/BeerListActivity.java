@@ -1,7 +1,6 @@
 package com.rjmoseley.beerator.app;
 
 import android.app.Activity;
-import android.app.Service;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -10,8 +9,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -28,7 +25,6 @@ import com.parse.ParseQuery;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -255,7 +251,7 @@ public class BeerListActivity extends Activity {
             return true;
         } else if (id == R.id.action_recent) {
             Crashlytics.log(Log.INFO, TAG, "Recent ratings selected from menu");
-            Intent i = new Intent(this, RecentRatingsActivity.class);
+            Intent i = new Intent(this, RatingsListActivity.class);
             startActivity(i);
             return true;
         }

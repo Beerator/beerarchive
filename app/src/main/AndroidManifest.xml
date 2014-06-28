@@ -103,7 +103,7 @@
             android:value="85a800fab69e352506c2c71eb08d6ff898ee7daa" />
 
         <activity
-            android:name=".RecentRatingsActivity"
+            android:name=".RatingsListActivity"
             android:label="@string/title_activity_recent_ratings"
             android:parentActivityName=".BeerListActivity" >
             <meta-data
