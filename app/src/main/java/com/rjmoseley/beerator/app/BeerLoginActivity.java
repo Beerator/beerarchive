@@ -66,6 +66,12 @@ public class BeerLoginActivity extends Activity {
             }
         });
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Crashlytics.log(Log.INFO, TAG, "Resumed");
         updateCurrentStatus();
 
         Intent intent = getIntent();
@@ -86,13 +92,6 @@ public class BeerLoginActivity extends Activity {
             getDetailsBackground();
             launchBeerList();
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Crashlytics.log(Log.INFO, TAG, "Resumed");
-        updateCurrentStatus();
     }
 
     private void updateCurrentStatus() {

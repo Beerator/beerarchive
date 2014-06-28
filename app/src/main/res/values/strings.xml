@@ -42,6 +42,10 @@
     <string name="load_ratings">Load all ratings</string>
     <string name="load_my_ratings">Load my ratings</string>
 
+    <!--Ratings list buttons-->
+    <string name="show_recent_ratings">Recent Ratings</string>
+    <string name="show_top_ratings">Top Ratings</string>
+
     <!-- Authentication and Login screen -->
     <string name="login_top">Welcome to Beerator</string>
     <string name="login_bottom">Beerator uses Facebook for authentication and to provide social
