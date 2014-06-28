@@ -61,6 +61,8 @@ public class BeerDetailsActivity extends Activity {
 
     private static final String TAG = "BeerDetails";
 
+    public final static String AUTH_ACTION = "com.rjmoseley.beerator.app.MESSAGE";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -431,6 +433,17 @@ public class BeerDetailsActivity extends Activity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
+            Crashlytics.log(Log.INFO, TAG, "Settings selected from menu");
+            Intent i = new Intent(this, SettingActivity.class);
+            startActivity(i);
+            return true;
+        }
+        else if (id == R.id.action_logout) {
+            Crashlytics.log(Log.INFO, TAG, "Logout selected from menu");
+            Intent launchBeerLoginActivity = new Intent(this, BeerLoginActivity.class);
+            String message = "logout";
+            launchBeerLoginActivity.putExtra(AUTH_ACTION, message);
+            startActivity(launchBeerLoginActivity);
             return true;
         }
         return super.onOptionsItemSelected(item);

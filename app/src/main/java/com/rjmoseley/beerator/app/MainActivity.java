@@ -24,6 +24,7 @@ import com.parse.PushService;
 public class MainActivity extends Activity {
 
     private static final String TAG = "Main";
+    public final static String AUTH_ACTION = "com.rjmoseley.beerator.app.MESSAGE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +70,12 @@ public class MainActivity extends Activity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_logout) {
+            Crashlytics.log(Log.INFO, TAG, "Logout selected from menu");
+            Intent launchBeerLoginActivity = new Intent(this, BeerLoginActivity.class);
+            String message = "logout";
+            launchBeerLoginActivity.putExtra(AUTH_ACTION, message);
+            startActivity(launchBeerLoginActivity);
             return true;
         }
         return super.onOptionsItemSelected(item);

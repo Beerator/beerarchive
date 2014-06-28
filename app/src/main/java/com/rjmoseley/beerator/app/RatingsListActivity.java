@@ -1,6 +1,7 @@
 package com.rjmoseley.beerator.app;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -27,6 +28,7 @@ public class RatingsListActivity extends Activity {
     private ArrayList<Beer> ratingsListBeerList;
     private static final String TAG = "RatingsList";
     final Globals g = Globals.getInstance();
+    public final static String AUTH_ACTION = "com.rjmoseley.beerator.app.MESSAGE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +45,9 @@ public class RatingsListActivity extends Activity {
         ratingsListAdapter.notifyDataSetChanged();
         ListView recentRatingsListView = (ListView) findViewById(R.id.ratingsListListView);
         recentRatingsListView.setAdapter(ratingsListAdapter);
+        findViewById(R.id.showRecentRatings).setVisibility(View.GONE);
+        findViewById(R.id.showTopRatings).setVisibility(View.GONE);
+        showRecentRatings();
     }
 
     public void showRecentRatingsOnClick(View view) {
@@ -79,7 +84,6 @@ public class RatingsListActivity extends Activity {
         });
     }
 
-
     private void processRatings(List<ParseObject> parseObjects, ParseException e, final String sortKey) {
         if (e == null) {
             for (final ParseObject ratingObj : parseObjects) {
@@ -99,6 +103,7 @@ public class RatingsListActivity extends Activity {
                         ratingsListBeerList.add(b);
                         sortBeerRatings(sortKey);
                         ratingsListAdapter.notifyDataSetChanged();
+                        findViewById(R.id.loadingPanel).setVisibility(View.GONE);
                     }
                 }
                 if (!beerFound) {
@@ -173,6 +178,17 @@ public class RatingsListActivity extends Activity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
+            Crashlytics.log(Log.INFO, TAG, "Settings selected from menu");
+            Intent i = new Intent(this, SettingActivity.class);
+            startActivity(i);
+            return true;
+        }
+        else if (id == R.id.action_logout) {
+            Crashlytics.log(Log.INFO, TAG, "Logout selected from menu");
+            Intent launchBeerLoginActivity = new Intent(this, BeerLoginActivity.class);
+            String message = "logout";
+            launchBeerLoginActivity.putExtra(AUTH_ACTION, message);
+            startActivity(launchBeerLoginActivity);
             return true;
         }
         return super.onOptionsItemSelected(item);

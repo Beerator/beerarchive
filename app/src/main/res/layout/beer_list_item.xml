@@ -10,14 +10,18 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="?android:attr/listPreferredItemPaddingLeft"
         android:layout_marginTop="4dip"
-        android:textAppearance="?android:attr/textAppearanceSmall" />
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:singleLine="true"
+        />
 
     <TextView android:id="@+id/text2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/text1"
         android:layout_marginLeft="?android:attr/listPreferredItemPaddingLeft"
-        android:textAppearance="?android:attr/textAppearanceListItem" />
+        android:textAppearance="?android:attr/textAppearanceListItem"
+        android:singleLine="true"
+        />
 
     <TextView android:id="@+id/objectId"
         android:layout_width="wrap_content"

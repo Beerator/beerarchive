@@ -65,11 +65,7 @@
         </activity>
         <activity
             android:name=".SettingActivity"
-            android:label="@string/title_activity_setting"
-            android:parentActivityName=".BeerListActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".BeerListActivity" />
+            android:label="@string/title_activity_setting" >
         </activity>
 
         <service android:name="com.parse.PushService" />

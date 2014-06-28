@@ -230,6 +230,14 @@ public class BeerListActivity extends Activity {
             startActivity(i);
             return true;
         }
+        else if (id == R.id.action_logout) {
+            Crashlytics.log(Log.INFO, TAG, "Logout selected from menu");
+            Intent launchBeerLoginActivity = new Intent(this, BeerLoginActivity.class);
+            String message = "logout";
+            launchBeerLoginActivity.putExtra(AUTH_ACTION, message);
+            startActivity(launchBeerLoginActivity);
+            return true;
+        }
         else if (id == R.id.action_add) {
             Crashlytics.log(Log.INFO, TAG, "Add selected from menu");
             Intent launchAddBeer = new Intent(this, BeerAddActivity.class);
@@ -241,14 +249,6 @@ public class BeerListActivity extends Activity {
             Toast.makeText(this, "Refreshing Beer List", Toast.LENGTH_SHORT).show();
             beerFilterText.setText("");
             downloadBeers();
-        }
-        else if (id == R.id.action_logout) {
-            Crashlytics.log(Log.INFO, TAG, "Logout selected from menu");
-            Intent launchBeerLoginActivity = new Intent(this, BeerLoginActivity.class);
-            String message = "logout";
-            launchBeerLoginActivity.putExtra(AUTH_ACTION, message);
-            startActivity(launchBeerLoginActivity);
-            return true;
         } else if (id == R.id.action_recent) {
             Crashlytics.log(Log.INFO, TAG, "Recent ratings selected from menu");
             Intent i = new Intent(this, RatingsListActivity.class);
