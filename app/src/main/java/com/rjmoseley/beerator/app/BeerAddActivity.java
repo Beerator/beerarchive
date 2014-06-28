@@ -1,7 +1,9 @@
 package com.rjmoseley.beerator.app;
 
 import android.app.Activity;
+import android.app.Service;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -9,6 +11,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -65,7 +69,13 @@ public class BeerAddActivity extends Activity {
                 @Override
                 public void done(ParseException e) {
                     if (e == null) {
+                        InputMethodManager imm = (InputMethodManager)BeerAddActivity
+                                .this.getSystemService(Service.INPUT_METHOD_SERVICE);
+                        if (imm != null) {
+                            imm.toggleSoftInput(0, InputMethodManager.HIDE_IMPLICIT_ONLY);
+                        }
                         Crashlytics.log(Log.INFO, TAG, "Beer saved successfully");
+                        Toast.makeText(BeerAddActivity.this, "Beer saved successfully", Toast.LENGTH_SHORT).show();
                         final String objectId = newParseBeer.getObjectId();
                         Globals g = Globals.getInstance();
                         ArrayList<Beer> beerList = g.getBeerList();
@@ -76,11 +86,14 @@ public class BeerAddActivity extends Activity {
                         beerList.add(newBeer);
                         Crashlytics.log(Log.INFO, TAG, "Beer added to beerList");
                         g.setBeerlist(beerList);
-                        finish();
+                        Intent launchBeerDetails = new Intent(getApplicationContext(), BeerDetailsActivity.class);
+                        launchBeerDetails.putExtra("objectId", objectId);
+                        startActivity(launchBeerDetails);
                     } else {
                         Toast.makeText(BeerAddActivity.this, "Failed to add new beer", Toast.LENGTH_SHORT).show();
                         Crashlytics.log(Log.INFO, TAG, "Failed to save new beer");
-                        Crashlytics.log(Log.INFO, TAG, e.getMessage());
+                        Crashlytics.log(Log.INFO, TAG, "Code: " + e.getCode()
+                                + ", Message: " + e.getMessage());
                         Crashlytics.logException(e);
                         e.printStackTrace();
                     }
@@ -99,6 +112,10 @@ public class BeerAddActivity extends Activity {
     }
 
     public void cancel(View view) {
+        InputMethodManager imm = (InputMethodManager)this.getSystemService(Service.INPUT_METHOD_SERVICE);
+        if (imm != null) {
+            imm.toggleSoftInput(0, InputMethodManager.HIDE_IMPLICIT_ONLY);
+        }
         finish();
     }
 

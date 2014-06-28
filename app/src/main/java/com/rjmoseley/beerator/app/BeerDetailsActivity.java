@@ -13,18 +13,18 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
-import com.facebook.FacebookRequestError;
 import com.facebook.Request;
 import com.facebook.Response;
 import com.facebook.model.GraphUser;
 import com.parse.FindCallback;
-import com.parse.Parse;
+import com.parse.LocationCallback;
 import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
@@ -42,7 +42,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 
@@ -154,12 +153,18 @@ public class BeerDetailsActivity extends Activity {
                         Crashlytics.log(Log.INFO, TAG, "All ratings: none downloaded");
                     } else {
                         Crashlytics.log(Log.INFO, TAG, "All ratings: " + beer.getRatingsList().size() + " beers downloaded");
+                        Button allRatingsButton = (Button) findViewById(R.id.loadAllRatings);
+                        String allText = "All ratings (" + beer.getRatingsList().size() + ")";
+                        allRatingsButton.setText(allText);
                         findViewById(R.id.loadAllRatings).setVisibility(View.VISIBLE);
                         //If there are ratings, are there some of my ratings?
                         if (beer.getMyRatingsList().isEmpty()) {
                             Crashlytics.log(Log.INFO, TAG, "My ratings: none downloaded");
                         } else {
                             Crashlytics.log(Log.INFO, TAG, "My ratings: " + beer.getMyRatingsList().size() + " beers downloaded");
+                            Button myRatingsButton = (Button) findViewById(R.id.loadMyRatings);
+                            String myText = "My ratings (" + beer.getMyRatingsList().size() + ")";
+                            myRatingsButton.setText(myText);
                             findViewById(R.id.loadMyRatings).setVisibility(View.VISIBLE);
                         }
                     }
@@ -167,7 +172,8 @@ public class BeerDetailsActivity extends Activity {
                     Toast.makeText(BeerDetailsActivity.this, "Failed to download beer ratings",
                             Toast.LENGTH_SHORT).show();
                     Crashlytics.log(Log.INFO, TAG, "Beer ratings download failed");
-                    Crashlytics.log(Log.INFO, TAG, e.getMessage());
+                    Crashlytics.log(Log.INFO, TAG, "Code: " + e.getCode()
+                            + ", Message: " + e.getMessage());
                     Crashlytics.logException(e);
                     e.printStackTrace();
                 }
@@ -212,36 +218,6 @@ public class BeerDetailsActivity extends Activity {
         String[] np2Strings = np2.getDisplayedValues();
         final String ratingElement2 = np2Strings[np2.getValue()];
 
-        final ParseGeoPoint geoPoint = new ParseGeoPoint();
-
-        if (sharedPrefs.getBoolean("geotag", true)) {
-            Crashlytics.log(Log.INFO, TAG, "Attempting to GeoTag");
-            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            Criteria criteria = new Criteria();
-            criteria.setAccuracy(Criteria.ACCURACY_COARSE);
-            criteria.setCostAllowed(false);
-
-            String locationProvider = locationManager.getBestProvider(criteria, true);
-            Crashlytics.log(Log.INFO, TAG, "Location provider chosen: "+ locationProvider);
-
-            if (locationProvider != null) {
-                Location location = locationManager.getLastKnownLocation(locationProvider);
-                if (location != null) {
-                    Crashlytics.log(Log.INFO, TAG, "Location: " + location.toString());
-                    geoPoint.setLatitude(location.getLatitude());
-                    geoPoint.setLongitude(location.getLongitude());
-                } else {
-                    Crashlytics.log(Log.INFO, TAG, "Unable to get location");
-                    Toast.makeText(this, "Unable to get location.  Check your device settings",
-                            Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                Crashlytics.log(Log.INFO, TAG, "Unable to get location provider");
-                Toast.makeText(this, "Unable to get location provider.  Check your device settings",
-                        Toast.LENGTH_SHORT).show();
-            }
-        }
-
         final BeerRating tempBR = new BeerRating(ratingElement1+ratingElement2, ratingSystem, new Date());
 
         final String normRating = tempBR.getNormRating();
@@ -254,13 +230,35 @@ public class BeerDetailsActivity extends Activity {
         parseRating.put("ratingSystem", ratingSystem);
         parseRating.put("userDisplayName",ParseUser.getCurrentUser().getString("displayName"));
         parseRating.put("userObjectId", ParseUser.getCurrentUser().getObjectId());
-        parseRating.put("location", geoPoint);
+
 
         //Sort out the ACL
         ParseACL acl = new ParseACL(ParseUser.getCurrentUser());
         acl.setPublicReadAccess(sharedPrefs.getBoolean("public_ratings", true));
         Crashlytics.log(Log.INFO, TAG, "Public rating: " + sharedPrefs.getBoolean("public_ratings", true));
         parseRating.setACL(acl);
+
+        if (sharedPrefs.getBoolean("geotag", true)) {
+            Crashlytics.log(Log.INFO, TAG, "Attempting to GeoTag");
+            Criteria criteria = new Criteria();
+            criteria.setAccuracy(Criteria.ACCURACY_COARSE);
+            criteria.setCostAllowed(false);
+            ParseGeoPoint.getCurrentLocationInBackground(5000, criteria, new LocationCallback() {
+                @Override
+                public void done(ParseGeoPoint parseGeoPoint, ParseException e) {
+                    if (e == null) {
+                        parseRating.put("location", parseGeoPoint);
+                        parseRating.saveInBackground();
+                        Crashlytics.log(Log.INFO, TAG, "Saving geoPoint");
+                    } else {
+                        Crashlytics.log(Log.INFO, TAG, "Unable to get location");
+                        Toast.makeText(BeerDetailsActivity.this, "Unable to get location",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+
 
         Crashlytics.log(Log.INFO, TAG, "Adding rating of " + normRating + " and rating system " + ratingSystem
                 + " for beer with objectId " + beerObjectId);
@@ -269,24 +267,47 @@ public class BeerDetailsActivity extends Activity {
             @Override
             public void done(ParseException e) {
                 if (e == null) {
+                    Crashlytics.log(Log.INFO, TAG, "Beer rating saved to Parse successfully");
                     findViewById(R.id.loadingPanel).setVisibility(View.GONE);
                     Date date = parseRating.getCreatedAt();
                     BeerRating beerRating = new BeerRating(normRating, date);
                     beerRating.setObjectId(parseRating.getObjectId());
-                    beerRating.setLocation(geoPoint);
+                    try {
+                        beerRating.setLocation(parseRating.getParseGeoPoint("location"));
+                    } catch (NullPointerException e2) {
+                        Crashlytics.log(Log.INFO, TAG, "No geoPoint to add to rating at present");
+                        Crashlytics.log(Log.INFO, TAG, e2.getMessage());
+                    }
                     beerRating.setUserObjectId(ParseUser.getCurrentUser().getObjectId());
                     beerRating.setUserName(ParseUser.getCurrentUser().getString("displayName"));
                     beer.addRating(beerRating);
                     beer.addMyRating(beerRating);
                     beer.sortRatings();
+                    //Sort out the button text
+                    Button allRatingsButton = (Button) findViewById(R.id.loadAllRatings);
+                    Button myRatingsButton = (Button) findViewById(R.id.loadMyRatings);
+                    String allText = "All ratings (" + beer.getRatingsList().size() + ")";
+                    String myText = "My ratings (" + beer.getMyRatingsList().size() + ")";
+                    allRatingsButton.setText(allText);
+                    myRatingsButton.setText(myText);
                     if (beerRatingsAdapter != null) {
+                        //beerRatings are already on display so add to them
                         beerRatingsAdapter.notifyDataSetChanged();
+                    } else {
+                        //beerRatings are not currently displayed so display the buttons
+                        if (allRatingsButton.getVisibility() == View.GONE) {
+                            allRatingsButton.setVisibility(View.VISIBLE);
+                        }
+                        if (myRatingsButton.getVisibility() == View.GONE) {
+                            myRatingsButton.setVisibility(View.VISIBLE);
+                        }
                     }
                 } else {
                     Toast.makeText(BeerDetailsActivity.this, "Failed to save rating",
                             Toast.LENGTH_SHORT).show();
                     Crashlytics.log(Log.INFO, TAG, "Beer ratings save failed");
-                    Crashlytics.log(Log.INFO, TAG, e.getMessage());
+                    Crashlytics.log(Log.INFO, TAG, "Code: " + e.getCode()
+                            + ", Message: " + e.getMessage());
                     Crashlytics.logException(e);
                     e.printStackTrace();
                 }
@@ -335,7 +356,8 @@ public class BeerDetailsActivity extends Activity {
                                     Crashlytics.log(Log.INFO, TAG, "Notification sent successfully");
                                 } else {
                                     Crashlytics.log(Log.INFO, TAG, "Failed to send notification");
-                                    Crashlytics.log(Log.INFO, TAG, e.getMessage());
+                                    Crashlytics.log(Log.INFO, TAG, "Code: " + e.getCode()
+                                            + ", Message: " + e.getMessage());
                                     Crashlytics.logException(e);
                                     e.printStackTrace();
                                 }

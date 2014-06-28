@@ -9,10 +9,12 @@ import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.view.LayoutInflater;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 
 /**
@@ -24,7 +26,7 @@ public class BeerAdapter extends ArrayAdapter<Beer> {
     private Context context;
     private int layoutResourceId;
     private BeerFilter beerFilter;
-    public Object mLock = new Object();
+    public final Object mLock = new Object();
     private static final String TAG = "BeerAdapter";
 
     public BeerAdapter(Context context, int layoutResourceId, ArrayList<Beer> beerList) {
@@ -77,33 +79,44 @@ public class BeerAdapter extends ArrayAdapter<Beer> {
             FilterResults results = new FilterResults();
 
             String filterString = constraint.toString();
-
-            // We implement here the filter logic
-            if (constraint == null || constraint.length() == 0) {
-                // No filter implemented we return all the list
-                Crashlytics.log(Log.INFO, TAG, "constraint is null");
-                results.values = beerList;
-                results.count = beerList.size();
-            }
-            else {
-                Crashlytics.log(Log.INFO, TAG, "Filtering on: " + filterString);
-                // We perform filtering operation
-                List<Beer> nBeerList = new ArrayList<Beer>();
-
-                for (Beer b : beerList) {
-                    if (b.getName().toUpperCase().startsWith(filterString.toUpperCase())) {
-                        nBeerList.add(b);
-                        Crashlytics.log(Log.INFO, TAG, "Adding by Name: " + b.toString());
-                    }
-                    else if (b.getBrewery().toUpperCase().startsWith(filterString.toUpperCase())) {
-                        nBeerList.add(b);
-                        Crashlytics.log(Log.INFO, TAG, "Adding by Brewery: " + b.toString());
-                    }
+            try {
+                // We implement here the filter logic
+                if (constraint.length() == 0) {
+                    // No filter implemented we return all the list
+                    Crashlytics.log(Log.INFO, TAG, "Filter constraint is empty");
+                    results.values = beerList;
+                    results.count = beerList.size();
                 }
-                Crashlytics.log(Log.INFO, TAG, "Number of items found " + nBeerList.size());
-                results.values = nBeerList;
-                results.count = nBeerList.size();
+                else {
+                    Crashlytics.log(Log.INFO, TAG, "Filtering on: " + filterString);
+                    // We perform filtering operation
+                    List<Beer> nBeerList = new ArrayList<Beer>();
 
+                    for (Beer b : beerList) {
+                        if (b.getName().toUpperCase().startsWith(filterString.toUpperCase())) {
+                            nBeerList.add(b);
+                            Crashlytics.log(Log.INFO, TAG, "Adding by Name: " + b.toString());
+                        }
+                        else if (b.getBrewery().toUpperCase().startsWith(filterString.toUpperCase())) {
+                            nBeerList.add(b);
+                            Crashlytics.log(Log.INFO, TAG, "Adding by Brewery: " + b.toString());
+                        }
+                    }
+                    Crashlytics.log(Log.INFO, TAG, "Number of items found " + nBeerList.size());
+                    results.values = nBeerList;
+                    results.count = nBeerList.size();
+
+                }
+            } catch (ConcurrentModificationException e) {
+                Crashlytics.log(Log.INFO, TAG, "Filtering failed, ConcurrentModificationException");
+                Crashlytics.log(Log.INFO, TAG, e.getMessage());
+                Crashlytics.logException(e);
+                e.printStackTrace();
+            } catch (Exception e) {
+                Crashlytics.log(Log.INFO, TAG, "Filtering failed with an Exception");
+                Crashlytics.log(Log.INFO, TAG, e.getMessage());
+                Crashlytics.logException(e);
+                e.printStackTrace();
             }
             return results;
         }
@@ -134,5 +147,18 @@ public class BeerAdapter extends ArrayAdapter<Beer> {
         Crashlytics.log(Log.INFO, TAG, "Resetting data");
         beerList = beerListOrig;
         notifyDataSetChanged();
+    }
+
+    /* Possible fix for issue #22 suggested by
+    https://stackoverflow.com/questions/15194835/filtering-custom-adapter-indexoutofboundsexception
+     */
+    @Override
+    public int getCount() {
+        return beerList.size();
+    }
+
+    @Override
+    public Beer getItem(int pos) {
+        return beerList.get(pos);
     }
 }

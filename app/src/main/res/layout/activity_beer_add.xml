@@ -11,7 +11,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:id="@+id/linearLayout"
-        android:layout_margin="6dp">
+        android:layout_margin="6dp"
+        >
 
         <TextView android:id="@+id/tvBrewery"
             android:layout_width="110dp"

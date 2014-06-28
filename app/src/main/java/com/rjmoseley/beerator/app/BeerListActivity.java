@@ -1,6 +1,7 @@
 package com.rjmoseley.beerator.app;
 
 import android.app.Activity;
+import android.app.Service;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -9,6 +10,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -25,7 +28,10 @@ import com.parse.ParseQuery;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -58,14 +64,28 @@ public class BeerListActivity extends Activity {
         Crashlytics.log(Log.INFO, TAG, "Created");
 
         beerListView = (ListView) findViewById(R.id.beerListView);
+        beerFilterText = (EditText) findViewById(R.id.filter);
 
-        downloadBeers();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         Crashlytics.log(Log.INFO, TAG, "Resumed");
+        if (g.getBeerList() == null || g.getBeerList().isEmpty()) {
+            Crashlytics.log(Log.INFO, TAG, "Beer download needed");
+            downloadBeers();
+        } else {
+            Crashlytics.log(Log.INFO, TAG, "No beer download needed");
+            beerList = g.getBeerList();
+            //Sort the beers
+            if (beerList.size() > 0) {
+                Crashlytics.log(Log.INFO, TAG, "Sorting beers");
+                sortBeers("name");
+                sortBeers("brewery");
+            }
+            setListViewContent();
+        }
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             try {
@@ -82,21 +102,22 @@ public class BeerListActivity extends Activity {
                 String objectId = json.getString("beerObjectId");
                 Crashlytics.log(Log.INFO, TAG, "Beer in notification is " + objectId);
                 Crashlytics.log(Log.INFO, TAG, "Launching BeerDetailsActivity");
-                        Intent launchBeerDetails = new Intent(getApplicationContext(), BeerDetailsActivity.class);
+                Intent launchBeerDetails = new Intent(getApplicationContext(), BeerDetailsActivity.class);
                 launchBeerDetails.putExtra("objectId", objectId);
                 startActivity(launchBeerDetails);
             } catch (JSONException e) {
                 Log.d(TAG, "JSONException: " + e.getMessage());
             }
         }
+
+
+
+
     }
 
     private void downloadBeers() {
         Crashlytics.log(Log.INFO, TAG, "Downloading beers");
-        findViewById(R.id.loadingPanel).setVisibility(View.VISIBLE);
-        findViewById(R.id.beerListView).setVisibility(View.GONE);
-
-        beerFilterText = (EditText) findViewById(R.id.filter);
+        Toast.makeText(this, "Downloading beers", Toast.LENGTH_SHORT).show();
         ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("beer");
         query.orderByAscending(sortKey1);
         query.addAscendingOrder(sortKey2);
@@ -117,13 +138,16 @@ public class BeerListActivity extends Activity {
                         beerList.add(b);
                     }
                     Crashlytics.log(Log.INFO, TAG, "Beers downloaded: " + beerList.size());
+                    Toast.makeText(BeerListActivity.this, beerList.size()+ " beers downloaded",
+                            Toast.LENGTH_SHORT).show();
                     setListViewContent();
                     Crashlytics.log(Log.INFO, TAG, "Saving beerList to Globals");
                     g.setBeerlist(beerList);
                 } else {
                     Toast.makeText(BeerListActivity.this, "Beer download failed", Toast.LENGTH_SHORT).show();
                     Crashlytics.log(Log.INFO, TAG, "Beer download failed");
-                    Crashlytics.log(Log.INFO, TAG, e.getMessage());
+                    Crashlytics.log(Log.INFO, TAG, "Code: " + e.getCode()
+                            + ", Message: " + e.getMessage());
                     Crashlytics.logException(e);
                     e.printStackTrace();
                 }
@@ -132,6 +156,7 @@ public class BeerListActivity extends Activity {
     }
 
     private void setListViewContent() {
+        Crashlytics.log(Log.INFO, TAG, "Setting ListView content");
         final BeerAdapter beerAdapter = new BeerAdapter(this, R.layout.beer_list_item, beerList);
         Crashlytics.log(Log.INFO, TAG, "Beers listed: " + beerList.size());
 
@@ -144,7 +169,7 @@ public class BeerListActivity extends Activity {
             @Override
             public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
                 Crashlytics.log(Log.INFO, "FilterText", "Text: " + charSequence.toString() + ", Start: " + start
-                                            + ", Before: " + before + ", Count: " + count);
+                        + ", Before: " + before + ", Count: " + count);
                 if (count < before) beerAdapter.resetData();
                 if (count == 0) beerAdapter.resetData();
                 beerAdapter.getFilter().filter(charSequence.toString());
@@ -171,6 +196,15 @@ public class BeerListActivity extends Activity {
                 Intent launchBeerDetails = new Intent(getApplicationContext(), BeerDetailsActivity.class);
                 launchBeerDetails.putExtra("objectId", objectId);
                 startActivity(launchBeerDetails);
+            }
+        });
+    }
+
+    public void sortBeers(final String key) {
+        Collections.sort(beerList, new Comparator<Beer>() {
+            @Override
+            public int compare(Beer beer1, Beer beer2) {
+                return beer1.get(key).compareTo(beer2.get(key));
             }
         });
     }
@@ -211,6 +245,7 @@ public class BeerListActivity extends Activity {
         }
         else if (id == R.id.action_refresh) {
             Crashlytics.log(Log.INFO, TAG, "Refresh selected from menu");
+            Toast.makeText(this, "Refreshing Beer List", Toast.LENGTH_SHORT).show();
             beerFilterText.setText("");
             downloadBeers();
         }
@@ -220,6 +255,11 @@ public class BeerListActivity extends Activity {
             String message = "logout";
             launchBeerLoginActivity.putExtra(AUTH_ACTION, message);
             startActivity(launchBeerLoginActivity);
+            return true;
+        } else if (id == R.id.action_recent) {
+            Crashlytics.log(Log.INFO, TAG, "Recent ratings selected from menu");
+            Intent i = new Intent(this, RecentRatingsActivity.class);
+            startActivity(i);
             return true;
         }
         return super.onOptionsItemSelected(item);
