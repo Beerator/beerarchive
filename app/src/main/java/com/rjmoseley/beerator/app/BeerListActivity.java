@@ -46,9 +46,6 @@ public class BeerListActivity extends Activity {
 
     private EditText beerFilterText;
 
-    private String sortKey1 = "brewery";
-    private String sortKey2 = "beer";
-
     final Globals g = Globals.getInstance();
 
     private static final String TAG = "BeerList";
@@ -117,10 +114,10 @@ public class BeerListActivity extends Activity {
 
     private void downloadBeers() {
         Crashlytics.log(Log.INFO, TAG, "Downloading beers");
-        Toast.makeText(this, "Downloading beers", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, "Downloading beers", Toast.LENGTH_SHORT).show();
         ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("beer");
-        query.orderByAscending(sortKey1);
-        query.addAscendingOrder(sortKey2);
+        query.orderByAscending("brewery");
+        query.addAscendingOrder("beerName");
         query.setLimit(1000);
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override

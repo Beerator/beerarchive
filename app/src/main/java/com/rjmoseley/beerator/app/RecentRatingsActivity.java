@@ -5,24 +5,22 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ListView;
 
 import com.crashlytics.android.Crashlytics;
 import com.parse.FindCallback;
 import com.parse.GetCallback;
-import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.rjmoseley.beerator.app.R;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class RecentRatingsActivity extends Activity {
 
-    private ListView recentRatingsListView;
     private RecentRatingsAdapter recentRatingsAdapter;
     private ArrayList<Beer> recentRatingsBeerList;
     private static final String TAG = "RecentRatings";
@@ -40,7 +38,7 @@ public class RecentRatingsActivity extends Activity {
         recentRatingsAdapter = new RecentRatingsAdapter(RecentRatingsActivity.this,
                 R.layout.recent_ratings_item, recentRatingsBeerList);
         recentRatingsAdapter.notifyDataSetChanged();
-        recentRatingsListView = (ListView)findViewById(R.id.recentRatingsListView);
+        ListView recentRatingsListView = (ListView)findViewById(R.id.recentRatingsListView);
         recentRatingsListView.setAdapter(recentRatingsAdapter);
         ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("beerRating");
         query.addDescendingOrder("createdAt");
@@ -62,6 +60,7 @@ public class RecentRatingsActivity extends Activity {
                                     beerRating.setUserName(ratingObj.getString("userDisplayName"));
                                     beer.addRating(beerRating);
                                     recentRatingsBeerList.add(beer);
+                                    sortBeerRatingsByDate();
                                     recentRatingsAdapter.notifyDataSetChanged();
                                 } else {
                                     Crashlytics.log(Log.INFO, TAG, "Failed to find beer to match recent rating");
@@ -71,8 +70,6 @@ public class RecentRatingsActivity extends Activity {
                             }
                         });
                     }
-
-
                 } else {
                     Crashlytics.log(Log.INFO, TAG, "Failed to download recent ratings");
                     Crashlytics.log(Log.INFO, TAG, "Code: " + e.getCode()
@@ -80,8 +77,16 @@ public class RecentRatingsActivity extends Activity {
                 }
             }
         });
+    }
 
-
+    public void sortBeerRatingsByDate() {
+        Collections.sort(recentRatingsBeerList, new Comparator<Beer>() {
+            @Override
+            public int compare(Beer beer1, Beer beer2) {
+                return beer2.getRatingsList().get(0).getDate()
+                        .compareTo(beer1.getRatingsList().get(0).getDate());
+            }
+        });
     }
 
     @Override
