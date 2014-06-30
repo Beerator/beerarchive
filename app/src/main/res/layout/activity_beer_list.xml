@@ -23,6 +23,8 @@
         <ListView android:id="@+id/beerListView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fastScrollEnabled="true"
+            android:fastScrollAlwaysVisible="true"
              />
 
         <ProgressBar android:id="@+id/loadingPanel"
