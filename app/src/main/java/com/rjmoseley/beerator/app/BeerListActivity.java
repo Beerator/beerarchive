@@ -10,11 +10,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -73,7 +71,7 @@ public class BeerListActivity extends Activity {
             Crashlytics.log(Log.INFO, TAG, "Beer download needed");
             downloadBeers();
         } else {
-            Crashlytics.log(Log.INFO, TAG, "No beer download needed");
+            Crashlytics.log(Log.INFO, TAG, "No beer download needed, beerList size: " + g.getBeerList().size());
             beerList = g.getBeerList();
             //Sort the beers
             if (beerList.size() > 0) {
@@ -112,11 +110,17 @@ public class BeerListActivity extends Activity {
 
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        beerFilterText.setText("");
+    }
+
     private void downloadBeers() {
         Crashlytics.log(Log.INFO, TAG, "Downloading beers");
         //Toast.makeText(this, "Downloading beers", Toast.LENGTH_SHORT).show();
         setCountryList();
-        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("beer");
+        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>(g.getBeerDatabase());
         query.orderByAscending("brewery");
         query.addAscendingOrder("beerName");
         query.setLimit(1000);
@@ -146,7 +150,7 @@ public class BeerListActivity extends Activity {
                             Toast.LENGTH_SHORT).show();
                     setListViewContent();
                     Crashlytics.log(Log.INFO, TAG, "Saving beerList to Globals");
-                    g.setBeerlist(beerList);
+                    g.setBeerList(beerList);
                 } else {
                     Toast.makeText(BeerListActivity.this, "Beer download failed", Toast.LENGTH_SHORT).show();
                     Crashlytics.log(Log.INFO, TAG, "Beer download failed");

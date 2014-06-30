@@ -59,7 +59,7 @@ public class RatingsListActivity extends Activity {
     private void showRecentRatings() {
         Crashlytics.log(Log.INFO, TAG, "Downloading recent ratings");
         ratingsListBeerList.clear();
-        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("beerRating");
+        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>(g.getBeerRatingsDatabase());
         query.addDescendingOrder("createdAt");
         query.setLimit(20);
         query.findInBackground(new FindCallback<ParseObject>() {
@@ -78,7 +78,7 @@ public class RatingsListActivity extends Activity {
     private void showTopRatings() {
         Crashlytics.log(Log.INFO, TAG, "Downloading top ratings");
         ratingsListBeerList.clear();
-        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("beerRating");
+        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>(g.getBeerDatabase());
         query.addDescendingOrder("normRating");
         query.setLimit(20);
         query.findInBackground(new FindCallback<ParseObject>() {
@@ -116,7 +116,7 @@ public class RatingsListActivity extends Activity {
                 }
                 if (!beerFound) {
                     //Beer was not found locally, try and download it
-                    ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("beer");
+                    ParseQuery<ParseObject> query = new ParseQuery<ParseObject>(g.getBeerDatabase());
                     query.getInBackground(ratingObj.getString("beerObjectId"), new GetCallback<ParseObject>() {
                         @Override
                         public void done(ParseObject beerObj, ParseException e) {

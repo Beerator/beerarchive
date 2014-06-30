@@ -57,6 +57,8 @@ public class BeerDetailsActivity extends Activity {
 
     private ArrayList<BeerRating> beerRatings = new ArrayList<BeerRating>();
 
+    final Globals g = Globals.getInstance();
+
     private String ratingSystem = "1-5+";
 
     private static final String TAG = "BeerDetails";
@@ -100,7 +102,7 @@ public class BeerDetailsActivity extends Activity {
         ArrayList<Beer> beerList = g.getBeerList();
         if (beerList.isEmpty()) {
             Crashlytics.log(Log.INFO, TAG, "beerList is empty");
-            ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("beer");
+            ParseQuery<ParseObject> query = new ParseQuery<ParseObject>(g.getBeerDatabase());
             try {
                 ParseObject b = query.get(objectId);
                 beer = new Beer(b.getString("beerName"), b.getString("brewery"), b.getObjectId());
@@ -137,7 +139,7 @@ public class BeerDetailsActivity extends Activity {
 
         //Download beer ratings in background
         Crashlytics.log(Log.INFO, TAG, "Downloading beer ratings");
-        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("beerRating");
+        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>(g.getBeerRatingsDatabase());
         query.whereEqualTo("beerObjectId", objectId);
         query.orderByDescending("createdAt");
         query.findInBackground(new FindCallback<ParseObject>() {
@@ -234,7 +236,7 @@ public class BeerDetailsActivity extends Activity {
         final String normRating = tempBR.getNormRating();
         Crashlytics.log(Log.INFO, TAG, "Normalised rating = " + normRating);
 
-        final ParseObject parseRating = new ParseObject("beerRating");
+        final ParseObject parseRating = new ParseObject(g.getBeerRatingsDatabase());
 
         parseRating.put("beerObjectId", beerObjectId);
         parseRating.put("normRating", normRating);

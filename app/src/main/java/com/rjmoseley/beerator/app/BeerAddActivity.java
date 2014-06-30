@@ -4,23 +4,18 @@ import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
-import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -28,11 +23,6 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
-import java.util.MissingResourceException;
 
 
 public class BeerAddActivity extends Activity {
@@ -85,7 +75,7 @@ public class BeerAddActivity extends Activity {
         final String userString = ParseUser.getCurrentUser().getObjectId();
         final String countryOfOriginString = countryOfOrigin.getCode();
         if ((beerString.length() > 0) && (breweryString.length() > 0)) {
-            final ParseObject newParseBeer = new ParseObject("beer");
+            final ParseObject newParseBeer = new ParseObject(g.getBeerDatabase());
             newParseBeer.put("beerName", beerString);
             newParseBeer.put("brewery", breweryString);
             newParseBeer.put("userObjectId", userString);
@@ -121,7 +111,7 @@ public class BeerAddActivity extends Activity {
                         newBeer.setCountry(countryOfOrigin);
                         beerList.add(newBeer);
                         Crashlytics.log(Log.INFO, TAG, "Beer added to beerList");
-                        g.setBeerlist(beerList);
+                        g.setBeerList(beerList);
                         Intent launchBeerDetails = new Intent(getApplicationContext(), BeerDetailsActivity.class);
                         launchBeerDetails.putExtra("objectId", objectId);
                         startActivity(launchBeerDetails);

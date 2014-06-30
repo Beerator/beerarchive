@@ -145,7 +145,7 @@ public class BeerAdapter extends ArrayAdapter<Beer> {
 
     public void resetData() {
         Crashlytics.log(Log.INFO, TAG, "Resetting data");
-        beerList = beerListOrig;
+        beerList = new ArrayList<Beer>(beerListOrig);
         notifyDataSetChanged();
     }
 

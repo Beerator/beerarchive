@@ -9,18 +9,18 @@ import java.util.List;
 public class Globals {
     private static Globals instance;
 
-    private ArrayList<Beer> beerList;
+    private ArrayList<Beer> globalBeerList;
     private List<Country> countries;
 
     private Globals() {
     }
 
-    public void setBeerlist(ArrayList<Beer> bl) {
-        this.beerList = bl;
+    public void setBeerList(ArrayList<Beer> bl) {
+        this.globalBeerList = bl;
     }
 
     public ArrayList<Beer> getBeerList() {
-        return this.beerList;
+        return this.globalBeerList;
     }
 
     public void setCountries(List<Country> countries) {
@@ -29,6 +29,14 @@ public class Globals {
 
     public List<Country> getCountries() {
         return this.countries;
+    }
+
+    //Get database names
+    public String getBeerDatabase() {
+        return "Beer";
+    }
+    public String getBeerRatingsDatabase() {
+        return "BeerRating";
     }
 
     public static synchronized Globals getInstance() {
