@@ -1,6 +1,7 @@
 package com.rjmoseley.beerator.app;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by richmose on 12/06/14.
@@ -8,17 +9,34 @@ import java.util.ArrayList;
 public class Globals {
     private static Globals instance;
 
-    private ArrayList<Beer> beerList;
+    private ArrayList<Beer> globalBeerList;
+    private List<Country> countries;
 
     private Globals() {
     }
 
-    public void setBeerlist(ArrayList<Beer> bl) {
-        this.beerList = bl;
+    public void setBeerList(ArrayList<Beer> bl) {
+        this.globalBeerList = bl;
     }
 
     public ArrayList<Beer> getBeerList() {
-        return this.beerList;
+        return this.globalBeerList;
+    }
+
+    public void setCountries(List<Country> countries) {
+        this.countries = countries;
+    }
+
+    public List<Country> getCountries() {
+        return this.countries;
+    }
+
+    //Get database names
+    public String getBeerDatabase() {
+        return "Beer";
+    }
+    public String getBeerRatingsDatabase() {
+        return "BeerRating";
     }
 
     public static synchronized Globals getInstance() {

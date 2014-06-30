@@ -4,20 +4,18 @@ import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
-import com.parse.Parse;
 import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -30,6 +28,8 @@ import java.util.ArrayList;
 public class BeerAddActivity extends Activity {
 
     private static final String TAG = "BeerAdd";
+    public final static String AUTH_ACTION = "com.rjmoseley.beerator.app.MESSAGE";
+    final Globals g = Globals.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,19 +38,44 @@ public class BeerAddActivity extends Activity {
         Crashlytics.log(Log.INFO, TAG, "Created");
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        ArrayAdapter<Country> countryAdapter = new ArrayAdapter<Country>(this,
+                android.R.layout.simple_spinner_item, g.getCountries());
+        Spinner countrySpinner = (Spinner) findViewById(R.id.spinnerCountry);
+        countrySpinner.setAdapter(countryAdapter);
+        Country uk = findCountry("GB");
+        int spinnerPosition = countryAdapter.getPosition(uk);
+        countrySpinner.setSelection(spinnerPosition);
+    }
+
+    private Country findCountry(String countryCode) {
+        for (Country c : g.getCountries()) {
+            if (countryCode.equals(c.getCode()))
+                return c;
+        }
+        return null;
+    }
+
     public void addBeer(View view) {
         //Add the beer to the Parse DB
         Crashlytics.log(Log.INFO, TAG, "Adding a new beer");
+        findViewById(R.id.addBeerButton).setEnabled(false);
+        findViewById(R.id.cancelButton).setEnabled(false);
         EditText beerInput = (EditText) findViewById(R.id.etBeerName);
         EditText breweryInput = (EditText) findViewById(R.id.etBreweryName);
         EditText abvInput = (EditText) findViewById(R.id.etAbv);
+        Spinner countryInput = (Spinner) findViewById(R.id.spinnerCountry);
+        int countryPosition = countryInput.getSelectedItemPosition();
+        final Country countryOfOrigin = g.getCountries().get(countryPosition);
         final String beerString = beerInput.getText().toString();
         final String breweryString = breweryInput.getText().toString();
         final String abvString = abvInput.getText().toString();
         final String userString = ParseUser.getCurrentUser().getObjectId();
-        final String countryOfOriginString = "";
+        final String countryOfOriginString = countryOfOrigin.getCode();
         if ((beerString.length() > 0) && (breweryString.length() > 0)) {
-            final ParseObject newParseBeer = new ParseObject("beer");
+            final ParseObject newParseBeer = new ParseObject(g.getBeerDatabase());
             newParseBeer.put("beerName", beerString);
             newParseBeer.put("brewery", breweryString);
             newParseBeer.put("userObjectId", userString);
@@ -83,9 +108,10 @@ public class BeerAddActivity extends Activity {
                         if (abvString.length() > 0) {
                             newBeer.setABV(abvString);
                         }
+                        newBeer.setCountry(countryOfOrigin);
                         beerList.add(newBeer);
                         Crashlytics.log(Log.INFO, TAG, "Beer added to beerList");
-                        g.setBeerlist(beerList);
+                        g.setBeerList(beerList);
                         Intent launchBeerDetails = new Intent(getApplicationContext(), BeerDetailsActivity.class);
                         launchBeerDetails.putExtra("objectId", objectId);
                         startActivity(launchBeerDetails);
@@ -134,6 +160,17 @@ public class BeerAddActivity extends Activity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
+            Crashlytics.log(Log.INFO, TAG, "Settings selected from menu");
+            Intent i = new Intent(this, SettingActivity.class);
+            startActivity(i);
+            return true;
+        }
+        else if (id == R.id.action_logout) {
+            Crashlytics.log(Log.INFO, TAG, "Logout selected from menu");
+            Intent launchBeerLoginActivity = new Intent(this, BeerLoginActivity.class);
+            String message = "logout";
+            launchBeerLoginActivity.putExtra(AUTH_ACTION, message);
+            startActivity(launchBeerLoginActivity);
             return true;
         }
         return super.onOptionsItemSelected(item);

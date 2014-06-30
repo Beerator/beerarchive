@@ -1,7 +1,6 @@
 package com.rjmoseley.beerator.app;
 
 import android.app.Activity;
-import android.app.Service;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -10,8 +9,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -28,12 +25,13 @@ import com.parse.ParseQuery;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
+import java.util.MissingResourceException;
 
 
 public class BeerListActivity extends Activity {
@@ -45,9 +43,6 @@ public class BeerListActivity extends Activity {
     private ListView beerListView ;
 
     private EditText beerFilterText;
-
-    private String sortKey1 = "brewery";
-    private String sortKey2 = "beer";
 
     final Globals g = Globals.getInstance();
 
@@ -76,7 +71,7 @@ public class BeerListActivity extends Activity {
             Crashlytics.log(Log.INFO, TAG, "Beer download needed");
             downloadBeers();
         } else {
-            Crashlytics.log(Log.INFO, TAG, "No beer download needed");
+            Crashlytics.log(Log.INFO, TAG, "No beer download needed, beerList size: " + g.getBeerList().size());
             beerList = g.getBeerList();
             //Sort the beers
             if (beerList.size() > 0) {
@@ -115,12 +110,19 @@ public class BeerListActivity extends Activity {
 
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        beerFilterText.setText("");
+    }
+
     private void downloadBeers() {
         Crashlytics.log(Log.INFO, TAG, "Downloading beers");
-        Toast.makeText(this, "Downloading beers", Toast.LENGTH_SHORT).show();
-        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("beer");
-        query.orderByAscending(sortKey1);
-        query.addAscendingOrder(sortKey2);
+        //Toast.makeText(this, "Downloading beers", Toast.LENGTH_SHORT).show();
+        setCountryList();
+        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>(g.getBeerDatabase());
+        query.orderByAscending("brewery");
+        query.addAscendingOrder("beerName");
         query.setLimit(1000);
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
@@ -135,6 +137,12 @@ public class BeerListActivity extends Activity {
                         if (obj.getString("abv") != null) {
                             b.setABV(obj.getString("abv"));
                         }
+                        if (obj.getString("countryOfOrigin") != null) {
+                            Country country = findCountry(obj.getString("countryOfOrigin"));
+                            if (country != null) {
+                                b.setCountry(country);
+                            }
+                        }
                         beerList.add(b);
                     }
                     Crashlytics.log(Log.INFO, TAG, "Beers downloaded: " + beerList.size());
@@ -142,7 +150,7 @@ public class BeerListActivity extends Activity {
                             Toast.LENGTH_SHORT).show();
                     setListViewContent();
                     Crashlytics.log(Log.INFO, TAG, "Saving beerList to Globals");
-                    g.setBeerlist(beerList);
+                    g.setBeerList(beerList);
                 } else {
                     Toast.makeText(BeerListActivity.this, "Beer download failed", Toast.LENGTH_SHORT).show();
                     Crashlytics.log(Log.INFO, TAG, "Beer download failed");
@@ -209,6 +217,50 @@ public class BeerListActivity extends Activity {
         });
     }
 
+    private void setCountryList() {
+        Locale[] locales = Locale.getAvailableLocales();
+        List<Country> countries = new ArrayList<Country>();
+        for (Locale locale : locales) {
+            try {
+                String code = locale.getCountry();
+                String name = locale.getDisplayCountry();
+                if (!"".equals(code) && code.length() == 2
+                        && !"".equals(name)) {
+                    Country country = new Country(code, name);
+                    if (isCountryNew(country, countries)) {
+                        countries.add(country);
+                    }
+                }
+            } catch (MissingResourceException e) {
+                Log.v(TAG, "Missing country code");
+            }
+        }
+        Collections.sort(countries, new Comparator<Country>() {
+            @Override
+            public int compare(Country country, Country country2) {
+                return country.getName().compareTo(country2.getName());
+            }
+        });
+        g.setCountries(countries);
+    }
+
+    private Boolean isCountryNew(Country country, List<Country> countries) {
+        for (Country c : countries) {
+            if (c.getName().equals(country.getName())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private Country findCountry(String countryCode) {
+        for (Country c : g.getCountries()) {
+            if (countryCode.equals(c.getCode()))
+                return c;
+        }
+        return null;
+    }
+
     @Override
     public void onBackPressed(){
         Crashlytics.log(Log.INFO, TAG, "Back button pressed, launching home screen");
@@ -237,6 +289,14 @@ public class BeerListActivity extends Activity {
             startActivity(i);
             return true;
         }
+        else if (id == R.id.action_logout) {
+            Crashlytics.log(Log.INFO, TAG, "Logout selected from menu");
+            Intent launchBeerLoginActivity = new Intent(this, BeerLoginActivity.class);
+            String message = "logout";
+            launchBeerLoginActivity.putExtra(AUTH_ACTION, message);
+            startActivity(launchBeerLoginActivity);
+            return true;
+        }
         else if (id == R.id.action_add) {
             Crashlytics.log(Log.INFO, TAG, "Add selected from menu");
             Intent launchAddBeer = new Intent(this, BeerAddActivity.class);
@@ -248,17 +308,9 @@ public class BeerListActivity extends Activity {
             Toast.makeText(this, "Refreshing Beer List", Toast.LENGTH_SHORT).show();
             beerFilterText.setText("");
             downloadBeers();
-        }
-        else if (id == R.id.action_logout) {
-            Crashlytics.log(Log.INFO, TAG, "Logout selected from menu");
-            Intent launchBeerLoginActivity = new Intent(this, BeerLoginActivity.class);
-            String message = "logout";
-            launchBeerLoginActivity.putExtra(AUTH_ACTION, message);
-            startActivity(launchBeerLoginActivity);
-            return true;
         } else if (id == R.id.action_recent) {
             Crashlytics.log(Log.INFO, TAG, "Recent ratings selected from menu");
-            Intent i = new Intent(this, RecentRatingsActivity.class);
+            Intent i = new Intent(this, RatingsListActivity.class);
             startActivity(i);
             return true;
         }

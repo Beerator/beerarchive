@@ -57,16 +57,25 @@ public class BeerDetailsActivity extends Activity {
 
     private ArrayList<BeerRating> beerRatings = new ArrayList<BeerRating>();
 
+    final Globals g = Globals.getInstance();
+
     private String ratingSystem = "1-5+";
 
     private static final String TAG = "BeerDetails";
+
+    public final static String AUTH_ACTION = "com.rjmoseley.beerator.app.MESSAGE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_beer_details);
-
         Crashlytics.log(Log.INFO, TAG, "Created");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Crashlytics.log(Log.INFO, TAG, "Resumed");
 
         ratingsListView = (ListView) findViewById(R.id.ratingsListView);
         View headerView = View.inflate(this, R.layout.activity_beer_details_header, null);
@@ -82,6 +91,7 @@ public class BeerDetailsActivity extends Activity {
         final TextView breweryName = (TextView) findViewById(R.id.breweryName);
         final TextView beerName = (TextView) findViewById(R.id.beerName);
         final TextView abv = (TextView) findViewById(R.id.abv);
+        final TextView country = (TextView) findViewById(R.id.country);
 
         Intent intent = getIntent();
         String objectId = intent.getStringExtra("objectId");
@@ -92,7 +102,7 @@ public class BeerDetailsActivity extends Activity {
         ArrayList<Beer> beerList = g.getBeerList();
         if (beerList.isEmpty()) {
             Crashlytics.log(Log.INFO, TAG, "beerList is empty");
-            ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("beer");
+            ParseQuery<ParseObject> query = new ParseQuery<ParseObject>(g.getBeerDatabase());
             try {
                 ParseObject b = query.get(objectId);
                 beer = new Beer(b.getString("beerName"), b.getString("brewery"), b.getObjectId());
@@ -123,10 +133,13 @@ public class BeerDetailsActivity extends Activity {
         if (beer.getABV() != null) {
             abv.setText(beer.getABV() + " %");
         }
+        if (beer.getCountry() != null) {
+            country.setText(beer.getCountry().toString());
+        }
 
         //Download beer ratings in background
         Crashlytics.log(Log.INFO, TAG, "Downloading beer ratings");
-        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("beerRating");
+        ParseQuery<ParseObject> query = new ParseQuery<ParseObject>(g.getBeerRatingsDatabase());
         query.whereEqualTo("beerObjectId", objectId);
         query.orderByDescending("createdAt");
         query.findInBackground(new FindCallback<ParseObject>() {
@@ -223,7 +236,7 @@ public class BeerDetailsActivity extends Activity {
         final String normRating = tempBR.getNormRating();
         Crashlytics.log(Log.INFO, TAG, "Normalised rating = " + normRating);
 
-        final ParseObject parseRating = new ParseObject("beerRating");
+        final ParseObject parseRating = new ParseObject(g.getBeerRatingsDatabase());
 
         parseRating.put("beerObjectId", beerObjectId);
         parseRating.put("normRating", normRating);
@@ -431,6 +444,17 @@ public class BeerDetailsActivity extends Activity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_settings) {
+            Crashlytics.log(Log.INFO, TAG, "Settings selected from menu");
+            Intent i = new Intent(this, SettingActivity.class);
+            startActivity(i);
+            return true;
+        }
+        else if (id == R.id.action_logout) {
+            Crashlytics.log(Log.INFO, TAG, "Logout selected from menu");
+            Intent launchBeerLoginActivity = new Intent(this, BeerLoginActivity.class);
+            String message = "logout";
+            launchBeerLoginActivity.putExtra(AUTH_ACTION, message);
+            startActivity(launchBeerLoginActivity);
             return true;
         }
         return super.onOptionsItemSelected(item);

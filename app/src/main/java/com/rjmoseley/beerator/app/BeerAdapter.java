@@ -16,13 +16,14 @@ import com.crashlytics.android.Crashlytics;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Custom Adapter to hold beer objects
  */
 public class BeerAdapter extends ArrayAdapter<Beer> {
-    private ArrayList<Beer> beerList;
-    private ArrayList<Beer> beerListOrig;
+    private CopyOnWriteArrayList<Beer> beerList;
+    private CopyOnWriteArrayList<Beer> beerListOrig;
     private Context context;
     private int layoutResourceId;
     private BeerFilter beerFilter;
@@ -31,10 +32,10 @@ public class BeerAdapter extends ArrayAdapter<Beer> {
 
     public BeerAdapter(Context context, int layoutResourceId, ArrayList<Beer> beerList) {
         super(context, layoutResourceId, beerList);
-        this.beerList = beerList;
+        this.beerList = new CopyOnWriteArrayList<Beer>(beerList);
         this.context = context;
         this.layoutResourceId = layoutResourceId;
-        this.beerListOrig = new ArrayList<Beer>(beerList);
+        this.beerListOrig = new CopyOnWriteArrayList<Beer>(beerList);
     }
 
     @Override
@@ -90,7 +91,7 @@ public class BeerAdapter extends ArrayAdapter<Beer> {
                 else {
                     Crashlytics.log(Log.INFO, TAG, "Filtering on: " + filterString);
                     // We perform filtering operation
-                    List<Beer> nBeerList = new ArrayList<Beer>();
+                    final List<Beer> nBeerList = new CopyOnWriteArrayList<Beer>();
 
                     for (Beer b : beerList) {
                         if (b.getName().toUpperCase().startsWith(filterString.toUpperCase())) {
@@ -100,6 +101,28 @@ public class BeerAdapter extends ArrayAdapter<Beer> {
                         else if (b.getBrewery().toUpperCase().startsWith(filterString.toUpperCase())) {
                             nBeerList.add(b);
                             Crashlytics.log(Log.INFO, TAG, "Adding by Brewery: " + b.toString());
+                        } else {
+                            final String[] nameWords = b.getName().split(" ");
+                            final String[] breweryWords = b.getName().split(" ");
+                            // Start at index 0, in case valueText starts with space(s)
+                            if (nameWords.length > 1) {
+                                for (String word : nameWords) {
+                                    if (word.toUpperCase().startsWith(filterString.toUpperCase())) {
+                                        Crashlytics.log(Log.INFO, TAG, "Adding by Name after split: " + b.toString());
+                                        nBeerList.add(b);
+                                        break;
+                                    }
+                                }
+                            } else if (breweryWords.length > 1) {
+                                // Start at index 0, in case valueText starts with space(s)
+                                for (String word : breweryWords) {
+                                    if (word.toUpperCase().startsWith(filterString.toUpperCase())) {
+                                        Crashlytics.log(Log.INFO, TAG, "Adding by Brewery after split: " + b.toString());
+                                        nBeerList.add(b);
+                                        break;
+                                    }
+                                }
+                            }
                         }
                     }
                     Crashlytics.log(Log.INFO, TAG, "Number of items found " + nBeerList.size());
@@ -125,7 +148,7 @@ public class BeerAdapter extends ArrayAdapter<Beer> {
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
             synchronized (mLock) {
-                beerList = (ArrayList<Beer>) results.values;
+                beerList = (CopyOnWriteArrayList<Beer>) results.values;
                 clear();
                 for (Beer b : beerList) {
                     add(b);
@@ -145,7 +168,7 @@ public class BeerAdapter extends ArrayAdapter<Beer> {
 
     public void resetData() {
         Crashlytics.log(Log.INFO, TAG, "Resetting data");
-        beerList = beerListOrig;
+        beerList = new CopyOnWriteArrayList<Beer>(beerListOrig);
         notifyDataSetChanged();
     }
 

@@ -10,8 +10,10 @@ import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
-public class RecentRatingsAdapter extends ArrayAdapter<Beer> {
+public class RatingsListAdapter extends ArrayAdapter<Beer> {
 
     private ArrayList<Beer> beerList;
     private Context context;
@@ -19,7 +21,7 @@ public class RecentRatingsAdapter extends ArrayAdapter<Beer> {
 
     private String ratingSystem = "1-5+";
 
-    public RecentRatingsAdapter(Context context, int layoutResourceId, ArrayList<Beer> beerList) {
+    public RatingsListAdapter(Context context, int layoutResourceId, ArrayList<Beer> beerList) {
         super(context, layoutResourceId, beerList);
         this.beerList = beerList;
         this.context = context;

@@ -1,0 +1,14 @@
+{
+    "applications": {
+        "Beerator": {
+            "applicationId": "HoS88PNeP8Fv0XE9PHTHsanhMNjRmoVYLuSjh4BE", 
+            "masterKey": "2vSQQVBsUybsytltpUI4D9DwfPI4BRjmsH75kGTj"
+        }, 
+        "_default": {
+            "link": "Beerator"
+        }
+    }, 
+    "global": {
+        "parseVersion": "1.2.18"
+    }
+}

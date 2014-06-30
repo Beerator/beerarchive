@@ -42,6 +42,10 @@
     <string name="load_ratings">Load all ratings</string>
     <string name="load_my_ratings">Load my ratings</string>
 
+    <!--Ratings list buttons-->
+    <string name="show_recent_ratings">Recent Ratings</string>
+    <string name="show_top_ratings">Top Ratings</string>
+
     <!-- Authentication and Login screen -->
     <string name="login_top">Welcome to Beerator</string>
     <string name="login_bottom">Beerator uses Facebook for authentication and to provide social
@@ -62,18 +66,13 @@
     <string name="display_name_dialog_title">User display name</string>
     <string name="sharing_settings">Sharing Settings</string>
     <string name="public_ratings_title">Public Ratings</string>
-    <string name="public_ratings_summary_on">Future ratings will be made public</string>
-    <string name="public_ratings_summary_off">Future ratings will be private</string>
+    <string name="public_ratings_summary">Share your ratings with other users</string>
     <string name="geotag_title">Enable GeoTagging</string>
-    <string name="geotag_summary_on">Your ratings will be tagged with your location</string>
-    <string name="geotag_summary_off">Your location will not be shared</string>
+    <string name="geotag_summary">Tag ratings with your location</string>
     <string name="push_settings">Notification Settings</string>
     <string name="push_receive_enabled_title">Receive Notifications</string>
-    <string name="push_receive_enabled_summary_on">You will receive notifications</string>
-    <string name="push_receive_enabled_summary_off">You will not receive notifications</string>
+    <string name="push_receive_enabled_summary">See when your friends submit public ratings</string>
     <string name="push_send_enabled_title">Send Notifications</string>
-    <string name="push_send_enabled_summary_on">Rating notifications will be sent</string>
-    <string name="push_send_enabled_summary_off">No notifications will be sent</string>
-
+    <string name="push_send_enabled_summary">Allow the sending of rating notifications</string>
 
 </resources>

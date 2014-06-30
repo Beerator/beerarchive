@@ -6,7 +6,6 @@
     >
 
     <TextView android:id="@+id/text1"
-        android:text="text1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
@@ -14,10 +13,12 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_marginLeft="?android:attr/listPreferredItemPaddingLeft"
+        android:layout_toLeftOf="@+id/text3"
+        android:singleLine="true"
+        android:ellipsize="end"
         />
 
     <TextView android:id="@+id/text2"
-        android:text="text2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
@@ -25,10 +26,12 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_marginLeft="?android:attr/listPreferredItemPaddingLeft"
+        android:layout_toLeftOf="@+id/text3"
+        android:singleLine="true"
+        android:ellipsize="end"
         />
 
     <TextView android:id="@+id/text3"
-        android:text="text3"
         android:layout_width="35dp"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
@@ -36,6 +39,8 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textSize="30sp"
         android:layout_centerVertical="true"
+        android:layout_marginLeft="5dp"
+        android:singleLine="true"
         />
 
 </RelativeLayout>
