@@ -8,26 +8,36 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.view.LayoutInflater;
+import android.widget.SectionIndexer;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 
+import org.apache.http.impl.conn.tsccm.ConnPoolByRoute;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.ConcurrentModificationException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Custom Adapter to hold beer objects
  */
-public class BeerAdapter extends ArrayAdapter<Beer> {
+public class BeerAdapter extends ArrayAdapter<Beer> implements SectionIndexer {
+
     private CopyOnWriteArrayList<Beer> beerList;
     private CopyOnWriteArrayList<Beer> beerListOrig;
     private Context context;
     private int layoutResourceId;
     private BeerFilter beerFilter;
     public final Object mLock = new Object();
+    HashMap<String, Integer> indexer;
+    String[] sections;
     private static final String TAG = "BeerAdapter";
 
     public BeerAdapter(Context context, int layoutResourceId, ArrayList<Beer> beerList) {
@@ -36,6 +46,35 @@ public class BeerAdapter extends ArrayAdapter<Beer> {
         this.context = context;
         this.layoutResourceId = layoutResourceId;
         this.beerListOrig = new CopyOnWriteArrayList<Beer>(beerList);
+
+        //Store the first character of the Beers to sort and their position
+        //Should end up with most of an alphabet
+        indexer = new HashMap<String, Integer>();
+
+        //iterate through the beerList
+        int size = beerList.size();
+        for (int i = size - 1; i >= 0; i--) {
+            //Get the first character of the brewery string and add it to the indexer
+            String brewery = beerList.get(i).getBrewery();
+            indexer.put(brewery.substring(0, 1), i);
+        }
+
+        //We need the keys to be in alphabetical order
+        //Get the keys
+        Set<String> keys = indexer.keySet();
+        //Convert to something that can be sorted
+        Iterator<String> it = keys.iterator();
+        ArrayList<String> keyList = new ArrayList<String>();
+        while (it.hasNext()) {
+            String key = it.next();
+            keyList.add(key);
+        }
+        //Sort it
+        Collections.sort(keyList);
+
+        //Convert to an array of Strings
+        sections = new String[keyList.size()];
+        keyList.toArray(sections);
     }
 
     @Override
@@ -172,9 +211,6 @@ public class BeerAdapter extends ArrayAdapter<Beer> {
         notifyDataSetChanged();
     }
 
-    /* Possible fix for issue #22 suggested by
-    https://stackoverflow.com/questions/15194835/filtering-custom-adapter-indexoutofboundsexception
-     */
     @Override
     public int getCount() {
         return beerList.size();
@@ -183,5 +219,21 @@ public class BeerAdapter extends ArrayAdapter<Beer> {
     @Override
     public Beer getItem(int pos) {
         return beerList.get(pos);
+    }
+
+    @Override
+    public int getPositionForSection(int section) {
+        String letter = sections[section];
+        return indexer.get(letter);
+    }
+
+    @Override
+    public int getSectionForPosition(int position) {
+        return 0; //We'll never call this
+    }
+
+    @Override
+    public Object[] getSections() {
+        return sections; //To be used for the display
     }
 }

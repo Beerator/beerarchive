@@ -70,18 +70,17 @@ public class BeerDetailsActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_beer_details);
         Crashlytics.log(Log.INFO, TAG, "Created");
+        ratingsListView = (ListView) findViewById(R.id.ratingsListView);
+        View headerView = View.inflate(this, R.layout.activity_beer_details_header, null);
+        ratingsListView.addHeaderView(headerView);
+
+        ratingsListView.setAdapter(beerRatingsAdapter);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         Crashlytics.log(Log.INFO, TAG, "Resumed");
-
-        ratingsListView = (ListView) findViewById(R.id.ratingsListView);
-        View headerView = View.inflate(this, R.layout.activity_beer_details_header, null);
-        ratingsListView.addHeaderView(headerView);
-
-        ratingsListView.setAdapter(beerRatingsAdapter);
 
         findViewById(R.id.loadingPanel).setVisibility(View.GONE);
         findViewById(R.id.ratingsListView).setVisibility(View.VISIBLE);
@@ -429,6 +428,16 @@ public class BeerDetailsActivity extends Activity {
         findViewById(R.id.ratingsListView).setVisibility(View.VISIBLE);
         findViewById(R.id.loadMyRatings).setVisibility(View.GONE);
     }
+
+
+    @Override
+    public void onBackPressed(){
+        Crashlytics.log(Log.INFO, TAG, "Back button pressed, returning to BeerList");
+        Intent launchBeerList = new Intent(this, BeerListActivity.class);
+        startActivity(launchBeerList);
+        finish();
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

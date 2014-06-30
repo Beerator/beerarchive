@@ -72,6 +72,7 @@ public class Beer {
 
     public void clearRatings() {
         ratingsList.clear();
+        myRatingsList.clear();
     }
 
     public void sortRatings() {
@@ -103,7 +104,6 @@ public class Beer {
             return "Failed to find key";
         }
     }
-
 
     @Override
     public String toString() {
