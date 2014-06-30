@@ -69,9 +69,9 @@ public class BeerAddActivity extends Activity {
         Spinner countryInput = (Spinner) findViewById(R.id.spinnerCountry);
         int countryPosition = countryInput.getSelectedItemPosition();
         final Country countryOfOrigin = g.getCountries().get(countryPosition);
-        final String beerString = beerInput.getText().toString();
-        final String breweryString = breweryInput.getText().toString();
-        final String abvString = abvInput.getText().toString();
+        final String beerString = beerInput.getText().toString().trim();
+        final String breweryString = breweryInput.getText().toString().trim();
+        final String abvString = abvInput.getText().toString().trim();
         final String userString = ParseUser.getCurrentUser().getObjectId();
         final String countryOfOriginString = countryOfOrigin.getCode();
         if ((beerString.length() > 0) && (breweryString.length() > 0)) {
