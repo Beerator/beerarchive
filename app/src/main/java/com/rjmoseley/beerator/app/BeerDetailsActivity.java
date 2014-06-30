@@ -69,6 +69,10 @@ public class BeerDetailsActivity extends Activity {
         setContentView(R.layout.activity_beer_details);
 
         Crashlytics.log(Log.INFO, TAG, "Created");
+    }
+
+    @Override
+    protected void onResume() {
 
         ratingsListView = (ListView) findViewById(R.id.ratingsListView);
         View headerView = View.inflate(this, R.layout.activity_beer_details_header, null);
