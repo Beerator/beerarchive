@@ -34,11 +34,13 @@ public class RatingsListActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ratings_list);
+        Crashlytics.log(Log.INFO, TAG, "Created");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        Crashlytics.log(Log.INFO, TAG, "Resumed");
         ratingsListBeerList = new ArrayList<Beer>();
         ratingsListAdapter = new RatingsListAdapter(RatingsListActivity.this,
                 R.layout.ratings_list_item, ratingsListBeerList);
@@ -55,6 +57,7 @@ public class RatingsListActivity extends Activity {
     }
 
     private void showRecentRatings() {
+        Crashlytics.log(Log.INFO, TAG, "Downloading recent ratings");
         ratingsListBeerList.clear();
         ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("beerRating");
         query.addDescendingOrder("createdAt");
@@ -62,6 +65,7 @@ public class RatingsListActivity extends Activity {
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> parseObjects, ParseException e) {
+                Crashlytics.log(Log.INFO, TAG, "Download successful");
                 processRatings(parseObjects, e, "date");
             }
         });
@@ -72,6 +76,7 @@ public class RatingsListActivity extends Activity {
     }
 
     private void showTopRatings() {
+        Crashlytics.log(Log.INFO, TAG, "Downloading top ratings");
         ratingsListBeerList.clear();
         ParseQuery<ParseObject> query = new ParseQuery<ParseObject>("beerRating");
         query.addDescendingOrder("normRating");
@@ -79,14 +84,17 @@ public class RatingsListActivity extends Activity {
         query.findInBackground(new FindCallback<ParseObject>() {
             @Override
             public void done(List<ParseObject> parseObjects, ParseException e) {
+                Crashlytics.log(Log.INFO, TAG, "Download successful");
                 processRatings(parseObjects, e, "normRating");
             }
         });
     }
 
     private void processRatings(List<ParseObject> parseObjects, ParseException e, final String sortKey) {
+        Crashlytics.log(Log.INFO, TAG, "Processing ratings");
         if (e == null) {
             for (final ParseObject ratingObj : parseObjects) {
+                Crashlytics.log(Log.INFO, TAG, "Ratings received");
                 String beerObjectId = ratingObj.getString("beerObjectId");
                 Boolean beerFound = false;
                 //Try and find the beer in the local beerList first
@@ -146,6 +154,7 @@ public class RatingsListActivity extends Activity {
 
     public void sortBeerRatings(String sortKey) {
         if (sortKey.equals("date")) {
+            Crashlytics.log(Log.INFO, TAG, "Sorting by date");
             Collections.sort(ratingsListBeerList, new Comparator<Beer>() {
                 @Override
                 public int compare(Beer beer1, Beer beer2) {
@@ -154,6 +163,7 @@ public class RatingsListActivity extends Activity {
                 }
             });
         } else if (sortKey.equals("normRating")) {
+            Crashlytics.log(Log.INFO, TAG, "Sorting by normRating");
             Collections.sort(ratingsListBeerList, new Comparator<Beer>() {
                 @Override
                 public int compare(Beer beer1, Beer beer2) {

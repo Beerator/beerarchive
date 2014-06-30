@@ -67,12 +67,13 @@ public class BeerDetailsActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_beer_details);
-
         Crashlytics.log(Log.INFO, TAG, "Created");
     }
 
     @Override
     protected void onResume() {
+        super.onResume();
+        Crashlytics.log(Log.INFO, TAG, "Resumed");
 
         ratingsListView = (ListView) findViewById(R.id.ratingsListView);
         View headerView = View.inflate(this, R.layout.activity_beer_details_header, null);

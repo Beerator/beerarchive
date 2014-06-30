@@ -23,16 +23,14 @@
 
         <CheckBoxPreference
             android:key="public_ratings"
-            android:summaryOn="@string/public_ratings_summary_on"
-            android:summaryOff="@string/public_ratings_summary_off"
+            android:summary="@string/public_ratings_summary"
             android:title="@string/public_ratings_title"
             android:defaultValue="true"
             />
 
         <CheckBoxPreference
             android:key="geotag"
-            android:summaryOn="@string/geotag_summary_on"
-            android:summaryOff="@string/geotag_summary_off"
+            android:summary="@string/geotag_summary"
             android:title="@string/geotag_title"
             android:defaultValue="true"
             />
@@ -46,16 +44,14 @@
         <CheckBoxPreference
             android:key="push_receive_enabled"
             android:title="@string/push_receive_enabled_title"
-            android:summaryOn="@string/push_receive_enabled_summary_on"
-            android:summaryOff="@string/push_receive_enabled_summary_off"
+            android:summary="@string/push_receive_enabled_summary"
             android:defaultValue="true"
             />
 
         <CheckBoxPreference
             android:key="push_send_enabled"
             android:title="@string/push_send_enabled_title"
-            android:summaryOn="@string/push_send_enabled_summary_on"
-            android:summaryOff="@string/push_send_enabled_summary_off"
+            android:summary="@string/push_send_enabled_summary"
             android:defaultValue="true"
             android:dependency="public_ratings"
             />
