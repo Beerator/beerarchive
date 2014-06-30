@@ -91,7 +91,7 @@ public class BeerAdapter extends ArrayAdapter<Beer> {
                 else {
                     Crashlytics.log(Log.INFO, TAG, "Filtering on: " + filterString);
                     // We perform filtering operation
-                    List<Beer> nBeerList = new CopyOnWriteArrayList<Beer>();
+                    final List<Beer> nBeerList = new CopyOnWriteArrayList<Beer>();
 
                     for (Beer b : beerList) {
                         if (b.getName().toUpperCase().startsWith(filterString.toUpperCase())) {
@@ -101,6 +101,28 @@ public class BeerAdapter extends ArrayAdapter<Beer> {
                         else if (b.getBrewery().toUpperCase().startsWith(filterString.toUpperCase())) {
                             nBeerList.add(b);
                             Crashlytics.log(Log.INFO, TAG, "Adding by Brewery: " + b.toString());
+                        } else {
+                            final String[] nameWords = b.getName().split(" ");
+                            final String[] breweryWords = b.getName().split(" ");
+                            // Start at index 0, in case valueText starts with space(s)
+                            if (nameWords.length > 1) {
+                                for (String word : nameWords) {
+                                    if (word.toUpperCase().startsWith(filterString.toUpperCase())) {
+                                        Crashlytics.log(Log.INFO, TAG, "Adding by Name after split: " + b.toString());
+                                        nBeerList.add(b);
+                                        break;
+                                    }
+                                }
+                            } else if (breweryWords.length > 1) {
+                                // Start at index 0, in case valueText starts with space(s)
+                                for (String word : breweryWords) {
+                                    if (word.toUpperCase().startsWith(filterString.toUpperCase())) {
+                                        Crashlytics.log(Log.INFO, TAG, "Adding by Brewery after split: " + b.toString());
+                                        nBeerList.add(b);
+                                        break;
+                                    }
+                                }
+                            }
                         }
                     }
                     Crashlytics.log(Log.INFO, TAG, "Number of items found " + nBeerList.size());
